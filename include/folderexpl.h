@@ -2,6 +2,7 @@
 #define FOLDEREXPL_H
 
 #include <QObject>
+#include <settingscontroller.h>
 
 class FolderExpl : public QObject
 {

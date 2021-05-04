@@ -1,17 +1,47 @@
-#include "servsettings.h"
+#include "settingscontroller.h"
 
-ServSettings &ServSettings::get_instanse()
+std::vector<std::string> split(const std::string &s, std::string delimiter)
 {
-    static ServSettings sett;
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    std::string token;
+    std::vector<std::string> res;
+
+    while ((pos_end = s.find (delimiter, pos_start)) != std::string::npos) {
+        token = s.substr (pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back (token);
+    }
+
+    res.push_back (s.substr (pos_start));
+    return res;
+}
+
+std::vector<std::string> split(const std::string &s, char delim)
+{
+    std::vector<std::string> result;
+    std::stringstream ss(s);
+    std::string item;
+
+    while (getline (ss, item, delim)) {
+        result.push_back (item);
+    }
+
+    return result;
+}
+
+
+SettingsController &SettingsController::get_instanse()
+{
+    static SettingsController sett;
     return sett;
 }
 
-void ServSettings::parse_args(int argc, char *argv[])
+void SettingsController::parse_args(int argc, char *argv[])
 {
     ///need settings args
 }
 
-void ServSettings::save_settings(std::string path_to_save_file)
+void SettingsController::save_settings(std::string path_to_save_file)
 {
     QFile file(QString::fromStdString(path_to_save_file));
     if(!file.open(QIODevice::WriteOnly)){
@@ -47,7 +77,7 @@ void ServSettings::save_settings(std::string path_to_save_file)
     file.close();   // Закрываем файл
 }
 
-void ServSettings::read_settings()
+void SettingsController::read_settings()
 {
     QString path;
     if(m_path_to_file.empty())
@@ -100,32 +130,32 @@ void ServSettings::read_settings()
     file.close(); // Закрываем файл
 }
 
-bool ServSettings::is_init()
+bool SettingsController::is_init()
 {
     return this->is_init_arg;
 }
 
-const Settings &ServSettings::get_settings()
+const Settings &SettingsController::get_settings()
 {
     return this->m_set;
 }
 
-QString ServSettings::save_dump_dir()
+QString SettingsController::save_dump_dir()
 {
     return QString::fromStdString(m_set.save_dump_dir);
 }
 
-QString ServSettings::log_file_path()
+QString SettingsController::log_file_path()
 {
     return QString::fromStdString(m_set.log_file_path);
 }
 
-QString ServSettings::dir_list()
+QString SettingsController::dir_list()
 {
     return QString::fromStdString(m_set.dir_list);
 }
 
-std::list<std::string> ServSettings::parse_dump_list()
+std::list<std::string> SettingsController::parse_dump_list()
 {
     std::list<std::string> lst;
     if(!m_set.dir_list.empty()){
@@ -134,28 +164,28 @@ std::list<std::string> ServSettings::parse_dump_list()
     return lst;
 }
 
-void ServSettings::set_save_dump_dir(const QString &name)
+void SettingsController::set_save_dump_dir(const QString &name)
 {
     auto list = name.split("///");
     m_set.save_dump_dir = list.at(list.size()-1).toStdString();
     emit save_dump_dir_change(QString::fromStdString(m_set.save_dump_dir));
 }
 
-void ServSettings::save_app_settings()
+void SettingsController::save_app_settings()
 {
     if(m_path_to_file.empty())
         save_settings(SET_PATH);
     else  save_settings(m_path_to_file);
 }
 
-void ServSettings::set_log_file_path(const QString &path)
+void SettingsController::set_log_file_path(const QString &path)
 {
     if(path.isEmpty()) return;
     m_set.log_file_path = path.toStdString();
     emit log_file_path_change(path);
 }
 
-void ServSettings::set_dir_list(const QString &dir_list)
+void SettingsController::set_dir_list(const QString &dir_list)
 {
     if(!dir_list.isEmpty()){
         m_set.dir_list = dir_list.toStdString();
@@ -163,10 +193,10 @@ void ServSettings::set_dir_list(const QString &dir_list)
     }
 }
 
-ServSettings::ServSettings(QObject *parent)
+SettingsController::SettingsController(QObject *parent)
 {
     Q_UNUSED(parent)
 }
 
-ServSettings::~ServSettings()
+SettingsController::~SettingsController()
 {}

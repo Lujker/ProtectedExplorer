@@ -30,11 +30,11 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick Xml LinguistTools REQUI
 set(PROJECT_SOURCES
         ./src/main.cpp
         ./src/loger.cpp
-        ./src/servsettings.cpp
+        ./src/settingscontroller.cpp
         ./src/folderexpl.cpp
         ./qml/qml.qrc
 )
-set(HEADER_FILE_ONLY ./include/folderexpl.h ./include/loger.h ./include/servsettings.h)
+set(HEADER_FILE_ONLY ./include/folderexpl.h ./include/loger.h ./include/settingscontroller.h)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(ProtectedExplorer

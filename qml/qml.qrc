@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>AppButton.qml</file>
+        <file>MainMenuBar.qml</file>
     </qresource>
 </RCC>

@@ -2,5 +2,4 @@
 
 FolderExpl::FolderExpl(QObject *parent) : QObject(parent)
 {
-
 }
