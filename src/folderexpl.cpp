@@ -1,4 +1,4 @@
-#include "folderexpl.h"
+﻿#include "folderexpl.h"
 
 FolderExpl::FolderExpl(QObject *parent) :
     QObject(parent) , m_sub_model(nullptr), m_dir_model(nullptr)
@@ -98,6 +98,21 @@ QHash<int, QByteArray> SubsModel::roleNames() const
 }
 
 DirsModel::DirsModel(std::list<std::string> dirs, QObject *parent)
+{
+
+}
+
+void DirsModel::openFolder(int index)
+{
+
+}
+
+void DirsModel::comeBack()
+{
+
+}
+
+void DirsModel::comeToBeginning()
 {
 
 }

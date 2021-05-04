@@ -1,7 +1,8 @@
-#ifndef FOLDEREXPL_H
+﻿#ifndef FOLDEREXPL_H
 #define FOLDEREXPL_H
 
 #include <QObject>
+#include <QList>
 #include <QAbstractListModel>
 #include <QDir>
 #include <QFile>
@@ -58,8 +59,21 @@ class DirsModel: public QAbstractListModel
 public:
     explicit DirsModel(std::list<std::string> dirs, QObject* parent = nullptr);
 
+public slots:
+    void openFolder(int index);
+    void comeBack();
+    void comeToBeginning();
+
 private:
+    ///список даступных папок с их вложением
     std::list<std::string> m_dirs;
+    ///открытая сейчас дериктория
+    QString m_path;
+    ///списко имен папок и файлов для отображения
+    QList<QString> m_filenames;
+    ///уровень вхождения
+    int m_level_count;
+
     enum DirsRoles
         {
             NameRole = Qt::UserRole+1,
