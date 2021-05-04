@@ -12,16 +12,17 @@
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 #include <QXmlStreamAttribute>
+#include <QCommandLineParser>
 
 #define SET_PATH "../settings/set.xml"
 #define SET_DIR "../settings"
 
 
 /*!
-    \brief РЎС‚СЂСѓРєСЂС‚СѓСЂР° СЃ РїР°СЂР°РјРµС‚СЂР°РјРё РЅР°СЃС‚СЂРѕРµРє
+    \brief � ЎС‚СЂСѓ� єСЂС‚СѓСЂ� ° СЃ � ї� °СЂ� °� ј� µС‚СЂ� °� ј� ё � Ѕ� °СЃС‚СЂ� ѕ� µ� є
 */
 struct Settings{
-    std::string save_dump_dir;
+    std::string sub_list_dirs;
     std::string log_file_path;
     std::string dir_list;
 };
@@ -32,17 +33,17 @@ std::vector<std::string> split (const std::string&, char);
 
 
 /*!
-    \brief РљР»Р°СЃСЃ РґРѕСЃС‚СѓРїР° Рє РЅР°СЃС‚СЂРѕР№РєР°Рј
+    \brief � љ� »� °СЃСЃ � ґ� ѕСЃС‚Сѓ� ї� ° � є � Ѕ� °СЃС‚СЂ� ѕ� №� є� °� ј
     \author Zelenskiy V.P.
     \version 1.0
-    \date РњР°СЂС‚ 2021 РіРѕРґР°
-    \warning Р”Р°РЅРЅС‹Р№ РєР»Р°СЃСЃ РЅРµ СЃРѕР·РґР°РµС‚СЃСЏ, Р° РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С‡РµСЂРµР· РёРЅС‚СЃС‚Р°РЅСЃ
+    \date � њ� °СЂС‚ 2021 � і� ѕ� ґ� °
+    \warning � ”� °� Ѕ� ЅС‹� № � є� »� °СЃСЃ � Ѕ� µ СЃ� ѕ� ·� ґ� °� µС‚СЃСЏ, � ° � ёСЃ� ї� ѕ� »СЊ� ·Сѓ� µС‚СЃСЏ С‡� µСЂ� µ� · � ё� ЅС‚СЃС‚� °� ЅСЃ
 
-    РљР»Р°СЃСЃ РґР»СЏ С‡С‚РµРЅРёСЏ Рё Р·Р°РїРёСЃРё РЅР°СЃС‚СЂРѕР№Рє РїСЂРѕРіСЂР°РјРјС‹, СЂР°Р·СЂР°Р±РѕС‚Р°РЅ РїРѕ С€Р°Р±Р»РѕРЅСѓ singleton
-    Рё РЅРµ РґРѕР»Р¶РµРЅ СЃРѕР·РґР°РІР°С‚СЊСЃСЏ РІ РїСЂРѕРіСЂР°РјРјРµ.
-    РџРµСЂРµРґ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј РЅРµРѕР±С…РѕРёРґРјРѕ РІС‹Р·РІР°С‚СЊ РјРµС‚РѕРґ read_settings РёР»Рё parse_args
-    РґР»СЏ СЃС‡РёС‚С‹РІР°РЅРёСЏ РЅР°СЃС‚СЂРѕРµРє.
-    РџР°СЂР°РјРµС‚СЂС‹ РЅР°СЃС‚СЂРµРѕРє РјРѕРіСѓС‚ РїРµСЂРµРґР°РІР°С‚СЊСЃСЏ РІ qml РµСЃР»Рё РѕРїРµСЂРґРµР»РёС‚СЊ РѕР±СЊРµРєС‚ РёРЅСЃС‚Р°РЅСЃР° РІ РєРѕРЅС‚РµРєСЃС‚ qml.
+    � љ� »� °СЃСЃ � ґ� »СЏ С‡С‚� µ� Ѕ� ёСЏ � ё � ·� °� ї� ёСЃ� ё � Ѕ� °СЃС‚СЂ� ѕ� №� є � їСЂ� ѕ� іСЂ� °� ј� јС‹, СЂ� °� ·СЂ� °� ±� ѕС‚� °� Ѕ � ї� ѕ С€� °� ±� »� ѕ� ЅСѓ singleton
+    � ё � Ѕ� µ � ґ� ѕ� »� ¶� µ� Ѕ СЃ� ѕ� ·� ґ� °� І� °С‚СЊСЃСЏ � І � їСЂ� ѕ� іСЂ� °� ј� ј� µ.
+    � џ� µСЂ� µ� ґ � ёСЃ� ї� ѕ� »СЊ� ·� ѕ� І� °� Ѕ� ё� µ� ј � Ѕ� µ� ѕ� ±С…� ѕ� ё� ґ� ј� ѕ � ІС‹� ·� І� °С‚СЊ � ј� µС‚� ѕ� ґ read_settings � ё� »� ё parse_args
+    � ґ� »СЏ СЃС‡� ёС‚С‹� І� °� Ѕ� ёСЏ � Ѕ� °СЃС‚СЂ� ѕ� µ� є.
+    � џ� °СЂ� °� ј� µС‚СЂС‹ � Ѕ� °СЃС‚СЂ� µ� ѕ� є � ј� ѕ� іСѓС‚ � ї� µСЂ� µ� ґ� °� І� °С‚СЊСЃСЏ � І qml � µСЃ� »� ё � ѕ� ї� µСЂ� ґ� µ� »� ёС‚СЊ � ѕ� ±СЊ� µ� єС‚ � ё� ЅСЃС‚� °� ЅСЃ� ° � І � є� ѕ� ЅС‚� µ� єСЃС‚ qml.
 
 */
 
@@ -51,31 +52,33 @@ class SettingsController: public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString save_dump_dir READ save_dump_dir WRITE set_save_dump_dir NOTIFY save_dump_dir_change)
+    Q_PROPERTY(QString sub_list_dirs READ sub_list_dirs WRITE set_sub_list_dirs NOTIFY sub_list_dirs_change)
+    Q_PROPERTY(QString dir_list READ dir_list WRITE set_dir_list NOTIFY dir_list_change)
 
 public:
     static SettingsController &get_instanse();
-    static void parse_args(int argc, char *argv[]);
+    static void parse_args(const QCoreApplication &app);
     void save_settings(std::string path_to_save_file = std::string());
     void read_settings();
     bool is_init();
     const Settings &get_settings();
 
     ///PROPERTY_GET
-    QString save_dump_dir();
+    QString sub_list_dirs();
     QString log_file_path();
     QString dir_list();
-    std::list<std::string> parse_dump_list();
+    std::list<std::string> parse_dir_list();
+    std::list<std::string> parse_sub_list();
 
     ///PROPERTY_SET
 public slots:
-    void set_save_dump_dir(const QString &name);
+    void set_sub_list_dirs(const QString &name);
     void set_log_file_path(const QString& path);
     void set_dir_list(const QString& dir_list);
     void save_app_settings();
     ///PROPERTY_NOTIFY
 signals:
-    void save_dump_dir_change(const QString &name);
+    void sub_list_dirs_change(const QString &name);
     void dir_list_change(const QString &dir_list);
     void log_file_path_change(const QString &path);
 

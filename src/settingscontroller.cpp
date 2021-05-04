@@ -36,9 +36,21 @@ SettingsController &SettingsController::get_instanse()
     return sett;
 }
 
-void SettingsController::parse_args(int argc, char *argv[])
+void SettingsController::parse_args(const QCoreApplication &app)
 {
-    ///need settings args
+    QCommandLineParser parser;
+      parser.setApplicationDescription("open protected file explorer");
+      parser.addHelpOption();
+
+      parser.addVersionOption();
+      QCommandLineOption set_file(QStringList() << "s", "path to settings .xml file", "path");
+      parser.addOption(set_file);
+
+      parser.process(app);
+
+      if(parser.isSet(set_file)){
+          get_instanse().m_path_to_file = parser.value("s").toStdString();
+      }
 }
 
 void SettingsController::save_settings(std::string path_to_save_file)
@@ -55,8 +67,8 @@ void SettingsController::save_settings(std::string path_to_save_file)
     xmlWriter.writeStartDocument();     // Запускаем запись в документ
     xmlWriter.writeStartElement("Settings");   // Записываем первый элемент с его именем
 
-    xmlWriter.writeStartElement("save_dump_dir");  // Записываем тег с именем для первого чекбокса
-    xmlWriter.writeAttribute("string", QString::fromStdString(m_set.save_dump_dir));
+    xmlWriter.writeStartElement("sub_list_dirs");  // Записываем тег с именем для первого чекбокса
+    xmlWriter.writeAttribute("string", QString::fromStdString(m_set.sub_list_dirs));
     xmlWriter.writeEndElement();        // Закрываем тег
 
     xmlWriter.writeStartElement("log_file_path");  // Записываем тег с именем для первого чекбокса
@@ -98,11 +110,11 @@ void SettingsController::read_settings()
                  * */
                 if(xmlReader.isStartElement())
                 {
-                    if(xmlReader.name() == "save_dump_dir")
+                    if(xmlReader.name() == "sub_list_dirs")
                         for(const auto &attr : xmlReader.attributes()) {
                             if (attr.name().toString() == "string") {
                                 QString attribute_value = attr.value().toString();
-                                m_set.save_dump_dir = attribute_value.toStdString();
+                                m_set.sub_list_dirs = attribute_value.toStdString();
                             }
                         }
 
@@ -140,9 +152,9 @@ const Settings &SettingsController::get_settings()
     return this->m_set;
 }
 
-QString SettingsController::save_dump_dir()
+QString SettingsController::sub_list_dirs()
 {
-    return QString::fromStdString(m_set.save_dump_dir);
+    return QString::fromStdString(m_set.sub_list_dirs);
 }
 
 QString SettingsController::log_file_path()
@@ -155,20 +167,31 @@ QString SettingsController::dir_list()
     return QString::fromStdString(m_set.dir_list);
 }
 
-std::list<std::string> SettingsController::parse_dump_list()
+std::list<std::string> SettingsController::parse_dir_list()
 {
     std::list<std::string> lst;
     if(!m_set.dir_list.empty()){
-
+        auto vect = split(m_set.dir_list,';');
+        if(vect.empty()) return lst;
     }
     return lst;
 }
 
-void SettingsController::set_save_dump_dir(const QString &name)
+std::list<std::string> SettingsController::parse_sub_list()
+{
+    std::list<std::string> lst;
+    if(!m_set.sub_list_dirs.empty()){
+        auto vect = split(m_set.sub_list_dirs,';');
+        if(vect.empty()) return lst;
+    }
+    return lst;
+}
+
+void SettingsController::set_sub_list_dirs(const QString &name)
 {
     auto list = name.split("///");
-    m_set.save_dump_dir = list.at(list.size()-1).toStdString();
-    emit save_dump_dir_change(QString::fromStdString(m_set.save_dump_dir));
+    m_set.sub_list_dirs = list.at(list.size()-1).toStdString();
+    emit sub_list_dirs_change(QString::fromStdString(m_set.sub_list_dirs));
 }
 
 void SettingsController::save_app_settings()

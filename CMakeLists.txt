@@ -34,7 +34,12 @@ set(PROJECT_SOURCES
         ./src/folderexpl.cpp
         ./qml/qml.qrc
 )
-set(HEADER_FILE_ONLY ./include/folderexpl.h ./include/loger.h ./include/settingscontroller.h)
+
+set(HEADER_FILE_ONLY
+        ./include/folderexpl.h
+        ./include/loger.h
+        ./include/settingscontroller.h
+)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(ProtectedExplorer
