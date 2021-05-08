@@ -16,6 +16,7 @@
 
 #define SET_PATH "../settings/set.xml"
 #define SET_DIR "../settings"
+#define PATH_SEPARATOR ';' ///Разделитель для списка путей
 
 
 /*!

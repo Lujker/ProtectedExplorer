@@ -34,6 +34,9 @@ set(PROJECT_SOURCES
         ./src/loger.cpp
         ./src/settingscontroller.cpp
         ./src/folderexpl.cpp
+        ./src/databaseaccessor.cpp
+        ./src/databasequery.cpp
+        ./src/filesystemdriver.cpp
         ./qml/qml.qrc
 )
 
@@ -41,6 +44,9 @@ set(HEADER_FILE_ONLY
         ./include/folderexpl.h
         ./include/loger.h
         ./include/settingscontroller.h
+        ./include/filesystemdriver.h
+        ./include/databaseaccessor.h
+        ./include/databasequery.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
