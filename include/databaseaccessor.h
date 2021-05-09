@@ -46,8 +46,8 @@ namespace
     public:
         void operator() (QSqlDatabase* db) {
             if(db!=nullptr && db->isOpen()){
-                db::DatabaseQuery::generate_drop_file_table();
-                db::DatabaseQuery::generate_drop_file_options_table();
+//                db::DatabaseQuery::generate_drop_file_table();
+//                db::DatabaseQuery::generate_drop_file_options_table();
                 db->close();
                 QSqlDatabase::removeDatabase(QSqlDatabase::defaultConnection);
 //                QFile::remove(db->databaseName());
@@ -89,10 +89,10 @@ public:
     bool try_open();
     bool is_open();
     bool db_is_valid();
+    static bool checkSQLDriver(QString driver_name = "QSQLITE");
     static void setState(int state);
     static int getState();
     static void close();
-
 
 private:
     DatabaseAccessor();

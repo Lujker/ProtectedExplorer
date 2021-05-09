@@ -14,8 +14,31 @@ class Driver: public QObject{
     Q_OBJECT
 public:
     Driver(QObject* parent = nullptr);
-    virtual void setPath(std::string &dir_list, std::string &sub_list_dirs);
+    virtual ~Driver();
     virtual void updateDataBase() = 0;
+    virtual void createDataBase() = 0;
+
+public slots:
+    virtual bool addFile(QString &path) = 0;
+    virtual bool addFolder(QString &path) = 0;
+    virtual bool deleteFile(QString &path) = 0;
+    virtual bool deleteFolder(QString &path) = 0;
+    virtual bool copyFile(QString &path, QString &dist_path) = 0;
+    virtual bool moveFile(QString &path, QString &dist_path) = 0;
+    virtual void newFile(QString path) = 0;
+
+signals:
+    void updateBase();
+};
+
+class FileSystemDriver: public Driver
+{
+    Q_OBJECT
+public:
+    FileSystemDriver(QObject* parent = nullptr);
+    virtual ~FileSystemDriver();
+    virtual void createDataBase();
+    virtual void updateDataBase();
 
 public slots:
     virtual bool addFile(QString &path);
@@ -24,27 +47,11 @@ public slots:
     virtual bool deleteFolder(QString &path);
     virtual bool copyFile(QString &path, QString &dist_path);
     virtual bool moveFile(QString &path, QString &dist_path);
-
-signals:
-    void updateBase();
+    virtual void newFile(QString path);
 
 protected:
-    virtual void createDataBase() = 0;
-private:
     QStringList allPath(const QString& dir_name);
-
-};
-
-class FileSystemDriver: public Driver
-{
-    Q_OBJECT
-public:
-    FileSystemDriver(QObject* parent = nullptr);
-
-public slots:
-    void newFile(QString path);
-
-private:
+    virtual void setPath(const std::string &dir_list, const std::string &sub_list_dirs);
     QFileSystemWatcher* m_watcher;
 };
 

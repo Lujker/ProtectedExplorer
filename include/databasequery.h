@@ -5,6 +5,9 @@
 #include "databaseaccessor.h"
 //Qt libs
 #include <QObject>
+#include <QFile>
+#include <QDir>
+#include <QFileInfo>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -42,21 +45,26 @@ class DatabaseQuery
 public:
     using RESULT = std::pair<DBResult,QSqlQuery>; ///возвращаем результат в виде информации об успешности и запрос для получения информации
 
+    ///Create and del tables functions
     static RESULT generate_create_files_table();
     static RESULT generate_crete_file_options_table();
     static RESULT generate_drop_file_table();
     static RESULT generate_drop_file_options_table();
 
-    static RESULT generate_add_file(std::string& path);
-    static RESULT generate_add_dir(std::string& path);
+    ///Edit db functions
+    static RESULT generate_add_file(QFile& file, bool isSub = false);
+    static RESULT generate_add_dir(QDir& dir, bool isSub = false);
     static RESULT generate_delete_file(std::string& path);
     static RESULT generate_find_file(std::string& path);
     static RESULT generate_copy_file_to(std::string& path, std::string& dest_path);
     static RESULT generate_move_file_to(std::string& path, std::string& dest_path);
 
-//    static RESULT generate_get_all_files(std::string& work_dir);
-//    static RESULT generate_get_all_sub_files(std::string& work_dir);
+    ///Select db finctions
+    static RESULT generate_select_all_files(std::string& work_dir);
+    static RESULT generate_select_all_sub_files(std::string& work_dir);
 
+
+    ///Exec query functions
     static RESULT exec_request(QSqlQuery qu);
     static RESULT exec_request(const QString& qu);
 

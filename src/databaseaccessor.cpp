@@ -13,9 +13,9 @@ int     DatabaseAccessor::m_state=0;
 
 DatabaseAccessor *DatabaseAccessor::getInstanse()
 {
-
- static DatabaseAccessor instanse;
- return &instanse;
+    if(!checkSQLDriver()) return nullptr;
+    static DatabaseAccessor instanse;
+    return &instanse;
 }
 
 int DatabaseAccessor::getState()
@@ -25,7 +25,7 @@ int DatabaseAccessor::getState()
 
 void DatabaseAccessor::close()
 {
-    DBCloser (db);
+    DBCloser(db);
 }
 
 void DatabaseAccessor::setState(int state)
@@ -60,6 +60,14 @@ bool DatabaseAccessor::is_open()
 bool DatabaseAccessor::db_is_valid()
 {
     return db->isValid();
+}
+
+bool DatabaseAccessor::checkSQLDriver(QString driver_name)
+{
+    if (QSqlDatabase::isDriverAvailable(driver_name))
+        return true;
+    else return false;
+    return false;
 }
 
 DatabaseAccessor::DatabaseAccessor()

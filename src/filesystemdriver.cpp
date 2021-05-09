@@ -1,11 +1,29 @@
 #include "filesystemdriver.h"
 
-FileSystemDriver::FileSystemDriver(QObject* parent): m_watcher(nullptr)
+FileSystemDriver::FileSystemDriver(QObject* parent): m_watcher(new QFileSystemWatcher)
 {
     Q_UNUSED(parent);
 }
 
+FileSystemDriver::~FileSystemDriver()
+{
+    db::DatabaseQuery::generate_drop_file_table();
+    db::DatabaseQuery::generate_drop_file_options_table();
+    delete m_watcher;
+}
+
 void FileSystemDriver::newFile(QString path)
+{
+
+}
+
+void FileSystemDriver::createDataBase()
+{
+    setPath(SettingsController::get_instanse().dir_list().toStdString(),
+            SettingsController::get_instanse().sub_list_dirs().toStdString());
+}
+
+void FileSystemDriver::updateDataBase()
 {
 
 }
@@ -15,7 +33,11 @@ Driver::Driver(QObject* parent)
     Q_UNUSED(parent);
 }
 
-void Driver::setPath(std::string &dir_list, std::string& sub_list_dirs)
+Driver::~Driver()
+{
+}
+
+void FileSystemDriver::setPath(const std::string &dir_list, const std::string& sub_list_dirs)
 {
     db::DatabaseQuery::generate_drop_file_table();
     db::DatabaseQuery::generate_drop_file_options_table();
@@ -23,47 +45,83 @@ void Driver::setPath(std::string &dir_list, std::string& sub_list_dirs)
     db::DatabaseQuery::generate_crete_file_options_table();
     ///Перезагружаем таблицы файлов
 
-    for(auto it : split(dir_list, PATH_SEPARATOR)){
-
+    for(auto const &it : split(dir_list, PATH_SEPARATOR)){
+        auto lst = allPath(QString::fromStdString(it));
+        for(const auto &i : qAsConst(lst)){
+            QFileInfo info(i);
+            if(info.isDir()){
+                QDir dir(i);
+                if(dir.exists()){
+                    db::DatabaseQuery::generate_add_dir(dir);
+                }
+                else continue;
+            }
+            else{
+                QFile file(i);
+                if(file.exists()){
+                   db::DatabaseQuery::generate_add_file(file);
+                }
+                else continue;
+            }
+        }
+        m_watcher->addPaths(lst); ///Добавляем в filewatcher пути
     }
     ///Добавляем пути к доступным деректориям
-    for(auto it : split(sub_list_dirs, PATH_SEPARATOR)){
-
+    for(const auto &it : split(sub_list_dirs, PATH_SEPARATOR)){
+        auto lst = allPath(QString::fromStdString(it));
+        for(const auto &i : qAsConst(lst)){
+            QFileInfo info(i);
+            if(info.isDir()){
+                QDir dir(i);
+                if(dir.exists()){
+                    db::DatabaseQuery::generate_add_dir(dir, true);
+                }
+                else continue;
+            }
+            else{
+                QFile file(i);
+                if(file.exists()){
+                   db::DatabaseQuery::generate_add_file(file, true);
+                }
+                else continue;
+            }
+        }
+        m_watcher->addPaths(lst);
     }
     ///Добавляем пути к расшариным дерикториям
 }
 
-bool Driver::addFile(QString &path)
+bool FileSystemDriver::addFile(QString &path)
 {
     return false;
 }
 
-bool Driver::addFolder(QString &path)
+bool FileSystemDriver::addFolder(QString &path)
 {
     return false;
 }
 
-bool Driver::deleteFile(QString &path)
+bool FileSystemDriver::deleteFile(QString &path)
 {
     return false;
 }
 
-bool Driver::deleteFolder(QString &path)
+bool FileSystemDriver::deleteFolder(QString &path)
 {
     return false;
 }
 
-bool Driver::copyFile(QString &path, QString &dist_path)
+bool FileSystemDriver::copyFile(QString &path, QString &dist_path)
 {
     return false;
 }
 
-bool Driver::moveFile(QString &path, QString &dist_path)
+bool FileSystemDriver::moveFile(QString &path, QString &dist_path)
 {
     return false;
 }
 
-QStringList Driver::allPath(const QString &dir_name)
+QStringList FileSystemDriver::allPath(const QString &dir_name)
 {
     QStringList lst;
     QDir dir(dir_name);
