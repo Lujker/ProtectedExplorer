@@ -8,10 +8,10 @@ void FolderExpl::initFromSettings()
 {
     clear_members();
     m_dir_model = new DirsModel(SettingsController::get_instanse().parse_dir_list());
-    m_sub_model = new SubsModel(SettingsController::get_instanse().parse_sub_list());
+    m_sub_model = new DirsModel(SettingsController::get_instanse().parse_sub_list());
 }
 
-void FolderExpl::init(SubsModel *subs, DirsModel *dirs)
+void FolderExpl::init(DirsModel *subs, DirsModel *dirs)
 {
     clear_members();
     m_sub_model = subs;
@@ -30,91 +30,68 @@ void FolderExpl::clear_members()
     }
 }
 
-SubsModel::SubsModel(std::list<std::string> subs, QObject *parent)
+DirsModel::DirsModel(std::list<std::string> dirs, QObject *parent):
+    m_dirs(dirs), folder(nullptr),  m_level_count(0),  watcher(new QFileSystemWatcher)
 {
-
-}
-
-QModelIndex SubsModel::index(int row, int column, const QModelIndex &parent) const
-{
-    Q_UNUSED(column)
-    if (!parent.isValid())
-                return createIndex(row, 0, static_cast<quintptr>(0));
-
-    return createIndex(row, 0, parent.row() + 1);
-}
-
-QModelIndex SubsModel::parent(const QModelIndex &child) const
-{
-    if (!child.isValid() || child.internalId() == 0)
-                   return QModelIndex();
-
-       return createIndex(child.internalId() - 1, 0, static_cast<quintptr>(0));
-}
-
-int SubsModel::rowCount(const QModelIndex &parent) const
-{
-    Q_UNUSED(parent)
-        return m_subs.size();
-}
-
-int SubsModel::columnCount(const QModelIndex &parent) const
-{
-    Q_UNUSED(parent)
-    return 1;
-}
-
-QVariant SubsModel::data(const QModelIndex &index, int role) const
-{
-//    if (!index.isValid() || index.row() > (item_list.size()-1) || !this->hasIndex(index.row(),0)) {
-//            return QVariant();
-//        }
-
-//        TreeModelItem *item = nullptr;
-//        try{
-//        item = item_list.at(index.row());
-//        }  catch (std::exception& exep) {
-//            qDebug()<<exep.what();
-//            return QVariant();
-//        }
-//        switch (role) {
-//        case Qt::DisplayRole:
-//            return QString::fromStdString(item->get_attr_name());
-//        case NameRole:
-//            return QString::fromStdString(item->get_attr_name());
-//        case SizeTreeRole:
-//            return QString::number(DataKeeperTree::count_tree(item));
-//        default:
-            return QVariant();
-//        }
-}
-
-QHash<int, QByteArray> SubsModel::roleNames() const
-{
-    QHash<int, QByteArray> roles;
-    roles.insert(NameRole, QByteArray("name"));
-    roles.insert(DateRole, QByteArray("date"));
-    return roles;
-}
-
-DirsModel::DirsModel(std::list<std::string> dirs, QObject *parent)
-{
-
+    Q_UNUSED(parent);
+    refreshModel();
 }
 
 void DirsModel::openFolder(int index)
 {
+    if(folder == nullptr){
 
+    }
+    watcher->removePath(folder->absolutePath());
+    folder->cd(m_filenames.at(index));
+    ++m_level_count;
+    watcher->addPath(folder->absolutePath());
+    refreshModel();
 }
 
 void DirsModel::comeBack()
 {
-
+    if(m_level_count!=1){
+        watcher->removePath(folder->absolutePath());
+        folder->cdUp();
+        --m_level_count;
+        watcher->addPath(folder->absolutePath());
+    }
+    else{
+        comeToBeginning();
+        return;
+    }
+    refreshModel();
 }
 
 void DirsModel::comeToBeginning()
 {
+    watcher->removePath(folder->absolutePath());
+    delete folder;
+    folder = nullptr;
+    m_level_count = 0;
+    refreshModel();
+}
 
+void DirsModel::refreshModel()
+{
+    beginResetModel();
+    if(folder==nullptr){
+        m_filenames.clear();
+        for(const auto &it : m_dirs){
+            ///заполнение списка именами папок
+            QDir dir(QString::fromStdString(it));
+            m_filenames.push_back(dir.dirName());
+        }
+    }
+    else{
+        auto lst = folder->entryList();
+        m_filenames.clear();
+        for(const auto &it : qAsConst(lst)){
+            m_filenames.push_back(it);
+        }
+    }
+    endResetModel();
 }
 
 QModelIndex DirsModel::index(int row, int column, const QModelIndex &parent) const
@@ -148,7 +125,24 @@ int DirsModel::columnCount(const QModelIndex &parent) const
 
 QVariant DirsModel::data(const QModelIndex &index, int role) const
 {
-     return QVariant();
+    QString filepath = folder->path() + m_filenames.at(index.row());
+    QFileInfo info(filepath);
+    switch (role) {
+    case NameRole:
+        return info.fileName();
+        break;
+    case DateRole:
+        return info.lastModified().toString();
+        break;
+    case SizeRole:
+        return info.size();
+        break;
+    case isFolderRole:
+        return info.isDir();
+        break;
+    }
+
+    return QVariant();
 }
 
 QHash<int, QByteArray> DirsModel::roleNames() const

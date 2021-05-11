@@ -52,7 +52,7 @@ DatabaseQuery::RESULT DatabaseQuery::generate_crete_file_options_table()
 DatabaseQuery::RESULT DatabaseQuery::generate_drop_file_table()
 {
     QSqlQuery query;
-    QString str = "CREATE TABLE IF EXISTS " + db::DatabaseAccessor::files_table + ";";
+    QString str = "DROP TABLE IF EXISTS " + db::DatabaseAccessor::files_table + ";";
 
     if(!query.exec(str) && query.lastError().isValid()){
         return std::make_pair(db::DBResult::FAIL, query);
@@ -66,7 +66,7 @@ DatabaseQuery::RESULT DatabaseQuery::generate_drop_file_table()
 DatabaseQuery::RESULT DatabaseQuery::generate_drop_file_options_table()
 {
     QSqlQuery query;
-    QString str = "CREATE TABLE IF EXISTS " + db::DatabaseAccessor::file_options_table + ";";
+    QString str = "DROP TABLE IF EXISTS " + db::DatabaseAccessor::file_options_table + ";";
 
     if(!query.exec(str) && query.lastError().isValid()){
         return std::make_pair(db::DBResult::FAIL, query);
@@ -116,12 +116,29 @@ DatabaseQuery::RESULT DatabaseQuery::generate_move_file_to(std::string& path, st
 DatabaseQuery::RESULT DatabaseQuery::generate_select_all_files(std::string &work_dir)
 {
     QSqlQuery query;
+    QString str = "SELECT name, size, type, date, path FROM" + db::DatabaseAccessor::files_table + ""
+                  "INNER JOIN "+ db::DatabaseAccessor::file_options_table + " ON "+
+                  db::DatabaseAccessor::file_options_table + ".id = " +
+                  db::DatabaseAccessor::files_table + ".options WHERE " + db::DatabaseAccessor::files_table + ";";
+    if(!query.exec(str) && query.lastError().isValid()){
+        return std::make_pair(db::DBResult::FAIL, query);
+    }
+    else{
+        return std::make_pair(db::DBResult::ISOK, query);
+    }
     return std::make_pair(db::DBResult::FAIL, query);
 }
 
 DatabaseQuery::RESULT DatabaseQuery::generate_select_all_sub_files(std::string &work_dir)
 {
     QSqlQuery query;
+    QString str = "DROP TABLE IF EXISTS " + db::DatabaseAccessor::files_table + ";";
+    if(!query.exec(str) && query.lastError().isValid()){
+        return std::make_pair(db::DBResult::FAIL, query);
+    }
+    else{
+        return std::make_pair(db::DBResult::ISOK, query);
+    }
     return std::make_pair(db::DBResult::FAIL, query);
 }
 

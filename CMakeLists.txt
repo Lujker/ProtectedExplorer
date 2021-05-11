@@ -25,18 +25,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #endif()
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS
-    Core Quick Xml sql LinguistTools REQUIRED)
+    Core Quick Xml LinguistTools REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
-    Core Quick Xml sql LinguistTools REQUIRED)
+    Core Quick Xml LinguistTools REQUIRED)
 
 set(PROJECT_SOURCES
         ./src/main.cpp
         ./src/loger.cpp
         ./src/settingscontroller.cpp
         ./src/folderexpl.cpp
-        ./src/databaseaccessor.cpp
-        ./src/databasequery.cpp
-        ./src/filesystemdriver.cpp
         ./qml/qml.qrc
 )
 
@@ -44,9 +41,6 @@ set(HEADER_FILE_ONLY
         ./include/folderexpl.h
         ./include/loger.h
         ./include/settingscontroller.h
-        ./include/filesystemdriver.h
-        ./include/databaseaccessor.h
-        ./include/databasequery.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -78,5 +72,4 @@ target_link_libraries(ProtectedExplorer
         PRIVATE
         Qt${QT_VERSION_MAJOR}::Core
         Qt${QT_VERSION_MAJOR}::Quick
-        Qt${QT_VERSION_MAJOR}::Xml
-        Qt${QT_VERSION_MAJOR}::Sql)
+        Qt${QT_VERSION_MAJOR}::Xml)

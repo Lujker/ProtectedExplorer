@@ -1,4 +1,4 @@
-#include "filesystemdriver.h"
+﻿#include "filesystemdriver.h"
 
 FileSystemDriver::FileSystemDriver(QObject* parent): m_watcher(new QFileSystemWatcher)
 {
@@ -39,8 +39,9 @@ Driver::~Driver()
 
 void FileSystemDriver::setPath(const std::string &dir_list, const std::string& sub_list_dirs)
 {
+    /*
     db::DatabaseQuery::generate_drop_file_table();
-    db::DatabaseQuery::generate_drop_file_options_table();
+    db::DatabaseQuery::generate_drop_file_options_table();*/
     db::DatabaseQuery::generate_create_files_table();
     db::DatabaseQuery::generate_crete_file_options_table();
     ///Перезагружаем таблицы файлов
