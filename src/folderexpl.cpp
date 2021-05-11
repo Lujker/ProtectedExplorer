@@ -30,6 +30,16 @@ void FolderExpl::clear_members()
     }
 }
 
+DirsModel *FolderExpl::sub_model() const
+{
+    return m_sub_model;
+}
+
+DirsModel *FolderExpl::dir_model() const
+{
+    return m_dir_model;
+}
+
 DirsModel::DirsModel(std::list<std::string> dirs, QObject *parent):
     m_dirs(dirs), folder(nullptr),  m_level_count(0),  watcher(new QFileSystemWatcher)
 {
@@ -92,6 +102,26 @@ void DirsModel::refreshModel()
         }
     }
     endResetModel();
+}
+
+void DirsModel::addFile()
+{
+    //    folde->
+}
+
+void DirsModel::deleteFile(int index)
+{
+
+}
+
+void DirsModel::addFolder()
+{
+    folder->mkdir("Новая папка");
+}
+
+void DirsModel::deleteFolder(int index)
+{
+
 }
 
 QModelIndex DirsModel::index(int row, int column, const QModelIndex &parent) const

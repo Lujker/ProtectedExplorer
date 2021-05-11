@@ -1,4 +1,4 @@
-#include "settingscontroller.h"
+﻿#include "settingscontroller.h"
 
 std::vector<std::string> split(const std::string &s, std::string delimiter)
 {
@@ -71,15 +71,15 @@ void SettingsController::save_settings(std::string path_to_save_file)
     xmlWriter.writeAttribute("string", QString::fromStdString(m_set.sub_list_dirs));
     xmlWriter.writeEndElement();        // Закрываем тег
 
+    xmlWriter.writeStartElement("dir_list");  // Записываем тег с именем для первого чекбокса
+    xmlWriter.writeAttribute("string", QString::fromStdString(m_set.dir_list));
+    xmlWriter.writeEndElement();
+
     xmlWriter.writeStartElement("log_file_path");  // Записываем тег с именем для первого чекбокса
     if(m_set.log_file_path.empty())
         xmlWriter.writeAttribute("string", "../logfile.log");
     else
         xmlWriter.writeAttribute("string", QString::fromStdString(m_set.log_file_path));
-    xmlWriter.writeEndElement();
-
-    xmlWriter.writeStartElement("dir_list");  // Записываем тег с именем для первого чекбокса
-    xmlWriter.writeAttribute("string", QString::fromStdString(m_set.dir_list));
     xmlWriter.writeEndElement();
 
     xmlWriter.writeEndElement();
@@ -117,7 +117,13 @@ void SettingsController::read_settings()
                                 m_set.sub_list_dirs = attribute_value.toStdString();
                             }
                         }
-
+                    if(xmlReader.name() == "dir_list")
+                        for(const auto &attr : xmlReader.attributes()) {
+                            if (attr.name().toString() == "string") {
+                                QString attribute_value = attr.value().toString();
+                                m_set.dir_list = attribute_value.toInt();
+                            }
+                        }
                     if(xmlReader.name() == "log_file_path")
                         for(const auto &attr : xmlReader.attributes()) {
                             if (attr.name().toString() == "string") {
@@ -127,15 +133,7 @@ void SettingsController::read_settings()
                                 else
                                     m_set.log_file_path = attribute_value.toStdString();
                             }
-                        }
-
-                    if(xmlReader.name() == "dir_list")
-                        for(const auto &attr : xmlReader.attributes()) {
-                            if (attr.name().toString() == "string") {
-                                QString attribute_value = attr.value().toString();
-                                m_set.dir_list = attribute_value.toInt();
-                            }
-                        }
+                        }                   
                 }
                 xmlReader.readNext(); // Переходим к следующему элементу файла
     }

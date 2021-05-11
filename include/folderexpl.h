@@ -25,6 +25,10 @@ public:
     void init(DirsModel *subs, DirsModel* dirs);
     void clear_members();
 
+    DirsModel *sub_model() const;
+
+    DirsModel *dir_model() const;
+
 signals:
 
 private:
@@ -39,10 +43,16 @@ public:
     explicit DirsModel(std::list<std::string> dirs, QObject* parent = nullptr);
 
 public slots:
+    void refreshModel();
+
     void openFolder(int index);
     void comeBack();
     void comeToBeginning();
-    void refreshModel();
+
+    void addFile();
+    void deleteFile(int index);
+    void addFolder();
+    void deleteFolder(int index);
 
 private:
     ///список даступных папок с их вложением
