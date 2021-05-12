@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     app.setApplicationVersion("1.0.0");
 
     ///Client code for init app
+
     SettingsController::get_instanse().parse_args(app);
     SettingsController::get_instanse().read_settings();
     Loger::getInstanse().init(

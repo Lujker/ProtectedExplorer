@@ -53,6 +53,10 @@ DirsModel::DirsModel(std::list<std::string> dirs, QObject *parent):
 
 void DirsModel::openFolder(int index)
 {
+    qDebug()<<index;
+    if(index<0){
+        return;
+    }
     if(folder != nullptr){
         watcher->removePath(folder->absolutePath());
         folder->cd(m_filenames.at(index));

@@ -3,8 +3,8 @@ import QtQuick.Window 2.15
 
 Window {
     id: mainWindow
-    minimumWidth: 640
-    minimumHeight: 480
+    minimumWidth: 820
+    minimumHeight: 640
     visible: true
     title: qsTr("ProtectedExplorer")
 
