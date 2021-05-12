@@ -2,6 +2,7 @@
 #define FOLDEREXPL_H
 
 #include <QObject>
+#include <QDebug>
 #include <QDateTime>
 #include <QList>
 #include <QAbstractListModel>
@@ -9,6 +10,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QFileSystemWatcher>
+#include <list>
 
 #include <settingscontroller.h>
 #include <loger.h>
@@ -36,7 +38,7 @@ private:
     DirsModel* m_dir_model;
 };
 
-class DirsModel: public QAbstractListModel
+class DirsModel: public QAbstractTableModel
 {
     Q_OBJECT
 public:
@@ -49,6 +51,9 @@ public slots:
     void comeBack();
     void comeToBeginning();
 
+    void derictoryChange(const QString& path);
+
+
     void addFile();
     void deleteFile(int index);
     void addFolder();
@@ -56,7 +61,7 @@ public slots:
 
 private:
     ///список даступных папок с их вложением
-    std::list<std::string> m_dirs;
+    QList<QString> m_dirs;
     ///открытая сейчас дериктория
     QDir* folder;
     ///списко имен папок и файлов для отображения

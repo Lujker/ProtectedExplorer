@@ -41,19 +41,25 @@ DirsModel *FolderExpl::dir_model() const
 }
 
 DirsModel::DirsModel(std::list<std::string> dirs, QObject *parent):
-    m_dirs(dirs), folder(nullptr),  m_level_count(0),  watcher(new QFileSystemWatcher)
+    folder(nullptr),  m_level_count(0),  watcher(new QFileSystemWatcher)
 {
     Q_UNUSED(parent);
+    for(const auto& it : dirs){
+        m_dirs.push_back(QString::fromStdString(it));
+    }
+    connect(watcher, SIGNAL(directoryChanged(const QString &)), this, SLOT(derictoryChange(const QString &)));
     refreshModel();
 }
 
 void DirsModel::openFolder(int index)
 {
-    if(folder == nullptr){
-
+    if(folder != nullptr){
+        watcher->removePath(folder->absolutePath());
+        folder->cd(m_filenames.at(index));
     }
-    watcher->removePath(folder->absolutePath());
-    folder->cd(m_filenames.at(index));
+    else{
+        folder = new QDir(m_dirs.at(index));
+    }
     ++m_level_count;
     watcher->addPath(folder->absolutePath());
     refreshModel();
@@ -83,14 +89,19 @@ void DirsModel::comeToBeginning()
     refreshModel();
 }
 
+void DirsModel::derictoryChange(const QString& path)
+{
+    refreshModel();
+}
+
 void DirsModel::refreshModel()
 {
     beginResetModel();
     if(folder==nullptr){
         m_filenames.clear();
-        for(const auto &it : m_dirs){
+        for(const auto &it : qAsConst(m_dirs)){
             ///заполнение списка именами папок
-            QDir dir(QString::fromStdString(it));
+            QDir dir(it);
             m_filenames.push_back(dir.dirName());
         }
     }
@@ -98,6 +109,7 @@ void DirsModel::refreshModel()
         auto lst = folder->entryList();
         m_filenames.clear();
         for(const auto &it : qAsConst(lst)){
+            if(it!="." && it!="..")
             m_filenames.push_back(it);
         }
     }
@@ -111,7 +123,7 @@ void DirsModel::addFile()
 
 void DirsModel::deleteFile(int index)
 {
-
+    folder->remove(m_filenames.at(index));
 }
 
 void DirsModel::addFolder()
@@ -121,7 +133,7 @@ void DirsModel::addFolder()
 
 void DirsModel::deleteFolder(int index)
 {
-
+    folder->rmdir(m_filenames.at(index));
 }
 
 QModelIndex DirsModel::index(int row, int column, const QModelIndex &parent) const
@@ -144,7 +156,9 @@ QModelIndex DirsModel::parent(const QModelIndex &child) const
 int DirsModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
+    if(folder==nullptr)
         return m_dirs.size();
+    else return m_filenames.size();
 }
 
 int DirsModel::columnCount(const QModelIndex &parent) const
@@ -155,14 +169,20 @@ int DirsModel::columnCount(const QModelIndex &parent) const
 
 QVariant DirsModel::data(const QModelIndex &index, int role) const
 {
-    QString filepath = folder->path() + m_filenames.at(index.row());
+    QString filepath;
+    if(folder==nullptr) {
+        filepath = m_dirs.at(index.row());
+    }
+    else{
+        filepath = folder->absolutePath() + "/" +  m_filenames.at(index.row());
+    }
     QFileInfo info(filepath);
     switch (role) {
     case NameRole:
         return info.fileName();
         break;
     case DateRole:
-        return info.lastModified().toString();
+        return info.lastModified().toLocalTime().toString();
         break;
     case SizeRole:
         return info.size();

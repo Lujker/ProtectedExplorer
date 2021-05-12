@@ -121,7 +121,7 @@ void SettingsController::read_settings()
                         for(const auto &attr : xmlReader.attributes()) {
                             if (attr.name().toString() == "string") {
                                 QString attribute_value = attr.value().toString();
-                                m_set.dir_list = attribute_value.toInt();
+                                m_set.dir_list = attribute_value.toStdString();
                             }
                         }
                     if(xmlReader.name() == "log_file_path")
@@ -170,7 +170,14 @@ std::list<std::string> SettingsController::parse_dir_list()
     std::list<std::string> lst;
     if(!m_set.dir_list.empty()){
         auto vect = split(m_set.dir_list,';');
-        if(vect.empty()) return lst;
+        if(vect.empty()){
+            return lst;
+        }
+        else{
+            for(const auto& it : vect){
+                lst.push_back(it);
+            }
+        }
     }
     return lst;
 }
@@ -180,7 +187,14 @@ std::list<std::string> SettingsController::parse_sub_list()
     std::list<std::string> lst;
     if(!m_set.sub_list_dirs.empty()){
         auto vect = split(m_set.sub_list_dirs,';');
-        if(vect.empty()) return lst;
+        if(vect.empty()){
+            return lst;
+        }
+        else{
+            for(const auto& it : vect){
+                lst.push_back(it);
+            }
+        }
     }
     return lst;
 }
