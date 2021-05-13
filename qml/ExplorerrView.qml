@@ -7,6 +7,7 @@ Rectangle {
     property alias listModel: fileList.model
     signal pressToElement(int index)
     signal copyElement(int start, int end)
+    signal deleteItem(int start, int end)
     signal openFolder(int index)
     signal presToTable
 
@@ -113,6 +114,20 @@ Rectangle {
         }
         if (event.key === Qt.Key_Control) {
             fileList.controlPressed = false
+        }
+        if (event.key === Qt.Key_Delete) {
+            if (fileList.selection.count > 0) {
+                var start = fileList.rowCount + 1
+                var end = 0
+                fileList.selection.forEach(function (rowIndex) {
+                    if (rowIndex < start)
+                        start = rowIndex
+                    if (rowIndex > end)
+                        end = rowIndex
+                })
+                deleteItem(start, end)
+                console.debug("delete from: ", start, " to: ", end)
+            }
         }
     }
 }

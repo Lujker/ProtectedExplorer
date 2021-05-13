@@ -57,6 +57,7 @@ public slots:
 
     void addFile();
     void deleteFile(int index);
+    void deleteFiles(int start, int end);
     void addFolder();
     void deleteFolder(int index);
     void copySelections(int start, int end);

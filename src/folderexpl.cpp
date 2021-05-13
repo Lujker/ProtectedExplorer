@@ -135,6 +135,21 @@ void DirsModel::deleteFile(int index)
     folder->remove(m_filenames.at(index));
 }
 
+void DirsModel::deleteFiles(int start, int end)
+{
+    if(folder!=nullptr){
+        for(int it = start; it < end; ++it){
+            if(folder->exists(folder->absolutePath() + "/" + m_filenames.at(it))){
+                folder->remove( folder->absolutePath() + "/" + m_filenames.at(it));
+            }
+        }
+    }
+    else{
+
+    }
+    refreshModel();
+}
+
 void DirsModel::addFolder()
 {
     folder->mkdir("Новая папка");

@@ -25,6 +25,9 @@ ApplicationWindow {
         onOpenFolder: {
             DirModel.openFolder(index)
         }
+        onDeleteItem: {
+            DirModel.deleteFiles(start, end)
+        }
         onPresToTable: {
             deselectAll()
             subView.deselectAll()
@@ -42,6 +45,9 @@ ApplicationWindow {
         }
         onOpenFolder: {
             SubModel.openFolder(index)
+        }
+        onDeleteItem: {
+            SubModel.deleteFiles(start, end)
         }
         onPresToTable: {
             deselectAll()
