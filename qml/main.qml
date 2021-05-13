@@ -1,23 +1,33 @@
 ﻿import QtQuick 2.15
-import QtQuick.Window 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Dialogs 1.2
 
-Window {
+ApplicationWindow {
     id: mainWindow
     minimumWidth: 820
     minimumHeight: 640
     visible: true
+    property bool help: false
     title: qsTr("ProtectedExplorer")
+
+    menuBar: MainMenuBar {
+        id: mainAppMenu
+    }
 
     ExplorerrView {
         id: dirView
         listModel: DirModel
         width: parent.width / 2
-        height: parent.height / 2
+        height: parent.height
         onPressToElement: {
-
+            subView.deselectAll()
         }
         onOpenFolder: {
             DirModel.openFolder(index)
+        }
+        onPresToTable: {
+            deselectAll()
+            subView.deselectAll()
         }
     }
 
@@ -25,13 +35,17 @@ Window {
         id: subView
         listModel: SubModel
         width: parent.width / 2
-        height: parent.height / 2
+        height: parent.height
         anchors.left: dirView.right
         onPressToElement: {
-
+            dirView.deselectAll()
         }
         onOpenFolder: {
             SubModel.openFolder(index)
+        }
+        onPresToTable: {
+            deselectAll()
+            dirView.deselectAll()
         }
     }
 }

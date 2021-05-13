@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QFileSystemWatcher>
+#include <QFileIconProvider>
 #include <list>
 
 #include <settingscontroller.h>
@@ -58,6 +59,7 @@ public slots:
     void deleteFile(int index);
     void addFolder();
     void deleteFolder(int index);
+    void copySelections(int start, int end);
 
 private:
     ///список даступных папок с их вложением
@@ -72,7 +74,8 @@ private:
 
     enum DirsRoles
         {
-            NameRole = Qt::UserRole+1,
+            IconRole = Qt::UserRole+1,
+            NameRole,
             SizeRole,
             isFolderRole,
             DateRole

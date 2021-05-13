@@ -53,11 +53,16 @@ DirsModel::DirsModel(std::list<std::string> dirs, QObject *parent):
 
 void DirsModel::openFolder(int index)
 {
-    qDebug()<<index;
+//    qDebug()<<index;
     if(index<0){
         return;
-    }
+    }    
+
     if(folder != nullptr){
+        if(m_filenames.at(index)==".."){
+            comeBack();
+            return;
+        }
         watcher->removePath(folder->absolutePath());
         folder->cd(m_filenames.at(index));
     }
@@ -113,7 +118,7 @@ void DirsModel::refreshModel()
         auto lst = folder->entryList();
         m_filenames.clear();
         for(const auto &it : qAsConst(lst)){
-            if(it!="." && it!="..")
+            if(it!=".")
             m_filenames.push_back(it);
         }
     }
@@ -138,6 +143,11 @@ void DirsModel::addFolder()
 void DirsModel::deleteFolder(int index)
 {
     folder->rmdir(m_filenames.at(index));
+}
+
+void DirsModel::copySelections(int start, int end)
+{
+
 }
 
 QModelIndex DirsModel::index(int row, int column, const QModelIndex &parent) const
@@ -181,7 +191,11 @@ QVariant DirsModel::data(const QModelIndex &index, int role) const
         filepath = folder->absolutePath() + "/" +  m_filenames.at(index.row());
     }
     QFileInfo info(filepath);
+    QFileIconProvider provider;
     switch (role) {
+    case IconRole:
+        return provider.icon(info).pixmap(34,34).toImage();
+        break;
     case NameRole:
         return info.fileName();
         break;
@@ -189,7 +203,8 @@ QVariant DirsModel::data(const QModelIndex &index, int role) const
         return info.lastModified().toLocalTime().toString();
         break;
     case SizeRole:
-        return info.size();
+        if(info.size()==0) return "<Папка>";
+        else    return info.size();
         break;
     case isFolderRole:
         return info.isDir();
@@ -202,6 +217,7 @@ QVariant DirsModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> DirsModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
+    roles.insert(IconRole, QByteArray("icon"));
     roles.insert(NameRole, QByteArray("name"));
     roles.insert(DateRole, QByteArray("date"));
     roles.insert(SizeRole, QByteArray("size"));
