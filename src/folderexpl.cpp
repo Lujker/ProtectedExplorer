@@ -9,6 +9,11 @@ void FolderExpl::initFromSettings()
     clear_members();
     m_dir_model = new DirsModel(SettingsController::get_instanse().parse_dir_list());
     m_sub_model = new DirsModel(SettingsController::get_instanse().parse_sub_list());
+
+    if(m_sub_model!=nullptr && m_dir_model!=nullptr){
+        QObject::connect(m_sub_model,SIGNAL(copyFile(QString)),m_dir_model,SLOT(copyFrom(QString)));
+        QObject::connect(m_dir_model,SIGNAL(copyFile(QString)),m_sub_model,SLOT(copyFrom(QString)));
+    }
 }
 
 void FolderExpl::init(DirsModel *subs, DirsModel *dirs)
@@ -115,6 +120,7 @@ void DirsModel::refreshModel()
         }
     }
     else{
+        folder->refresh();
         auto lst = folder->entryList();
         m_filenames.clear();
         for(const auto &it : qAsConst(lst)){
@@ -138,14 +144,23 @@ void DirsModel::deleteFile(int index)
 void DirsModel::deleteFiles(int start, int end)
 {
     if(folder!=nullptr){
-        for(int it = start; it < end; ++it){
-            if(folder->exists(folder->absolutePath() + "/" + m_filenames.at(it))){
-                folder->remove( folder->absolutePath() + "/" + m_filenames.at(it));
+        for(int it = start; it <= end; ++it){
+            QString path = folder->absolutePath() + "/" + m_filenames.at(it);
+            QFileInfo info(path);
+            if(folder->exists(path)){
+                if(info.isFile())
+                    folder->remove(path);
+                else if(info.isDir()){
+                    QDir subDir(path);
+                    if(subDir.exists())
+                        subDir.removeRecursively();
+                    else folder->rmdir(path);
+                }
             }
         }
     }
     else{
-
+        ///ОШИБКА, нельзя удалять стандартные пути
     }
     refreshModel();
 }
@@ -162,7 +177,32 @@ void DirsModel::deleteFolder(int index)
 
 void DirsModel::copySelections(int start, int end)
 {
+    if(folder!=nullptr)
+    for(int i = start; i<=end; ++i){
+        if(i>0 && i<m_filenames.size())
+            copyTo(folder->absoluteFilePath(m_filenames[i]));
+    }
 
+}
+
+void DirsModel::copyFrom(QString path)
+{
+    if(folder!=nullptr){
+        if(QFile::exists(path)){
+            QFileInfo info(path);
+            if(info.isFile()){
+                QString copy_file_name = folder->absolutePath()+ "/" +info.fileName();
+                QFile::remove(copy_file_name);
+                QFile::copy(path, copy_file_name);
+            }
+        }
+    }
+//    refreshModel();
+}
+
+void DirsModel::copyTo(QString path)
+{
+    copyFile(path);
 }
 
 QModelIndex DirsModel::index(int row, int column, const QModelIndex &parent) const

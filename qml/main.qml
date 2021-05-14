@@ -28,6 +28,9 @@ ApplicationWindow {
         onDeleteItem: {
             DirModel.deleteFiles(start, end)
         }
+        onCopyElement: {
+            DirModel.copySelections(start, end)
+        }
         onPresToTable: {
             deselectAll()
             subView.deselectAll()
@@ -49,6 +52,10 @@ ApplicationWindow {
         onDeleteItem: {
             SubModel.deleteFiles(start, end)
         }
+        onCopyElement: {
+            SubModel.copySelections(start, end)
+        }
+
         onPresToTable: {
             deselectAll()
             dirView.deselectAll()

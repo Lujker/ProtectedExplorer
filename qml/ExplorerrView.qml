@@ -4,6 +4,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.3
 
 Rectangle {
+    id: explWindow
     property alias listModel: fileList.model
     signal pressToElement(int index)
     signal copyElement(int start, int end)
@@ -27,12 +28,12 @@ Rectangle {
         TableViewColumn {
             role: "name"
             title: "Filename"
-            width: 150
+            width: explWindow.width - 242
         }
         TableViewColumn {
             role: "size"
             title: "Size"
-            width: 50
+            width: 70
         }
         TableViewColumn {
             role: "date"
@@ -92,23 +93,10 @@ Rectangle {
             console.debug("Control pressed")
             fileList.controlPressed = true
         }
-        if (event.key === Qt.Key_F5) {
-            console.debug("F5 pressed")
-            if (fileList.selection.count > 0) {
-                var start = fileList.rowCount + 1
-                var end = 0
-                fileList.selection.forEach(function (rowIndex) {
-                    if (rowIndex < start)
-                        start = rowIndex
-                    if (rowIndex > end)
-                        end = rowIndex
-                })
-                copyElement(start, end)
-                console.debug("copy from: ", start, " to: ", end)
-            }
-        }
     }
     Keys.onReleased: {
+        var start
+        var end
         if (event.key === Qt.Key_Shift) {
             fileList.shiftPressed = false
         }
@@ -117,8 +105,8 @@ Rectangle {
         }
         if (event.key === Qt.Key_Delete) {
             if (fileList.selection.count > 0) {
-                var start = fileList.rowCount + 1
-                var end = 0
+                start = fileList.rowCount + 1
+                end = 0
                 fileList.selection.forEach(function (rowIndex) {
                     if (rowIndex < start)
                         start = rowIndex
@@ -127,6 +115,21 @@ Rectangle {
                 })
                 deleteItem(start, end)
                 console.debug("delete from: ", start, " to: ", end)
+            }
+        }
+        if (event.key === Qt.Key_F5) {
+            console.debug("F5 pressed")
+            if (fileList.selection.count > 0) {
+                start = fileList.rowCount + 1
+                end = 0
+                fileList.selection.forEach(function (rowIndex) {
+                    if (rowIndex < start)
+                        start = rowIndex
+                    if (rowIndex > end)
+                        end = rowIndex
+                })
+                copyElement(start, end)
+                console.debug("copy from: ", start, " to: ", end)
             }
         }
     }

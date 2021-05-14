@@ -16,7 +16,6 @@
 #include <settingscontroller.h>
 #include <loger.h>
 
-class SubsModel;
 class DirsModel;
 
 class FolderExpl : public QObject
@@ -29,7 +28,6 @@ public:
     void clear_members();
 
     DirsModel *sub_model() const;
-
     DirsModel *dir_model() const;
 
 signals:
@@ -52,15 +50,17 @@ public slots:
     void comeBack();
     void comeToBeginning();
 
+    void copySelections(int start, int end);
+    void copyFrom(QString path);
+    void copyTo(QString path);
+
     void derictoryChange(const QString& path);
-
-
     void addFile();
     void deleteFile(int index);
     void deleteFiles(int start, int end);
     void addFolder();
     void deleteFolder(int index);
-    void copySelections(int start, int end);
+
 
 private:
     ///список даступных папок с их вложением
@@ -82,6 +82,7 @@ private:
             DateRole
         };
 
+
     /// QAbstractItemModel interface
 public:
     QModelIndex index(int row, int column, const QModelIndex &parent) const;
@@ -90,6 +91,9 @@ public:
     int columnCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role) const;
     QHash<int, QByteArray> roleNames() const;
+
+signals:
+    void copyFile(QString);
 };
 
 
