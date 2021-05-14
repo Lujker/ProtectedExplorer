@@ -4,7 +4,7 @@ import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
     id: mainWindow
-    minimumWidth: 820
+    minimumWidth: 1020
     minimumHeight: 640
     visible: true
     property bool help: false

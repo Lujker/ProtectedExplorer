@@ -61,15 +61,23 @@ void DirsModel::openFolder(int index)
 //    qDebug()<<index;
     if(index<0){
         return;
-    }    
+    }
 
     if(folder != nullptr){
         if(m_filenames.at(index)==".."){
             comeBack();
             return;
         }
-        watcher->removePath(folder->absolutePath());
-        folder->cd(m_filenames.at(index));
+        QFileInfo info(folder->absolutePath() + QDir::separator() + m_filenames.at(index));
+        if(info.isFile()){
+            ///open file
+            return;
+        }
+        else if(info.isDir()){
+            watcher->removePath(folder->absolutePath());
+            folder->cd(m_filenames.at(index));
+        }
+        else return;
     }
     else{
         folder = new QDir(m_dirs.at(index));
@@ -145,7 +153,7 @@ void DirsModel::deleteFiles(int start, int end)
 {
     if(folder!=nullptr){
         for(int it = start; it <= end; ++it){
-            QString path = folder->absolutePath() + "/" + m_filenames.at(it);
+            QString path = folder->absolutePath() + QDir::separator() + m_filenames.at(it);
             QFileInfo info(path);
             if(folder->exists(path)){
                 if(info.isFile())
@@ -175,6 +183,23 @@ void DirsModel::deleteFolder(int index)
     folder->rmdir(m_filenames.at(index));
 }
 
+void DirsModel::copyPath(QString src, QString dst)
+{
+    QDir dir(src);
+    if (! dir.exists())
+        return;
+
+    foreach (QString d, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+        QString dst_path = dst + QDir::separator() + d;
+        dir.mkpath(dst_path);
+        copyPath(src+ QDir::separator() + d, dst_path);
+    }
+
+    foreach (QString f, dir.entryList(QDir::Files)) {
+        QFile::copy(src + QDir::separator() + f, dst + QDir::separator() + f);
+    }
+}
+
 void DirsModel::copySelections(int start, int end)
 {
     if(folder!=nullptr)
@@ -191,18 +216,24 @@ void DirsModel::copyFrom(QString path)
         if(QFile::exists(path)){
             QFileInfo info(path);
             if(info.isFile()){
-                QString copy_file_name = folder->absolutePath()+ "/" +info.fileName();
+                QString copy_file_name = folder->absolutePath()+ QDir::separator() +info.fileName();
                 QFile::remove(copy_file_name);
                 QFile::copy(path, copy_file_name);
             }
+            else if(info.isDir()){
+                QString copy_file_name = folder->absolutePath()+ QDir::separator() +info.fileName();
+                QDir dir(copy_file_name);
+                if(dir.exists()) dir.removeRecursively();
+                folder->mkdir(info.fileName());
+                this->copyPath(path,copy_file_name);
+            }
         }
     }
-//    refreshModel();
 }
 
 void DirsModel::copyTo(QString path)
 {
-    copyFile(path);
+    emit copyFile(path);
 }
 
 QModelIndex DirsModel::index(int row, int column, const QModelIndex &parent) const
@@ -243,7 +274,7 @@ QVariant DirsModel::data(const QModelIndex &index, int role) const
         filepath = m_dirs.at(index.row());
     }
     else{
-        filepath = folder->absolutePath() + "/" +  m_filenames.at(index.row());
+        filepath = folder->absolutePath() + QDir::separator() +  m_filenames.at(index.row());
     }
     QFileInfo info(filepath);
     QFileIconProvider provider;
@@ -257,9 +288,17 @@ QVariant DirsModel::data(const QModelIndex &index, int role) const
     case DateRole:
         return info.lastModified().toLocalTime().toString();
         break;
+    case SuffixRole:
+        return info.suffix();
+        break;
     case SizeRole:
         if(info.size()==0) return "<Папка>";
-        else    return info.size();
+        else {
+            qint64 nSize = info.size();
+            qint64 i = 0;
+            for (; nSize > 1023; nSize /= 1024, ++i) { }
+            return QString().setNum(nSize) + " " + "BKMGT"[i];
+        }
         break;
     case isFolderRole:
         return info.isDir();
@@ -276,6 +315,7 @@ QHash<int, QByteArray> DirsModel::roleNames() const
     roles.insert(NameRole, QByteArray("name"));
     roles.insert(DateRole, QByteArray("date"));
     roles.insert(SizeRole, QByteArray("size"));
+    roles.insert(SuffixRole, QByteArray("suffix"));
     roles.insert(isFolderRole, QByteArray("isFolder"));
     return roles;
 }

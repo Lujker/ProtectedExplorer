@@ -77,11 +77,13 @@ private:
         {
             IconRole = Qt::UserRole+1,
             NameRole,
+            SuffixRole,
             SizeRole,
             isFolderRole,
             DateRole
         };
 
+    void copyPath(QString src, QString dst);
 
     /// QAbstractItemModel interface
 public:

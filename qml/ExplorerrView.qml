@@ -28,7 +28,12 @@ Rectangle {
         TableViewColumn {
             role: "name"
             title: "Filename"
-            width: explWindow.width - 242
+            width: explWindow.width - 292
+        }
+        TableViewColumn {
+            role: "suffix"
+            title: "suffix"
+            width: 50
         }
         TableViewColumn {
             role: "size"
@@ -103,7 +108,7 @@ Rectangle {
         if (event.key === Qt.Key_Control) {
             fileList.controlPressed = false
         }
-        if (event.key === Qt.Key_Delete) {
+        if (event.key === Qt.Key_Delete || Qt.Key_Backspace) {
             if (fileList.selection.count > 0) {
                 start = fileList.rowCount + 1
                 end = 0
