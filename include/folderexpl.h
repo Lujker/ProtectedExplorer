@@ -38,11 +38,15 @@ public:
     DirsModel *sub_model() const;
     DirsModel *dir_model() const;
 
+    IconProvider *getProvider() const;
+    void setProvider(IconProvider *value);
+
 signals:
 
 private:
     DirsModel* m_sub_model;
     DirsModel* m_dir_model;
+    IconProvider* provider;
 };
 
 class DirsModel: public QAbstractTableModel
@@ -68,6 +72,11 @@ public slots:
     void deleteFiles(int start, int end);
     void addFolder();
     void deleteFolder(int index);
+
+    void sortByName(bool lower = false);
+    void sortByDate(bool lower = false);
+    void sortBySize(bool lower = false);
+    void sortBySuffix(bool lower = false);
 
 
 private:

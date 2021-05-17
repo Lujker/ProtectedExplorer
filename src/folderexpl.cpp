@@ -1,7 +1,7 @@
 ﻿#include "folderexpl.h"
 
 FolderExpl::FolderExpl(QObject *parent) :
-    QObject(parent) , m_sub_model(nullptr), m_dir_model(nullptr)
+    QObject(parent) , m_sub_model(nullptr), m_dir_model(nullptr), provider(nullptr)
 {}
 
 void FolderExpl::initFromSettings()
@@ -9,6 +9,7 @@ void FolderExpl::initFromSettings()
     clear_members();
     m_dir_model = new DirsModel(SettingsController::get_instanse().parse_dir_list());
     m_sub_model = new DirsModel(SettingsController::get_instanse().parse_sub_list());
+    provider = new IconProvider;
 
     if(m_sub_model!=nullptr && m_dir_model!=nullptr){
         QObject::connect(m_sub_model,SIGNAL(copyFile(QString)),m_dir_model,SLOT(copyFrom(QString)));
@@ -33,6 +34,10 @@ void FolderExpl::clear_members()
         delete m_dir_model;
         m_dir_model = nullptr;
     }
+    if(provider!=nullptr){
+        delete  provider;
+        provider = nullptr;
+    }
 }
 
 DirsModel *FolderExpl::sub_model() const
@@ -43,6 +48,16 @@ DirsModel *FolderExpl::sub_model() const
 DirsModel *FolderExpl::dir_model() const
 {
     return m_dir_model;
+}
+
+IconProvider *FolderExpl::getProvider() const
+{
+    return provider;
+}
+
+void FolderExpl::setProvider(IconProvider *value)
+{
+    provider = value;
 }
 
 DirsModel::DirsModel(std::list<std::string> dirs, QObject *parent):
@@ -182,6 +197,26 @@ void DirsModel::addFolder()
 void DirsModel::deleteFolder(int index)
 {
     folder->rmdir(m_filenames.at(index));
+}
+
+void DirsModel::sortByName(bool lower)
+{
+
+}
+
+void DirsModel::sortByDate(bool lower)
+{
+
+}
+
+void DirsModel::sortBySize(bool lower)
+{
+
+}
+
+void DirsModel::sortBySuffix(bool lower)
+{
+
 }
 
 void DirsModel::copyPath(QString src, QString dst)
@@ -340,7 +375,7 @@ QPixmap IconProvider :: requestPixmap(const QString & id, QSize * size, const QS
         if(id=="") return QPixmap();
         QMimeType mime = m_mimeDB.mimeTypeForFile (id);
         if (QIcon :: hasThemeIcon (mime.iconName ())) return QIcon :: fromTheme (mime.iconName ()). pixmap (width, height);
-            return m_provider.icon (info) .pixmap (width, height);
+        return m_provider.icon (info) .pixmap (width, height);
     }
     return QPixmap();
 }

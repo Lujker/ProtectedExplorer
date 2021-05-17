@@ -18,13 +18,9 @@ Rectangle {
         anchors.fill: parent
         model: dataModel
         clip: true
-
         property bool shiftPressed: false
         property bool controlPressed: false
 
-        //        onClicked: {
-        //            presToTable()
-        //        }
         TableViewColumn {
             role: "filepath"
             title: "Icon"
@@ -38,7 +34,7 @@ Rectangle {
                     asynchronous: true
                     sourceSize.width: 8
                     sourceSize.height: 8
-                    source: "image://iconProvider/" + styleData.value
+                    source: styleData.value ? "image://iconProvider/" + styleData.value : ""
                 }
             }
             width: 40
@@ -64,9 +60,33 @@ Rectangle {
             width: 150
         }
 
+        headerDelegate: Rectangle {
+            id: _headerDelegate
+            width: _textHeader.text.length * 1.2
+            height: _textHeader.font.pixelSize * 1.2
+            color: "skyblue"
+            Connections {
+                target: styleData
+                function onPressedChanged() {
+                    if (styleData.pressed)
+                        console.debug(
+                                    "PRESSED:  " + styleData.column + " " + styleData.pressed)
+                }
+            }
+            Text {
+                id: _textHeader
+                anchors.horizontalCenter: parent.horizontalCenter
+                color: (styleData.pressed) ? "red" : "black"
+                text: styleData.value
+            }
+            border {
+                width: 1
+                color: (styleData.pressed) ? "red" : "black"
+            }
+        }
+
         itemDelegate: Item {
             id: fileDelegate
-
             Text {
                 anchors.left: parent.left
                 renderType: Text.NativeRendering
