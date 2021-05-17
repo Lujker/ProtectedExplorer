@@ -25,9 +25,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #endif()
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS
-    Core Quick Xml LinguistTools widgets REQUIRED)
+    Core Quick Xml LinguistTools widgets gui REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
-    Core Quick Xml LinguistTools widgets REQUIRED)
+    Core Quick Xml LinguistTools widgets gui REQUIRED)
 
 set(PROJECT_SOURCES
         ./src/main.cpp
@@ -73,4 +73,5 @@ target_link_libraries(ProtectedExplorer
         Qt${QT_VERSION_MAJOR}::Core
         Qt${QT_VERSION_MAJOR}::Quick
         Qt${QT_VERSION_MAJOR}::Xml
-        Qt${QT_VERSION_MAJOR}::Widgets)
+        Qt${QT_VERSION_MAJOR}::Widgets
+        Qt${QT_VERSION_MAJOR}::Gui)

@@ -26,9 +26,27 @@ Rectangle {
         //            presToTable()
         //        }
         TableViewColumn {
+            role: "filepath"
+            title: "Icon"
+            delegate: Component {
+                id: imageDelegate
+                Image {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    fillMode: Image.PreserveAspectFit
+                    cache: true
+                    asynchronous: true
+                    sourceSize.width: 8
+                    sourceSize.height: 8
+                    source: "image://iconProvider/" + styleData.value
+                }
+            }
+            width: 40
+        }
+        TableViewColumn {
             role: "name"
             title: "Filename"
-            width: explWindow.width - 292
+            width: explWindow.width - 315
         }
         TableViewColumn {
             role: "suffix"
@@ -46,10 +64,6 @@ Rectangle {
             width: 150
         }
 
-        //        TableViewColumn {
-        //            role: "icon"
-        //            title: "Image"
-        //        }
         itemDelegate: Item {
             id: fileDelegate
 
@@ -108,7 +122,7 @@ Rectangle {
         if (event.key === Qt.Key_Control) {
             fileList.controlPressed = false
         }
-        if (event.key === Qt.Key_Delete || Qt.Key_Backspace) {
+        if (event.key === Qt.Key_Delete) {
             if (fileList.selection.count > 0) {
                 start = fileList.rowCount + 1
                 end = 0
@@ -122,6 +136,21 @@ Rectangle {
                 console.debug("delete from: ", start, " to: ", end)
             }
         }
+        if (event.key === Qt.Key_Backspace) {
+            if (fileList.selection.count > 0) {
+                start = fileList.rowCount + 1
+                end = 0
+                fileList.selection.forEach(function (rowIndex) {
+                    if (rowIndex < start)
+                        start = rowIndex
+                    if (rowIndex > end)
+                        end = rowIndex
+                })
+                deleteItem(start, end)
+                console.debug("delete from: ", start, " to: ", end)
+            }
+        }
+
         if (event.key === Qt.Key_F5) {
             console.debug("F5 pressed")
             if (fileList.selection.count > 0) {

@@ -11,12 +11,20 @@
 #include <QFileInfo>
 #include <QFileSystemWatcher>
 #include <QFileIconProvider>
+#include <QDesktopServices>
+#include <QUrl>
+#include <QQuickImageProvider>
+#include <QFileIconProvider>
+#include <QMimeDatabase>
+#include <QPixmap>
+
 #include <list>
 
 #include <settingscontroller.h>
 #include <loger.h>
 
 class DirsModel;
+class IconProvider;
 
 class FolderExpl : public QObject
 {
@@ -75,7 +83,7 @@ private:
 
     enum DirsRoles
         {
-            IconRole = Qt::UserRole+1,
+            FilePathRole = Qt::UserRole+1,
             NameRole,
             SuffixRole,
             SizeRole,
@@ -98,5 +106,17 @@ signals:
     void copyFile(QString);
 };
 
+
+class IconProvider : public QQuickImageProvider
+{
+public:
+    IconProvider();
+    QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize);
+protected:
+    QFileIconProvider m_provider;
+    QMimeDatabase m_mimeDB;
+signals:
+public slots:
+};
 
 #endif // FOLDEREXPL_H

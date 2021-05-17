@@ -70,6 +70,7 @@ void DirsModel::openFolder(int index)
         }
         QFileInfo info(folder->absolutePath() + QDir::separator() + m_filenames.at(index));
         if(info.isFile()){
+            QDesktopServices::openUrl(QUrl::fromLocalFile(info.absoluteFilePath()));
             ///open file
             return;
         }
@@ -279,8 +280,8 @@ QVariant DirsModel::data(const QModelIndex &index, int role) const
     QFileInfo info(filepath);
     QFileIconProvider provider;
     switch (role) {
-    case IconRole:
-        return provider.icon(info).pixmap(34,34).toImage();
+    case FilePathRole:
+        return info.absoluteFilePath();
         break;
     case NameRole:
         return info.fileName();
@@ -311,11 +312,35 @@ QVariant DirsModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> DirsModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
-    roles.insert(IconRole, QByteArray("icon"));
+    roles.insert(FilePathRole, QByteArray("filepath"));
     roles.insert(NameRole, QByteArray("name"));
     roles.insert(DateRole, QByteArray("date"));
     roles.insert(SizeRole, QByteArray("size"));
     roles.insert(SuffixRole, QByteArray("suffix"));
     roles.insert(isFolderRole, QByteArray("isFolder"));
     return roles;
+}
+
+IconProvider :: IconProvider (): QQuickImageProvider (QQuickImageProvider :: Pixmap)
+{}
+
+QPixmap IconProvider :: requestPixmap(const QString & id, QSize * size, const QSize & requiredSize)
+{
+    int width = requiredSize.width ()> 0? requiredSize.width (): 8;
+    int height = width;
+    QFileInfo info(id);
+    if (size) *size = QSize(width, height);
+    if (QFileInfo (id) .isDir ()){
+//        return QPixmap();
+        QIcon icon =  m_provider.icon(info);
+        QPixmap pixmap = icon.pixmap(width, height);
+        return pixmap;
+    }
+    else {
+        if(id=="") return QPixmap();
+        QMimeType mime = m_mimeDB.mimeTypeForFile (id);
+        if (QIcon :: hasThemeIcon (mime.iconName ())) return QIcon :: fromTheme (mime.iconName ()). pixmap (width, height);
+            return m_provider.icon (info) .pixmap (width, height);
+    }
+    return QPixmap();
 }
