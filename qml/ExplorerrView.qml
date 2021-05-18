@@ -101,30 +101,83 @@ Rectangle {
             }
             MouseArea {
                 anchors.fill: parent
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onClicked: {
                     fileList.focus = true
-                    if (fileList.controlPressed) {
-                        fileList.selection.select(styleData.row)
-                    } else if (fileList.shiftPressed) {
-                        var lowIndex = fileList.rowCount + 1
-                        fileList.selection.forEach(function (rowIndex) {
-                            if (lowIndex > rowIndex)
-                                lowIndex = rowIndex
-                        })
-                        fileList.selection.select(lowIndex, styleData.row)
-                    } else {
+                    if (mouse.button === Qt.LeftButton) {
+                        if (fileList.controlPressed) {
+                            fileList.selection.select(styleData.row)
+                        } else if (fileList.shiftPressed) {
+                            var lowIndex = fileList.rowCount + 1
+                            fileList.selection.forEach(function (rowIndex) {
+                                if (lowIndex > rowIndex)
+                                    lowIndex = rowIndex
+                            })
+                            fileList.selection.select(lowIndex, styleData.row)
+                        } else {
+                            deselectAll()
+                            pressToElement(styleData.row)
+                            fileList.selection.select(styleData.row)
+                        }
+                    } else if (mouse.button === Qt.RightButton) {
                         deselectAll()
                         pressToElement(styleData.row)
                         fileList.selection.select(styleData.row)
+                        _itemDelegatePopup.open()
                     }
                 }
+
                 onDoubleClicked: {
-                    deselectAll()
-                    openFolder(styleData.row)
+                    if (mouse.button === Qt.LeftButton) {
+                        deselectAll()
+                        openFolder(styleData.row)
+                    }
+                }
+            }
+            Popup {
+                id: _itemDelegatePopup
+                width: 150
+                height: 200
+                modal: true
+                Overlay.modal: Rectangle {
+                    color: "#aacfdbe7"
+                }
+                ColumnLayout {
+                    anchors.fill: parent
+                    spacing: 2
+                    Rectangle {
+                        Layout.preferredWidth: parent.width
+                        Layout.preferredHeight: 20
+                        Text {
+                            text: qsTr("Удалить")
+                        }
+                    }
+                    Rectangle {
+                        Layout.preferredWidth: parent.width
+                        Layout.preferredHeight: 20
+                        Text {
+                            text: qsTr("Переименовать")
+                        }
+                    }
+                    Rectangle {
+                        Layout.preferredWidth: parent.width
+                        Layout.preferredHeight: 20
+                        Text {
+                            text: qsTr("Отправить")
+                        }
+                    }
+                    Rectangle {
+                        Layout.preferredWidth: parent.width
+                        Layout.preferredHeight: 20
+                        Text {
+                            text: qsTr("Подписать")
+                        }
+                    }
                 }
             }
         }
     }
+
     function deselectAll() {
         fileList.selection.clear()
     }
