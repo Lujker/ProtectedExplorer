@@ -162,12 +162,25 @@ void DirsModel::addFile()
 
 void DirsModel::deleteFile(int index)
 {
-    folder->remove(m_filenames.at(index));
+    QString path = folder->absolutePath() + QDir::separator() + m_filenames.at(index);
+    QFileInfo info(path);
+    if(folder->exists(path)){
+        if(info.isFile())
+            folder->remove(path);
+        else if(info.isDir()){
+            QDir subDir(path);
+            if(subDir.exists())
+                subDir.removeRecursively();
+            else folder->rmdir(path);
+        }
+    }
+
 }
 
 void DirsModel::deleteFiles(int start, int end)
 {
     if(folder!=nullptr){
+        if(start!=end)
         for(int it = start; it <= end; ++it){
             QString path = folder->absolutePath() + QDir::separator() + m_filenames.at(it);
             QFileInfo info(path);
@@ -182,11 +195,13 @@ void DirsModel::deleteFiles(int start, int end)
                 }
             }
         }
+        else{
+            deleteFile(start);
+        }
     }
     else{
         ///ОШИБКА, нельзя удалять стандартные пути
     }
-    refreshModel();
 }
 
 void DirsModel::addFolder()
@@ -236,6 +251,8 @@ void DirsModel::copyPath(QString src, QString dst)
     }
 }
 
+
+
 void DirsModel::copySelections(int start, int end)
 {
     if(folder!=nullptr)
@@ -244,6 +261,12 @@ void DirsModel::copySelections(int start, int end)
             copyTo(folder->absoluteFilePath(m_filenames[i]));
     }
 
+}
+
+void DirsModel::copyFile(int index)
+{
+    if(index>0 && index<m_filenames.size())
+        copyTo(folder->absoluteFilePath(m_filenames[index]));
 }
 
 void DirsModel::copyFrom(QString path)

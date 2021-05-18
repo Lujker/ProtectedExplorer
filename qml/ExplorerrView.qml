@@ -7,8 +7,12 @@ Rectangle {
     id: explWindow
     property alias listModel: fileList.model
     signal pressToElement(int index)
-    signal copyElement(int start, int end)
-    signal deleteItem(int start, int end)
+    signal copyElements(int start, int end)
+    signal copyElement(int index)
+    signal deleteItems(int start, int end)
+    signal deleteItem(int index)
+    signal signedElements(int start, int end)
+    signal signedElement(int index)
     signal openFolder(int index)
     signal presToTable
 
@@ -20,6 +24,7 @@ Rectangle {
         clip: true
         property bool shiftPressed: false
         property bool controlPressed: false
+        property bool sortedArr: [false, false, false, false]
 
         TableViewColumn {
             role: "filepath"
@@ -70,8 +75,7 @@ Rectangle {
                 target: styleData
                 function onPressedChanged() {
                     if (styleData.pressed === true) {
-
-                        //                        console.debug("pressed" + styleData.column)
+                        console.debug("pressed " + styleData.column)
                     }
                 }
             }
@@ -125,19 +129,25 @@ Rectangle {
         fileList.selection.clear()
     }
     function sendFilesToSub() {
-        var start
-        var end
         if (fileList.selection.count > 0) {
-            start = fileList.rowCount + 1
-            end = 0
             fileList.selection.forEach(function (rowIndex) {
-                if (rowIndex < start)
-                    start = rowIndex
-                if (rowIndex > end)
-                    end = rowIndex
+                copyElement(rowIndex)
             })
-            copyElement(start, end)
-            console.debug("copy from: ", start, " to: ", end)
+        }
+    }
+    function signedFiles() {
+        if (fileList.selection.count > 0) {
+            fileList.selection.forEach(function (rowIndex) {
+                signedElement(rowIndex)
+            })
+        }
+    }
+
+    function deleteSelected() {
+        if (fileList.selection.count > 0) {
+            fileList.selection.forEach(function (rowIndex) {
+                deleteItem(rowIndex)
+            })
         }
     }
 
@@ -152,8 +162,6 @@ Rectangle {
         }
     }
     Keys.onReleased: {
-        var start
-        var end
         if (event.key === Qt.Key_Shift) {
             fileList.shiftPressed = false
         }
@@ -161,48 +169,15 @@ Rectangle {
             fileList.controlPressed = false
         }
         if (event.key === Qt.Key_Delete) {
-            if (fileList.selection.count > 0) {
-                start = fileList.rowCount + 1
-                end = 0
-                fileList.selection.forEach(function (rowIndex) {
-                    if (rowIndex < start)
-                        start = rowIndex
-                    if (rowIndex > end)
-                        end = rowIndex
-                })
-                deleteItem(start, end)
-                console.debug("delete from: ", start, " to: ", end)
-            }
+            deleteSelected()
         }
         if (event.key === Qt.Key_Backspace) {
-            if (fileList.selection.count > 0) {
-                start = fileList.rowCount + 1
-                end = 0
-                fileList.selection.forEach(function (rowIndex) {
-                    if (rowIndex < start)
-                        start = rowIndex
-                    if (rowIndex > end)
-                        end = rowIndex
-                })
-                deleteItem(start, end)
-                console.debug("delete from: ", start, " to: ", end)
-            }
+            deleteSelected()
         }
 
         if (event.key === Qt.Key_F5) {
             console.debug("F5 pressed")
-            if (fileList.selection.count > 0) {
-                start = fileList.rowCount + 1
-                end = 0
-                fileList.selection.forEach(function (rowIndex) {
-                    if (rowIndex < start)
-                        start = rowIndex
-                    if (rowIndex > end)
-                        end = rowIndex
-                })
-                copyElement(start, end)
-                console.debug("copy from: ", start, " to: ", end)
-            }
+            sendFilesToSub()
         }
     }
 }

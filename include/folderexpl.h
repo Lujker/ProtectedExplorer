@@ -63,6 +63,7 @@ public slots:
     void comeToBeginning();
 
     void copySelections(int start, int end);
+    void copyFile(int index);
     void copyFrom(QString path);
     void copyTo(QString path);
 

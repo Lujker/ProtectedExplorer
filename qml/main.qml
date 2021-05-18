@@ -47,10 +47,10 @@ ApplicationWindow {
             DirModel.openFolder(index)
         }
         onDeleteItem: {
-            DirModel.deleteFiles(start, end)
+            DirModel.deleteFile(index)
         }
         onCopyElement: {
-            DirModel.copySelections(start, end)
+            DirModel.copyFile(index)
         }
         onPresToTable: {
             deselectAll()
@@ -71,12 +71,11 @@ ApplicationWindow {
             SubModel.openFolder(index)
         }
         onDeleteItem: {
-            SubModel.deleteFiles(start, end)
+            SubModel.deleteFile(index)
         }
         onCopyElement: {
-            SubModel.copySelections(start, end)
+            SubModel.copyFile(index)
         }
-
         onPresToTable: {
             deselectAll()
             dirView.deselectAll()
