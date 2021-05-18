@@ -14,11 +14,32 @@ ApplicationWindow {
         id: mainAppMenu
     }
 
+    AppButton {
+        id: _signature
+        anchors.top: mainAppMenu.bottom
+        anchors.horizontalCenter: mainAppMenu.horizontalCenter
+        anchors.topMargin: 14
+        color: "skyblue"
+        text: "Подписать"
+    }
+    AppButton {
+        id: _send
+        anchors.top: _signature.bottom
+        anchors.topMargin: 14
+        anchors.left: dirView.right
+        text: "Отправить"
+        color: "skyblue"
+        onButtonClicked: {
+            dirView.sendFilesToSub()
+        }
+    }
+
     ExplorerrView {
         id: dirView
         listModel: DirModel
-        width: parent.width / 2
+        width: parent.width / 2 - _signature.width / 2
         height: parent.height
+        anchors.right: _signature.left
         onPressToElement: {
             subView.deselectAll()
         }
@@ -40,9 +61,9 @@ ApplicationWindow {
     ExplorerrView {
         id: subView
         listModel: SubModel
-        width: parent.width / 2
+        width: parent.width / 2 - _signature.width / 2
         height: parent.height
-        anchors.left: dirView.right
+        anchors.left: _signature.right
         onPressToElement: {
             dirView.deselectAll()
         }

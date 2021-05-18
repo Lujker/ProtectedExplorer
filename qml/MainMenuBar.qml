@@ -3,29 +3,29 @@ import QtQuick.Controls 2.15
 
 MenuBar {
     background: Rectangle {
-        color: "#d8f3fb"
+        color: "skyblue"
     }
 
     Menu {
         id: fileMenu
-        title: qsTr("File")
+        title: qsTr("Файл")
         height: parent.height
         MenuItem {
-            text: qsTr("Exit")
+            text: qsTr("Выход")
             onTriggered: Qt.quit()
         }
     }
     Menu {
         id: settMenu
-        title: qsTr("Settings")
+        title: qsTr("Параметры")
         MenuItem {
             CheckBox {
-                text: qsTr("Tooltips")
+                text: qsTr("Подсказки")
                 onClicked: mainWindow.help = !mainWindow.help
             }
         }
         MenuItem {
-            text: "Apply and save settings"
+            text: "Сохранить настройки"
             onClicked: AppSettings.save_app_settings()
         }
     }

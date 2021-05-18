@@ -23,7 +23,7 @@ Rectangle {
 
         TableViewColumn {
             role: "filepath"
-            title: "Icon"
+            title: "Иконка"
             delegate: Component {
                 id: imageDelegate
                 Image {
@@ -41,22 +41,22 @@ Rectangle {
         }
         TableViewColumn {
             role: "name"
-            title: "Filename"
+            title: "Имя"
             width: explWindow.width - 315
         }
         TableViewColumn {
             role: "suffix"
-            title: "suffix"
+            title: "Тип"
             width: 50
         }
         TableViewColumn {
             role: "size"
-            title: "Size"
+            title: "Размер"
             width: 70
         }
         TableViewColumn {
             role: "date"
-            title: "Date"
+            title: "Дата"
             width: 150
         }
 
@@ -65,12 +65,14 @@ Rectangle {
             width: _textHeader.text.length * 1.2
             height: _textHeader.font.pixelSize * 1.2
             color: "skyblue"
+
             Connections {
                 target: styleData
                 function onPressedChanged() {
-                    if (styleData.pressed)
-                        console.debug(
-                                    "PRESSED:  " + styleData.column + " " + styleData.pressed)
+                    if (styleData.pressed === true) {
+
+                        //                        console.debug("pressed" + styleData.column)
+                    }
                 }
             }
             Text {
@@ -121,6 +123,22 @@ Rectangle {
     }
     function deselectAll() {
         fileList.selection.clear()
+    }
+    function sendFilesToSub() {
+        var start
+        var end
+        if (fileList.selection.count > 0) {
+            start = fileList.rowCount + 1
+            end = 0
+            fileList.selection.forEach(function (rowIndex) {
+                if (rowIndex < start)
+                    start = rowIndex
+                if (rowIndex > end)
+                    end = rowIndex
+            })
+            copyElement(start, end)
+            console.debug("copy from: ", start, " to: ", end)
+        }
     }
 
     Keys.onPressed: {

@@ -1,4 +1,4 @@
-import QtQuick 2.15
+﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
 
 Rectangle {
@@ -7,6 +7,7 @@ Rectangle {
     signal buttonClicked
     property alias text: txt.text
     property bool isHovered: false
+    property bool isClicked: false
     width: 82
     height: 36
     radius: 12
@@ -20,7 +21,14 @@ Rectangle {
             myButton.isHovered = !myButton.isHovered
         }
         onClicked: {
+
             myButton.buttonClicked()
+        }
+        onPressed: {
+            myButton.border.color = "green"
+        }
+        onReleased: {
+            myButton.border.color = "black"
         }
     }
     Text {
