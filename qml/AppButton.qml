@@ -4,6 +4,7 @@ import QtQuick.Controls 2.15
 Rectangle {
     id: myButton
     border.color: "black"
+    color: "skyblue"
     signal buttonClicked
     property alias text: txt.text
     property bool isHovered: false

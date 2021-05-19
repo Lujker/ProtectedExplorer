@@ -4,5 +4,6 @@
         <file>AppButton.qml</file>
         <file>MainMenuBar.qml</file>
         <file>ExplorerrView.qml</file>
+        <file>PopupItem.qml</file>
     </qresource>
 </RCC>

@@ -19,7 +19,6 @@ ApplicationWindow {
         anchors.top: mainAppMenu.bottom
         anchors.horizontalCenter: mainAppMenu.horizontalCenter
         anchors.topMargin: 14
-        color: "skyblue"
         text: "Подписать"
     }
     AppButton {
@@ -28,9 +27,8 @@ ApplicationWindow {
         anchors.topMargin: 14
         anchors.left: dirView.right
         text: "Отправить"
-        color: "skyblue"
         onButtonClicked: {
-            dirView.sendFilesToSub()
+            dirView.sendFiles()
         }
     }
 
@@ -56,6 +54,12 @@ ApplicationWindow {
             deselectAll()
             subView.deselectAll()
         }
+        onAddNewFile: {
+            DirModel.addFile()
+        }
+        onAddNewFolder: {
+            DirModel.addFolder()
+        }
     }
 
     ExplorerrView {
@@ -79,6 +83,12 @@ ApplicationWindow {
         onPresToTable: {
             deselectAll()
             dirView.deselectAll()
+        }
+        onAddNewFile: {
+            DirModel.addFile()
+        }
+        onAddNewFolder: {
+            SubModel.addFolder()
         }
     }
 }

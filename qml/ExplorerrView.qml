@@ -1,7 +1,7 @@
 ﻿import QtQuick 2.0
-import QtQuick.Controls 1.0
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.3
+import QtQuick.Controls 1.0
 
 Rectangle {
     id: explWindow
@@ -15,11 +15,17 @@ Rectangle {
     signal signedElement(int index)
     signal openFolder(int index)
     signal presToTable
+    signal addNewFile
+    signal addNewFolder
 
     TableView {
         id: fileList
         anchors.margins: 10
-        anchors.fill: parent
+        //        anchors.fill: parent
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: _rowLayoutTableButtom.top
         model: dataModel
         clip: true
         property bool shiftPressed: false
@@ -94,9 +100,9 @@ Rectangle {
         itemDelegate: Item {
             id: fileDelegate
             Text {
-                anchors.left: parent.left
-                renderType: Text.NativeRendering
-                fontSizeMode: Text.Fit
+                anchors.fill: parent
+                //                renderType: Text.NativeRendering
+                //                fontSizeMode: Text.Fit
                 text: styleData.value
             }
             MouseArea {
@@ -126,6 +132,9 @@ Rectangle {
                         _itemDelegatePopup.open()
                     }
                 }
+                onPressAndHold: {
+
+                }
 
                 onDoubleClicked: {
                     if (mouse.button === Qt.LeftButton) {
@@ -134,10 +143,11 @@ Rectangle {
                     }
                 }
             }
+
             Popup {
                 id: _itemDelegatePopup
-                width: 150
-                height: 200
+                width: 100
+                height: 150
                 modal: true
                 Overlay.modal: Rectangle {
                     color: "#aacfdbe7"
@@ -145,35 +155,72 @@ Rectangle {
                 ColumnLayout {
                     anchors.fill: parent
                     spacing: 2
-                    Rectangle {
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 20
-                        Text {
-                            text: qsTr("Удалить")
+
+                    PopupItem {
+                        text: qsTr("Удалить")
+                        onButtonPress: {
+                            deleteSelected()
+                        }
+                        onButtonReleased: {
+                            _itemDelegatePopup.close()
                         }
                     }
-                    Rectangle {
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 20
-                        Text {
-                            text: qsTr("Переименовать")
+                    PopupItem {
+                        text: qsTr("Переименовать")
+                        onButtonPress: {
+
+                            //                            deleteSelected()
+                        }
+                        onButtonReleased: {
+                            _itemDelegatePopup.close()
                         }
                     }
-                    Rectangle {
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 20
-                        Text {
-                            text: qsTr("Отправить")
+                    PopupItem {
+
+                        text: qsTr("Отправить")
+
+                        onButtonPress: {
+                            sendFiles()
+                        }
+                        onButtonReleased: {
+                            _itemDelegatePopup.close()
                         }
                     }
-                    Rectangle {
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 20
-                        Text {
-                            text: qsTr("Подписать")
+                    PopupItem {
+                        text: qsTr("Подписать")
+                        onButtonPress: {
+                            signedFiles()
+                        }
+                        onButtonReleased: {
+                            _itemDelegatePopup.close()
                         }
                     }
                 }
+            }
+        }
+    }
+    RowLayout {
+        id: _rowLayoutTableButtom
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 5
+        anchors.left: parent.left
+        anchors.leftMargin: 10
+        AppButton {
+            text: "Создать файл"
+            onButtonClicked: {
+                addNewFile()
+            }
+        }
+        AppButton {
+            text: "Создать папку"
+            onButtonClicked: {
+                addNewFolder()
+            }
+        }
+        AppButton {
+            text: "Удалить"
+            onButtonClicked: {
+                deleteSelected()
             }
         }
     }
@@ -181,7 +228,7 @@ Rectangle {
     function deselectAll() {
         fileList.selection.clear()
     }
-    function sendFilesToSub() {
+    function sendFiles() {
         if (fileList.selection.count > 0) {
             fileList.selection.forEach(function (rowIndex) {
                 copyElement(rowIndex)
@@ -195,7 +242,6 @@ Rectangle {
             })
         }
     }
-
     function deleteSelected() {
         if (fileList.selection.count > 0) {
             fileList.selection.forEach(function (rowIndex) {
@@ -230,7 +276,7 @@ Rectangle {
 
         if (event.key === Qt.Key_F5) {
             console.debug("F5 pressed")
-            sendFilesToSub()
+            sendFiles()
         }
     }
 }
