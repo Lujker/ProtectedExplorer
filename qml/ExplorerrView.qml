@@ -223,6 +223,12 @@ Rectangle {
                 deleteSelected()
             }
         }
+        AppButton {
+            text: "Копировать"
+            onButtonClicked: {
+                deleteSelected()
+            }
+        }
     }
 
     function deselectAll() {
@@ -252,11 +258,9 @@ Rectangle {
 
     Keys.onPressed: {
         if (event.key === Qt.Key_Shift) {
-            console.debug("Shift pressed")
             fileList.shiftPressed = true
         }
         if (event.key === Qt.Key_Control) {
-            console.debug("Control pressed")
             fileList.controlPressed = true
         }
     }
@@ -275,7 +279,6 @@ Rectangle {
         }
 
         if (event.key === Qt.Key_F5) {
-            console.debug("F5 pressed")
             sendFiles()
         }
     }

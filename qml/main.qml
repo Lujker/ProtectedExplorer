@@ -85,7 +85,7 @@ ApplicationWindow {
             dirView.deselectAll()
         }
         onAddNewFile: {
-            DirModel.addFile()
+            SubModel.addFile()
         }
         onAddNewFolder: {
             SubModel.addFolder()

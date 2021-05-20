@@ -158,10 +158,10 @@ void DirsModel::refreshModel()
 void DirsModel::addFile()
 {
     if(folder==nullptr) return;
-    QString filename = QString::fromLocal8Bit("Новый файл.txt");
+    QString filename = QString("Новый файл.txt");
     int count = 1;
     while(folder->exists(folder->filePath(folder->absolutePath() + QDir::separator() + filename)))
-        filename = QString::fromLocal8Bit("Новый файл(") + QString::number(count) + QString::fromLocal8Bit(").txt");
+        filename = QString("Новый файл(") + QString::number(count) + QString(").txt");
     QFile _newFile(folder->absolutePath() + QDir::separator() + filename);
     if(_newFile.open(QFile::WriteOnly)){
 
@@ -218,10 +218,10 @@ void DirsModel::deleteFiles(int start, int end)
 void DirsModel::addFolder()
 {
     if(folder==nullptr) return;
-    QString filename = QString::fromLocal8Bit("Новая папка");
+    QString filename = QString("Новая папка");
     int count = 1;
     while(folder->exists(folder->filePath(folder->absolutePath() + QDir::separator() + filename)))
-        filename = QString::fromLocal8Bit("Новый папка(") + QString::number(count) + QString::fromLocal8Bit(")");
+        filename = QString("Новый папка(") + QString::number(count) + QString(")");
     QFile _newFile(folder->absolutePath() + QDir::separator() + filename);
     folder->mkdir(filename);
 }
@@ -368,7 +368,7 @@ QVariant DirsModel::data(const QModelIndex &index, int role) const
         return info.suffix();
         break;
     case SizeRole:
-        if(info.isDir()) return QString::fromLocal8Bit("<Папка>");
+        if(info.isDir()) return QString::fromStdString("<Папка>");
         else {
             qint64 nSize = info.size();
             qint64 i = 0;
