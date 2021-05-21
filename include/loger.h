@@ -1,4 +1,4 @@
-#ifndef LOGER_H
+﻿#ifndef LOGER_H
 #define LOGER_H
 
 #include <memory>

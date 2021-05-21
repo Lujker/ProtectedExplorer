@@ -96,103 +96,127 @@ Rectangle {
                 color: (styleData.pressed) ? "red" : "black"
             }
         }
+        DropArea {
+            anchors.fill: parent
+            onEntered: {
 
-        itemDelegate: Item {
-            id: fileDelegate
-            Text {
-                anchors.fill: parent
-                //                renderType: Text.NativeRendering
-                //                fontSizeMode: Text.Fit
-                text: styleData.value
             }
-            MouseArea {
-                anchors.fill: parent
-                acceptedButtons: Qt.LeftButton | Qt.RightButton
-                onClicked: {
-                    fileList.focus = true
-                    if (mouse.button === Qt.LeftButton) {
-                        if (fileList.controlPressed) {
-                            fileList.selection.select(styleData.row)
-                        } else if (fileList.shiftPressed) {
-                            var lowIndex = fileList.rowCount + 1
-                            fileList.selection.forEach(function (rowIndex) {
-                                if (lowIndex > rowIndex)
-                                    lowIndex = rowIndex
-                            })
-                            fileList.selection.select(lowIndex, styleData.row)
-                        } else {
+        }
+        rowDelegate: Rectangle {
+            id: _rowDelegate
+            color: styleData.selected ? "skyblue" : "white"
+        }
+
+        itemDelegate: Component {
+
+            Item {
+                id: fileDelegate
+
+                //                Drag.active: _dragArea.held
+                //                Drag.source: _dragArea
+                Text {
+                    anchors.fill: parent
+                    renderType: Text.NativeRendering
+                    fontSizeMode: Text.Fit
+                    text: styleData.value
+                }
+
+                MouseArea {
+                    id: _dragArea
+                    //                    property bool held: false
+                    //                    drag.target: held ? fileDelegate : undefined
+                    //                    drag.axis: Drag.XAndYAxis
+                    anchors.fill: parent
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    onClicked: {
+                        fileList.focus = true
+                        if (mouse.button === Qt.LeftButton) {
+                            if (fileList.controlPressed) {
+                                fileList.selection.select(styleData.row)
+                            } else if (fileList.shiftPressed) {
+                                var lowIndex = fileList.rowCount + 1
+                                fileList.selection.forEach(function (rowIndex) {
+                                    if (lowIndex > rowIndex)
+                                        lowIndex = rowIndex
+                                })
+                                fileList.selection.select(lowIndex,
+                                                          styleData.row)
+                            } else {
+                                deselectAll()
+                                pressToElement(styleData.row)
+                                fileList.selection.select(styleData.row)
+                            }
+                        } else if (mouse.button === Qt.RightButton) {
                             deselectAll()
                             pressToElement(styleData.row)
                             fileList.selection.select(styleData.row)
+                            _itemDelegatePopup.open()
                         }
-                    } else if (mouse.button === Qt.RightButton) {
-                        deselectAll()
-                        pressToElement(styleData.row)
-                        fileList.selection.select(styleData.row)
-                        _itemDelegatePopup.open()
+                    }
+                    onPressAndHold: {
+                        console.debug("Press and hold")
+                        //                        held = true
+                    }
+
+                    //                    onReleased: held = false
+                    onDoubleClicked: {
+                        if (mouse.button === Qt.LeftButton) {
+                            deselectAll()
+                            openFolder(styleData.row)
+                        }
                     }
                 }
-                onPressAndHold: {
 
-                }
-
-                onDoubleClicked: {
-                    if (mouse.button === Qt.LeftButton) {
-                        deselectAll()
-                        openFolder(styleData.row)
+                Popup {
+                    id: _itemDelegatePopup
+                    width: 100
+                    height: 150
+                    modal: true
+                    Overlay.modal: Rectangle {
+                        color: "#aacfdbe7"
                     }
-                }
-            }
+                    ColumnLayout {
+                        anchors.fill: parent
+                        spacing: 2
 
-            Popup {
-                id: _itemDelegatePopup
-                width: 100
-                height: 150
-                modal: true
-                Overlay.modal: Rectangle {
-                    color: "#aacfdbe7"
-                }
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 2
+                        PopupItem {
+                            text: qsTr("Удалить")
+                            onButtonPress: {
+                                deleteSelected()
+                            }
+                            onButtonReleased: {
+                                _itemDelegatePopup.close()
+                            }
+                        }
+                        PopupItem {
+                            text: qsTr("Переименовать")
+                            onButtonPress: {
 
-                    PopupItem {
-                        text: qsTr("Удалить")
-                        onButtonPress: {
-                            deleteSelected()
+                                //                            deleteSelected()
+                            }
+                            onButtonReleased: {
+                                _itemDelegatePopup.close()
+                            }
                         }
-                        onButtonReleased: {
-                            _itemDelegatePopup.close()
-                        }
-                    }
-                    PopupItem {
-                        text: qsTr("Переименовать")
-                        onButtonPress: {
+                        PopupItem {
 
-                            //                            deleteSelected()
-                        }
-                        onButtonReleased: {
-                            _itemDelegatePopup.close()
-                        }
-                    }
-                    PopupItem {
+                            text: qsTr("Отправить")
 
-                        text: qsTr("Отправить")
-
-                        onButtonPress: {
-                            sendFiles()
+                            onButtonPress: {
+                                sendFiles()
+                            }
+                            onButtonReleased: {
+                                _itemDelegatePopup.close()
+                            }
                         }
-                        onButtonReleased: {
-                            _itemDelegatePopup.close()
-                        }
-                    }
-                    PopupItem {
-                        text: qsTr("Подписать")
-                        onButtonPress: {
-                            signedFiles()
-                        }
-                        onButtonReleased: {
-                            _itemDelegatePopup.close()
+                        PopupItem {
+                            text: qsTr("Подписать")
+                            onButtonPress: {
+                                signedFiles()
+                            }
+                            onButtonReleased: {
+                                _itemDelegatePopup.close()
+                            }
                         }
                     }
                 }
@@ -207,24 +231,28 @@ Rectangle {
         anchors.leftMargin: 10
         AppButton {
             text: "Создать файл"
+            toolTipText: "Создать файл в открытом каталоге таблицы"
             onButtonClicked: {
                 addNewFile()
             }
         }
         AppButton {
             text: "Создать папку"
+            toolTipText: "Создать папку в открытом каталоге таблицы"
             onButtonClicked: {
                 addNewFolder()
             }
         }
         AppButton {
             text: "Удалить"
+            toolTipText: "Удалить выбранные в таблице файлы (delete/backspace)"
             onButtonClicked: {
                 deleteSelected()
             }
         }
         AppButton {
             text: "Копировать"
+            toolTipText: "Копировать выбранный файлы в другую таблицу (F5)"
             onButtonClicked: {
                 deleteSelected()
             }
@@ -255,6 +283,7 @@ Rectangle {
             })
         }
     }
+    function moveElement() {}
 
     Keys.onPressed: {
         if (event.key === Qt.Key_Shift) {

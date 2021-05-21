@@ -6,6 +6,7 @@ Rectangle {
     border.color: "black"
     color: "skyblue"
     signal buttonClicked
+    property string toolTipText: ""
     property alias text: txt.text
     property bool isHovered: false
     property bool isClicked: false
@@ -16,6 +17,9 @@ Rectangle {
 
     MouseArea {
         id: mAreaa
+        ToolTip.text: toolTipText ///текст подсказки элемента
+        ToolTip.visible: toolTipText ? (containsMouse
+                                        && mainWindow.help) : false ///когда отображать подсказку
         anchors.fill: parent
         hoverEnabled: true
         onHoveredChanged: {
