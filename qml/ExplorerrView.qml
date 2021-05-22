@@ -70,21 +70,21 @@ Rectangle {
             title: "Дата"
             width: 150
         }
+        sortIndicatorVisible: true
+        onSortIndicatorColumnChanged: {
+            console.debug(sortIndicatorColumn)
+        }
+        onSortIndicatorOrderChanged: {
+            ///Вот тут сигнал сортировки console.debug(sortIndicatorColumn)
+            console.debug(sortIndicatorOrder)
+            console.debug(sortIndicatorColumn)
+        }
 
         headerDelegate: Rectangle {
             id: _headerDelegate
             width: _textHeader.text.length * 1.2
             height: _textHeader.font.pixelSize * 1.2
             color: "skyblue"
-
-            Connections {
-                target: styleData
-                function onPressedChanged() {
-                    if (styleData.pressed === true) {
-                        console.debug("pressed " + styleData.column)
-                    }
-                }
-            }
             Text {
                 id: _textHeader
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -123,9 +123,9 @@ Rectangle {
 
                 MouseArea {
                     id: _dragArea
-                    //                    property bool held: false
-                    //                    drag.target: held ? fileDelegate : undefined
-                    //                    drag.axis: Drag.XAndYAxis
+                    property bool held: false
+                    drag.target: held ? fileDelegate : undefined
+                    drag.axis: Drag.XAndYAxis
                     anchors.fill: parent
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: {
@@ -155,10 +155,10 @@ Rectangle {
                     }
                     onPressAndHold: {
                         console.debug("Press and hold")
-                        //                        held = true
+                        held = true
                     }
 
-                    //                    onReleased: held = false
+                    onReleased: held = false
                     onDoubleClicked: {
                         if (mouse.button === Qt.LeftButton) {
                             deselectAll()
