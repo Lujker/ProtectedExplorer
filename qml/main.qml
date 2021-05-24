@@ -1,6 +1,7 @@
 ﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Dialogs 1.2
+import QtQuick.Layouts 1.3
 
 ApplicationWindow {
     id: mainWindow
@@ -16,84 +17,159 @@ ApplicationWindow {
         MainMenuBar {
             id: mainAppMenu
         }
-
-        AppButton {
-            id: _signature
+        AppComboBox {
+            id: dirComboBox
+            model: ["Файловая система", "Сетевые папки"]
+            width: dirView.width / 2
+            height: 25
             anchors.top: _dropArea.top
-            anchors.horizontalCenter: _dropArea.horizontalCenter
-            anchors.topMargin: 14
-            text: "Подписать"
-            toolTipText: "Подписать выбранные файлы"
+            anchors.topMargin: 5
+            anchors.leftMargin: 10
+            anchors.left: dirView.left
+            onActivated: {
+                switch (index) {
+                case 0:
+                    DirModel.setAsDirModel()
+                    break
+                case 1:
+                    DirModel.setAsSubModel()
+                    break
+                default:
+                    return
+                }
+            }
         }
-        AppButton {
-            id: _send
-            anchors.top: _signature.bottom
-            anchors.topMargin: 14
-            anchors.left: dirView.right
-            text: "Отправить"
-            toolTipText: "Отправить выбранные файлы (F5)"
-            onButtonClicked: {
-                dirView.sendFiles()
+        AppComboBox {
+            id: subComboBox
+            model: ["Сетевые папки", "Файловая система"]
+            height: 25
+            width: subView.width / 2
+            anchors.top: _dropArea.top
+            anchors.topMargin: 5
+            anchors.leftMargin: 10
+            anchors.left: subView.left
+            onActivated: {
+                switch (index) {
+                case 0:
+                    SubModel.setAsSubModel()
+                    break
+                case 1:
+                    SubModel.setAsDirModel()
+                    break
+                default:
+                    return
+                }
             }
         }
 
         ExplorerrView {
             id: dirView
             listModel: DirModel
-            width: parent.width / 2 - _signature.width / 2
-            height: parent.height
-            anchors.right: _signature.left
+            width: parent.width / 2
+            height: parent.height - _rowLayoutTableButtom.height - dirComboBox.height
+            anchors.top: dirComboBox.bottom
+            anchors.bottom: _rowLayoutTableButtom.top
             onPressToElement: {
                 subView.deselectAll()
             }
             onOpenFolder: {
-                DirModel.openFolder(index)
+                listModel.openFolder(index)
             }
             onDeleteItem: {
-                DirModel.deleteFile(index)
+                listModel.deleteFile(index)
             }
             onCopyElement: {
-                DirModel.copyFile(index)
+                listModel.copyFile(index)
             }
             onPresToTable: {
                 deselectAll()
                 subView.deselectAll()
             }
             onAddNewFile: {
-                DirModel.addFile()
+                if (focusOfView === true)
+                    listModel.addFile()
             }
             onAddNewFolder: {
-                DirModel.addFolder()
+                if (focusOfView === true)
+                    listModel.addFolder()
             }
         }
 
         ExplorerrView {
             id: subView
             listModel: SubModel
-            width: parent.width / 2 - _signature.width / 2
-            height: parent.height
-            anchors.left: _signature.right
+            width: parent.width / 2
+            height: parent.height - _rowLayoutTableButtom.height - subComboBox.height
+            anchors.top: subComboBox.bottom
+            anchors.bottom: _rowLayoutTableButtom.top
+            anchors.right: parent.right
             onPressToElement: {
                 dirView.deselectAll()
             }
             onOpenFolder: {
-                SubModel.openFolder(index)
+                listModel.openFolder(index)
             }
             onDeleteItem: {
-                SubModel.deleteFile(index)
+                listModel.deleteFile(index)
             }
             onCopyElement: {
-                SubModel.copyFile(index)
+                listModel.copyFile(index)
             }
             onPresToTable: {
                 deselectAll()
                 dirView.deselectAll()
             }
             onAddNewFile: {
-                SubModel.addFile()
+                if (focusOfView === true)
+                    listModel.addFile()
             }
             onAddNewFolder: {
-                SubModel.addFolder()
+                if (focusOfView === true)
+                    listModel.addFolder()
+            }
+        }
+
+        RowLayout {
+            id: _rowLayoutTableButtom
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 5
+            anchors.horizontalCenter: parent.horizontalCenter
+            AppButton {
+                text: "Создать файл"
+                toolTipText: "Создать файл в открытом каталоге таблицы"
+                onButtonClicked: {
+                    subView.addNewFile()
+                    dirView.addNewFile()
+                }
+            }
+            AppButton {
+                text: "Создать папку"
+                toolTipText: "Создать папку в открытом каталоге таблицы"
+                onButtonClicked: {
+                    subView.addNewFolder()
+                    dirView.addNewFolder()
+                }
+            }
+            AppButton {
+                text: "Удалить"
+                toolTipText: "Удалить выбранные в таблице файлы (delete/backspace)"
+                onButtonClicked: {
+                    subView.deleteSelected()
+                    dirView.deleteSelected()
+                }
+            }
+            AppButton {
+                text: "F5 Копировать"
+                toolTipText: "Копировать выбранный файлы в другую таблицу (F5)"
+                onButtonClicked: {
+                    subView.sendFiles()
+                    dirView.sendFiles()
+                }
+            }
+            AppButton {
+                id: _signature
+                text: "Подписать"
+                toolTipText: "Подписать выбранные файлы"
             }
         }
     }

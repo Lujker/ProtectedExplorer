@@ -57,6 +57,9 @@ public:
 
 public slots:
     void refreshModel();
+    void setAsSubModel();
+    void setAsDirModel();
+
 
     void openFolder(int index);
     void comeBack();

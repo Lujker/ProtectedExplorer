@@ -155,13 +155,61 @@ void DirsModel::refreshModel()
     endResetModel();
 }
 
+void DirsModel::setAsSubModel()
+{
+    beginResetModel();
+    m_filenames.clear();
+
+
+    m_level_count = 0;
+    if(folder!=nullptr){
+        watcher->removePath(folder->absolutePath());
+        delete folder;
+        folder = nullptr;
+    }
+
+    m_dirs.clear();
+    for(const auto& it : SettingsController::get_instanse().parse_sub_list()){
+        m_dirs.push_back(QString::fromStdString(it));
+    }
+    for(const auto &it : qAsConst(m_dirs)){
+        ///заполнение списка именами папок
+        QDir dir(it);
+        m_filenames.push_back(dir.dirName());
+    }
+    endResetModel();
+}
+
+void DirsModel::setAsDirModel()
+{
+    beginResetModel();
+    m_filenames.clear();
+    if(folder!=nullptr){
+        watcher->removePath(folder->absolutePath());
+        delete folder;
+        folder = nullptr;
+    }
+    m_dirs.clear();
+    for(const auto& it : SettingsController::get_instanse().parse_dir_list()){
+        m_dirs.push_back(QString::fromStdString(it));
+    }
+    for(const auto &it : qAsConst(m_dirs)){
+        ///заполнение списка именами папок
+        QDir dir(it);
+        m_filenames.push_back(dir.dirName());
+    }
+    endResetModel();
+}
+
 void DirsModel::addFile()
 {
     if(folder==nullptr) return;
     QString filename = QString("Новый файл.txt");
     int count = 1;
-    while(folder->exists(folder->filePath(folder->absolutePath() + QDir::separator() + filename)))
+    while(folder->exists(folder->filePath(folder->absolutePath() + QDir::separator() + filename))){
         filename = QString("Новый файл(") + QString::number(count) + QString(").txt");
+        ++count;
+    }
     QFile _newFile(folder->absolutePath() + QDir::separator() + filename);
     if(_newFile.open(QFile::WriteOnly)){
 
@@ -173,6 +221,7 @@ void DirsModel::addFile()
 
 void DirsModel::deleteFile(int index)
 {
+    if(index<0 || index>=m_filenames.size()) return;
     if(folder==nullptr) return;
     QString path = folder->absolutePath() + QDir::separator() + m_filenames.at(index);
     QFileInfo info(path);
@@ -220,8 +269,10 @@ void DirsModel::addFolder()
     if(folder==nullptr) return;
     QString filename = QString("Новая папка");
     int count = 1;
-    while(folder->exists(folder->filePath(folder->absolutePath() + QDir::separator() + filename)))
+    while(folder->exists(folder->filePath(folder->absolutePath() + QDir::separator() + filename))){
         filename = QString("Новый папка(") + QString::number(count) + QString(")");
+        ++count;
+    }
     QFile _newFile(folder->absolutePath() + QDir::separator() + filename);
     folder->mkdir(filename);
 }

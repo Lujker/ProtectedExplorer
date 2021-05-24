@@ -5,6 +5,7 @@ import QtQuick.Controls 1.0
 
 Rectangle {
     id: explWindow
+    property bool focusOfView: fileList.focus
     property alias listModel: fileList.model
     signal pressToElement(int index)
     signal copyElements(int start, int end)
@@ -14,6 +15,7 @@ Rectangle {
     signal signedElements(int start, int end)
     signal signedElement(int index)
     signal openFolder(int index)
+    signal setSort(int column, int order)
     signal presToTable
     signal addNewFile
     signal addNewFolder
@@ -25,12 +27,11 @@ Rectangle {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: _rowLayoutTableButtom.top
+        anchors.bottom: parent.bottom
         model: dataModel
         clip: true
         property bool shiftPressed: false
         property bool controlPressed: false
-        property bool sortedArr: [false, false, false, false]
 
         TableViewColumn {
             role: "filepath"
@@ -72,10 +73,10 @@ Rectangle {
         }
         sortIndicatorVisible: true
         onSortIndicatorColumnChanged: {
-            console.debug(sortIndicatorColumn)
+            setSort(sortIndicatorColumn, 0)
         }
         onSortIndicatorOrderChanged: {
-            ///Вот тут сигнал сортировки console.debug(sortIndicatorColumn)
+
             console.debug(sortIndicatorOrder)
             console.debug(sortIndicatorColumn)
         }
@@ -223,42 +224,42 @@ Rectangle {
             }
         }
     }
-    RowLayout {
-        id: _rowLayoutTableButtom
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 5
-        anchors.left: parent.left
-        anchors.leftMargin: 10
-        AppButton {
-            text: "Создать файл"
-            toolTipText: "Создать файл в открытом каталоге таблицы"
-            onButtonClicked: {
-                addNewFile()
-            }
-        }
-        AppButton {
-            text: "Создать папку"
-            toolTipText: "Создать папку в открытом каталоге таблицы"
-            onButtonClicked: {
-                addNewFolder()
-            }
-        }
-        AppButton {
-            text: "Удалить"
-            toolTipText: "Удалить выбранные в таблице файлы (delete/backspace)"
-            onButtonClicked: {
-                deleteSelected()
-            }
-        }
-        AppButton {
-            text: "Копировать"
-            toolTipText: "Копировать выбранный файлы в другую таблицу (F5)"
-            onButtonClicked: {
-                deleteSelected()
-            }
-        }
-    }
 
+    //    RowLayout {
+    //        id: _rowLayoutTableButtom
+    //        anchors.bottom: parent.bottom
+    //        anchors.bottomMargin: 5
+    //        anchors.left: parent.left
+    //        anchors.leftMargin: 10
+    //        AppButton {
+    //            text: "Создать файл"
+    //            toolTipText: "Создать файл в открытом каталоге таблицы"
+    //            onButtonClicked: {
+    //                addNewFile()
+    //            }
+    //        }
+    //        AppButton {
+    //            text: "Создать папку"
+    //            toolTipText: "Создать папку в открытом каталоге таблицы"
+    //            onButtonClicked: {
+    //                addNewFolder()
+    //            }
+    //        }
+    //        AppButton {
+    //            text: "Удалить"
+    //            toolTipText: "Удалить выбранные в таблице файлы (delete/backspace)"
+    //            onButtonClicked: {
+    //                deleteSelected()
+    //            }
+    //        }
+    //        AppButton {
+    //            text: "Копировать"
+    //            toolTipText: "Копировать выбранный файлы в другую таблицу (F5)"
+    //            onButtonClicked: {
+    //                deleteSelected()
+    //            }
+    //        }
+    //    }
     function deselectAll() {
         fileList.selection.clear()
     }
