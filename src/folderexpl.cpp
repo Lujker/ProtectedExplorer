@@ -221,7 +221,7 @@ void DirsModel::addFile()
 
 void DirsModel::deleteFile(int index)
 {
-    if(index<0 || index>=m_filenames.size()) return;
+    if(index<=0 || index>=m_filenames.size()) return;
     if(folder==nullptr) return;
     QString path = folder->absolutePath() + QDir::separator() + m_filenames.at(index);
     QFileInfo info(path);
@@ -280,6 +280,22 @@ void DirsModel::addFolder()
 void DirsModel::deleteFolder(int index)
 {
     folder->rmdir(m_filenames.at(index));
+}
+
+void DirsModel::renameFile(int index, QString name)
+{
+    qDebug()<<index << name;
+    if(folder==nullptr) return;
+    QFileInfo f_info(folder->absolutePath() + QDir::separator() +  m_filenames.at(index));
+    QFile file(folder->absolutePath() + QDir::separator() +  m_filenames.at(index));
+    if(file.exists()){
+        if(file.rename(folder->absolutePath() + QDir::separator() + name)){
+            qDebug()<<"good rename";
+        }
+        else {
+            qDebug()<< "bad rename";
+        }
+    }
 }
 
 void DirsModel::setSorting(int column, int order)

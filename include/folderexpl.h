@@ -76,6 +76,7 @@ public slots:
     void deleteFiles(int start, int end);
     void addFolder();
     void deleteFolder(int index);
+    void renameFile(int index, QString name);
 
     void setSorting(int column, int order);
     void sortByName(bool lower = false);

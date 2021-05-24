@@ -7,6 +7,7 @@ Rectangle {
     id: explWindow
     property bool focusOfView: fileList.focus
     property alias listModel: fileList.model
+    property bool inputName: false
     signal pressToElement(int index)
     signal copyElements(int start, int end)
     signal copyElement(int index)
@@ -106,22 +107,73 @@ Rectangle {
         rowDelegate: Rectangle {
             id: _rowDelegate
             color: styleData.selected ? "skyblue" : "white"
+            MouseArea {
+                id: _dragArea
+                property bool held: false
+                drag.target: held ? fileDelegate : undefined
+                drag.axis: Drag.XAndYAxis
+                anchors.fill: parent
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                onClicked: {
+                    fileList.focus = true
+                    if (mouse.button === Qt.LeftButton) {
+                        if (fileList.controlPressed) {
+                            fileList.selection.select(styleData.row)
+                        } else if (fileList.shiftPressed) {
+                            var lowIndex = fileList.rowCount + 1
+                            fileList.selection.forEach(function (rowIndex) {
+                                if (lowIndex > rowIndex)
+                                    lowIndex = rowIndex
+                            })
+                            fileList.selection.select(lowIndex, styleData.row)
+                        } else {
+                            deselectAll()
+                            pressToElement(styleData.row)
+                            fileList.selection.select(styleData.row)
+                        }
+                    } else if (mouse.button === Qt.RightButton) {
+                        deselectAll()
+                        pressToElement(styleData.row)
+                        fileList.selection.select(styleData.row)
+                        _itemDelegatePopup.open()
+                    }
+                }
+                onPressAndHold: {
+                    console.debug("Press and hold")
+                    held = true
+                    fileList.selection.select(styleData.row)
+                }
+
+                onReleased: held = false
+                onDoubleClicked: {
+                    if (mouse.button === Qt.LeftButton) {
+                        deselectAll()
+                        openFolder(styleData.row)
+                    }
+                }
+            }
         }
 
         itemDelegate: Component {
 
             Item {
                 id: fileDelegate
+                clip: true
 
                 //                Drag.active: _dragArea.held
                 //                Drag.source: _dragArea
                 TextInput {
                     id: _txtInput
-                    anchors.fill: parent
+
+                    anchors.left: parent.left
                     readOnly: styleData.column !== 1
                     text: styleData.value
+
+                    renderType: Text.NativeRendering
                     onAccepted: {
-                        renameFile(styleData.row, text)
+                        inputName = false
+                        listModel.renameFile(styleData.row, text)
+                        parent.forceActiveFocus()
                         console.debug(text)
                         console.debug(styleData.row)
                     }
@@ -135,6 +187,8 @@ Rectangle {
                     anchors.fill: parent
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: {
+                        inputName = false
+                        parent.forceActiveFocus()
                         fileList.focus = true
                         if (mouse.button === Qt.LeftButton) {
                             if (fileList.controlPressed) {
@@ -160,14 +214,16 @@ Rectangle {
                         }
                     }
                     onPressAndHold: {
+                        inputName = false
                         console.debug("Press and hold")
                         held = true
                         fileList.selection.select(styleData.row)
-                        _txtInput.forceActiveFocus()
                     }
 
                     onReleased: held = false
                     onDoubleClicked: {
+                        inputName = false
+                        parent.forceActiveFocus()
                         if (mouse.button === Qt.LeftButton) {
                             deselectAll()
                             openFolder(styleData.row)
@@ -199,7 +255,8 @@ Rectangle {
                         PopupItem {
                             text: qsTr("Переименовать")
                             onButtonPress: {
-
+                                inputName = true
+                                _txtInput.forceActiveFocus()
                                 //                            deleteSelected()
                             }
                             onButtonReleased: {
@@ -273,13 +330,15 @@ Rectangle {
         if (event.key === Qt.Key_Control) {
             fileList.controlPressed = false
         }
+
         if (event.key === Qt.Key_Delete) {
-            deleteSelected()
+            if (inputName === false)
+                deleteSelected()
         }
         if (event.key === Qt.Key_Backspace) {
-            deleteSelected()
+            if (inputName === false)
+                deleteSelected()
         }
-
         if (event.key === Qt.Key_F5) {
             sendFiles()
         }
