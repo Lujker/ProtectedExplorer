@@ -15,7 +15,7 @@ Rectangle {
     signal signedElements(int start, int end)
     signal signedElement(int index)
     signal openFolder(int index)
-    //    signal setSort(int column, int order)
+    signal renameFile(int index, string newName)
     signal presToTable
     signal addNewFile
     signal addNewFolder
@@ -115,11 +115,16 @@ Rectangle {
 
                 //                Drag.active: _dragArea.held
                 //                Drag.source: _dragArea
-                Text {
+                TextInput {
+                    id: _txtInput
                     anchors.fill: parent
-                    renderType: Text.NativeRendering
-                    fontSizeMode: Text.Fit
+                    readOnly: styleData.column !== 1
                     text: styleData.value
+                    onAccepted: {
+                        renameFile(styleData.row, text)
+                        console.debug(text)
+                        console.debug(styleData.row)
+                    }
                 }
 
                 MouseArea {
@@ -157,6 +162,8 @@ Rectangle {
                     onPressAndHold: {
                         console.debug("Press and hold")
                         held = true
+                        fileList.selection.select(styleData.row)
+                        _txtInput.forceActiveFocus()
                     }
 
                     onReleased: held = false
