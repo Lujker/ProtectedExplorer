@@ -77,6 +77,7 @@ public slots:
     void addFolder();
     void deleteFolder(int index);
 
+    void setSorting(int column, int order);
     void sortByName(bool lower = false);
     void sortByDate(bool lower = false);
     void sortBySize(bool lower = false);

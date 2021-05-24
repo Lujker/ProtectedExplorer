@@ -15,7 +15,7 @@ Rectangle {
     signal signedElements(int start, int end)
     signal signedElement(int index)
     signal openFolder(int index)
-    signal setSort(int column, int order)
+    //    signal setSort(int column, int order)
     signal presToTable
     signal addNewFile
     signal addNewFolder
@@ -49,12 +49,12 @@ Rectangle {
                     source: styleData.value ? "image://iconProvider/" + styleData.value : ""
                 }
             }
-            width: 40
+            width: 50
         }
         TableViewColumn {
             role: "name"
             title: "Имя"
-            width: explWindow.width - 315
+            width: explWindow.width - 341
         }
         TableViewColumn {
             role: "suffix"
@@ -72,31 +72,31 @@ Rectangle {
             width: 150
         }
         sortIndicatorVisible: true
+
         onSortIndicatorColumnChanged: {
-            setSort(sortIndicatorColumn, 0)
+            listModel.setSorting(sortIndicatorColumn, 0)
         }
         onSortIndicatorOrderChanged: {
-
-            console.debug(sortIndicatorOrder)
-            console.debug(sortIndicatorColumn)
+            listModel.setSorting(sortIndicatorColumn, sortIndicatorOrder)
         }
 
-        headerDelegate: Rectangle {
-            id: _headerDelegate
-            width: _textHeader.text.length * 1.2
-            height: _textHeader.font.pixelSize * 1.2
-            color: "skyblue"
-            Text {
-                id: _textHeader
-                anchors.horizontalCenter: parent.horizontalCenter
-                color: (styleData.pressed) ? "red" : "black"
-                text: styleData.value
-            }
-            border {
-                width: 1
-                color: (styleData.pressed) ? "red" : "black"
-            }
-        }
+        //        headerDelegate: Rectangle {
+        //            id: _headerDelegate
+        //            width: _textHeader.text.length * 1.2
+        //            height: _textHeader.font.pixelSize * 1.2
+        //            color: "skyblue"
+
+        //            Text {
+        //                id: _textHeader
+        //                anchors.horizontalCenter: parent.horizontalCenter
+        //                color: (styleData.pressed) ? "red" : "black"
+        //                text: styleData.value
+        //            }
+        //            border {
+        //                width: 1
+        //                color: (styleData.pressed) ? "red" : "black"
+        //            }
+        //        }
         DropArea {
             anchors.fill: parent
             onEntered: {
@@ -225,41 +225,6 @@ Rectangle {
         }
     }
 
-    //    RowLayout {
-    //        id: _rowLayoutTableButtom
-    //        anchors.bottom: parent.bottom
-    //        anchors.bottomMargin: 5
-    //        anchors.left: parent.left
-    //        anchors.leftMargin: 10
-    //        AppButton {
-    //            text: "Создать файл"
-    //            toolTipText: "Создать файл в открытом каталоге таблицы"
-    //            onButtonClicked: {
-    //                addNewFile()
-    //            }
-    //        }
-    //        AppButton {
-    //            text: "Создать папку"
-    //            toolTipText: "Создать папку в открытом каталоге таблицы"
-    //            onButtonClicked: {
-    //                addNewFolder()
-    //            }
-    //        }
-    //        AppButton {
-    //            text: "Удалить"
-    //            toolTipText: "Удалить выбранные в таблице файлы (delete/backspace)"
-    //            onButtonClicked: {
-    //                deleteSelected()
-    //            }
-    //        }
-    //        AppButton {
-    //            text: "Копировать"
-    //            toolTipText: "Копировать выбранный файлы в другую таблицу (F5)"
-    //            onButtonClicked: {
-    //                deleteSelected()
-    //            }
-    //        }
-    //    }
     function deselectAll() {
         fileList.selection.clear()
     }

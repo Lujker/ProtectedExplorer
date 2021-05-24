@@ -282,24 +282,78 @@ void DirsModel::deleteFolder(int index)
     folder->rmdir(m_filenames.at(index));
 }
 
+void DirsModel::setSorting(int column, int order)
+{
+    beginResetModel();
+    qDebug()<< column << order;
+    if(folder==nullptr) return;
+    switch (column) {
+    case 1:
+        sortByName(order);
+        break;
+    case 2:
+        sortBySuffix(order);
+        break;
+    case 3:
+        sortBySize(order);
+        break;
+    case 4:
+        sortByDate(order);
+        break;
+    }
+    endResetModel();
+}
+
 void DirsModel::sortByName(bool lower)
 {
-
+    if(lower)
+        std::sort(m_filenames.begin(), m_filenames.end(), std::greater<QString>());
+    else std::sort(m_filenames.begin(), m_filenames.end());
 }
 
 void DirsModel::sortByDate(bool lower)
 {
-
+    if(lower)
+        std::sort(m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
+            QFileInfo f_info(folder->absolutePath() + QDir::separator() +  first);
+            QFileInfo s_info(folder->absolutePath() + QDir::separator() +  second);
+            return f_info.lastModified().toLocalTime() < s_info.lastModified().toLocalTime();
+        });
+    else std::sort(m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
+        QFileInfo f_info(folder->absolutePath() + QDir::separator() +  first);
+        QFileInfo s_info(folder->absolutePath() + QDir::separator() +  second);
+        return f_info.lastModified().toLocalTime() > s_info.lastModified().toLocalTime();
+    });
 }
 
 void DirsModel::sortBySize(bool lower)
-{
-
+{    
+    if(lower)
+        std::sort(m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
+            QFileInfo f_info(folder->absolutePath() + QDir::separator() +  first);
+            QFileInfo s_info(folder->absolutePath() + QDir::separator() +  second);
+            return f_info.size() < s_info.size();
+        });
+    else std::sort(m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
+        QFileInfo f_info(folder->absolutePath() + QDir::separator() +  first);
+        QFileInfo s_info(folder->absolutePath() + QDir::separator() +  second);
+        return f_info.size() > s_info.size();
+    });
 }
 
 void DirsModel::sortBySuffix(bool lower)
-{
-
+{    
+    if(lower)
+        std::sort(m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
+            QFileInfo f_info(folder->absolutePath() + QDir::separator() +  first);
+            QFileInfo s_info(folder->absolutePath() + QDir::separator() +  second);
+            return f_info.suffix() < s_info.suffix();
+        });
+    else std::sort(m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
+        QFileInfo f_info(folder->absolutePath() + QDir::separator() +  first);
+        QFileInfo s_info(folder->absolutePath() + QDir::separator() +  second);
+        return f_info.suffix() > s_info.suffix();
+    });
 }
 
 void DirsModel::copyPath(QString src, QString dst)
