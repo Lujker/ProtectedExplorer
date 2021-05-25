@@ -8,6 +8,7 @@ Rectangle {
     signal buttonClicked
     property string toolTipText: ""
     property alias text: txt.text
+    property alias icon: _icon.source
     property bool isHovered: false
     property bool isClicked: false
     width: 82
@@ -36,9 +37,16 @@ Rectangle {
             myButton.border.color = "black"
         }
     }
+    Image {
+        id: _icon
+        source: ""
+        anchors.centerIn: parent
+        height: 16
+        width: 16
+    }
     Text {
         id: txt
         anchors.centerIn: parent
-        text: qsTr("text")
+        text: qsTr("")
     }
 }

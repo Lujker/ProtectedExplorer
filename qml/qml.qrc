@@ -7,5 +7,11 @@
         <file>PopupItem.qml</file>
         <file>AppComboBox.qml</file>
         <file alias="appIcon.png">../icons/appIcon.png</file>
+        <file>../icons/add_file.png</file>
+        <file>../icons/add-folder.png</file>
+        <file>../icons/delete_file.png</file>
+        <file>../icons/edit_file.png</file>
+        <file>../icons/sent.png</file>
+        <file>../icons/trash.png</file>
     </qresource>
 </RCC>

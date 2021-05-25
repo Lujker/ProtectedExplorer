@@ -138,7 +138,7 @@ ApplicationWindow {
             anchors.bottomMargin: 5
             anchors.horizontalCenter: parent.horizontalCenter
             AppButton {
-                text: "Создать файл"
+                icon: "qrc:/../icons/add_file.png"
                 toolTipText: "Создать файл в открытом каталоге таблицы"
                 onButtonClicked: {
                     subView.addNewFile()
@@ -146,7 +146,7 @@ ApplicationWindow {
                 }
             }
             AppButton {
-                text: "Создать папку"
+                icon: "qrc:/../icons/add-folder.png"
                 toolTipText: "Создать папку в открытом каталоге таблицы"
                 onButtonClicked: {
                     subView.addNewFolder()
@@ -154,7 +154,7 @@ ApplicationWindow {
                 }
             }
             AppButton {
-                text: "Удалить"
+                icon: "qrc:/../icons/delete_file.png"
                 toolTipText: "Удалить выбранные в таблице файлы (delete/backspace)"
                 onButtonClicked: {
                     subView.deleteSelected()
@@ -162,7 +162,7 @@ ApplicationWindow {
                 }
             }
             AppButton {
-                text: "F5 Копировать"
+                icon: "qrc:/../icons/sent.png"
                 toolTipText: "Копировать выбранный файлы в другую таблицу (F5)"
                 onButtonClicked: {
                     subView.sendFiles()
@@ -171,7 +171,7 @@ ApplicationWindow {
             }
             AppButton {
                 id: _signature
-                text: "Подписать"
+                icon: "qrc:/../icons/edit_file.png"
                 toolTipText: "Подписать выбранные файлы"
             }
         }
