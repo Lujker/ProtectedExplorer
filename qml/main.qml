@@ -64,6 +64,7 @@ ApplicationWindow {
 
         ExplorerrView {
             id: dirView
+            parent: _dropArea
             listModel: DirModel
             width: parent.width / 2
             height: parent.height - _rowLayoutTableButtom.height - dirComboBox.height
@@ -97,6 +98,7 @@ ApplicationWindow {
 
         ExplorerrView {
             id: subView
+            parent: _dropArea
             listModel: SubModel
             width: parent.width / 2
             height: parent.height - _rowLayoutTableButtom.height - subComboBox.height

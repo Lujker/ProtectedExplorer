@@ -23,8 +23,8 @@ Rectangle {
 
     TableView {
         id: fileList
+        parent: explWindow
         anchors.margins: 10
-        //        anchors.fill: parent
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
@@ -80,24 +80,6 @@ Rectangle {
         onSortIndicatorOrderChanged: {
             listModel.setSorting(sortIndicatorColumn, sortIndicatorOrder)
         }
-
-        //        headerDelegate: Rectangle {
-        //            id: _headerDelegate
-        //            width: _textHeader.text.length * 1.2
-        //            height: _textHeader.font.pixelSize * 1.2
-        //            color: "skyblue"
-
-        //            Text {
-        //                id: _textHeader
-        //                anchors.horizontalCenter: parent.horizontalCenter
-        //                color: (styleData.pressed) ? "red" : "black"
-        //                text: styleData.value
-        //            }
-        //            border {
-        //                width: 1
-        //                color: (styleData.pressed) ? "red" : "black"
-        //            }
-        //        }
         DropArea {
             anchors.fill: parent
             onEntered: {
@@ -107,11 +89,9 @@ Rectangle {
         rowDelegate: Rectangle {
             id: _rowDelegate
             color: styleData.selected ? "skyblue" : "white"
+
             MouseArea {
                 id: _dragArea
-                property bool held: false
-                drag.target: held ? fileDelegate : undefined
-                drag.axis: Drag.XAndYAxis
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onClicked: {
@@ -140,11 +120,8 @@ Rectangle {
                 }
                 onPressAndHold: {
                     console.debug("Press and hold")
-                    held = true
                     fileList.selection.select(styleData.row)
                 }
-
-                onReleased: held = false
                 onDoubleClicked: {
                     if (mouse.button === Qt.LeftButton) {
                         deselectAll()
@@ -159,16 +136,11 @@ Rectangle {
             Item {
                 id: fileDelegate
                 clip: true
-
-                //                Drag.active: _dragArea.held
-                //                Drag.source: _dragArea
                 TextInput {
                     id: _txtInput
-
                     anchors.left: parent.left
                     readOnly: styleData.column !== 1
                     text: styleData.value
-
                     renderType: Text.NativeRendering
                     onAccepted: {
                         inputName = false
@@ -181,9 +153,6 @@ Rectangle {
 
                 MouseArea {
                     id: _dragArea
-                    property bool held: false
-                    drag.target: held ? fileDelegate : undefined
-                    drag.axis: Drag.XAndYAxis
                     anchors.fill: parent
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: {
@@ -216,11 +185,9 @@ Rectangle {
                     onPressAndHold: {
                         inputName = false
                         console.debug("Press and hold")
-                        held = true
                         fileList.selection.select(styleData.row)
                     }
 
-                    onReleased: held = false
                     onDoubleClicked: {
                         inputName = false
                         parent.forceActiveFocus()

@@ -301,9 +301,11 @@ void DirsModel::renameFile(int index, QString name)
 void DirsModel::setSorting(int column, int order)
 {
     beginResetModel();
-    qDebug()<< column << order;
     if(folder==nullptr) return;
     switch (column) {
+    case 0:
+        sortBySuffix(order);
+        break;
     case 1:
         sortByName(order);
         break;
@@ -323,19 +325,19 @@ void DirsModel::setSorting(int column, int order)
 void DirsModel::sortByName(bool lower)
 {
     if(lower)
-        std::sort(m_filenames.begin(), m_filenames.end(), std::greater<QString>());
-    else std::sort(m_filenames.begin(), m_filenames.end());
+        std::sort(++m_filenames.begin(), m_filenames.end(), std::greater<QString>());
+    else std::sort(++m_filenames.begin(), m_filenames.end());
 }
 
 void DirsModel::sortByDate(bool lower)
 {
     if(lower)
-        std::sort(m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
+        std::sort(++m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
             QFileInfo f_info(folder->absolutePath() + QDir::separator() +  first);
             QFileInfo s_info(folder->absolutePath() + QDir::separator() +  second);
             return f_info.lastModified().toLocalTime() < s_info.lastModified().toLocalTime();
         });
-    else std::sort(m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
+    else std::sort(++m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
         QFileInfo f_info(folder->absolutePath() + QDir::separator() +  first);
         QFileInfo s_info(folder->absolutePath() + QDir::separator() +  second);
         return f_info.lastModified().toLocalTime() > s_info.lastModified().toLocalTime();
@@ -345,12 +347,12 @@ void DirsModel::sortByDate(bool lower)
 void DirsModel::sortBySize(bool lower)
 {    
     if(lower)
-        std::sort(m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
+        std::sort(++m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
             QFileInfo f_info(folder->absolutePath() + QDir::separator() +  first);
             QFileInfo s_info(folder->absolutePath() + QDir::separator() +  second);
             return f_info.size() < s_info.size();
         });
-    else std::sort(m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
+    else std::sort(++m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
         QFileInfo f_info(folder->absolutePath() + QDir::separator() +  first);
         QFileInfo s_info(folder->absolutePath() + QDir::separator() +  second);
         return f_info.size() > s_info.size();
@@ -360,12 +362,12 @@ void DirsModel::sortBySize(bool lower)
 void DirsModel::sortBySuffix(bool lower)
 {    
     if(lower)
-        std::sort(m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
+        std::sort(++m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
             QFileInfo f_info(folder->absolutePath() + QDir::separator() +  first);
             QFileInfo s_info(folder->absolutePath() + QDir::separator() +  second);
             return f_info.suffix() < s_info.suffix();
         });
-    else std::sort(m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
+    else std::sort(++m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
         QFileInfo f_info(folder->absolutePath() + QDir::separator() +  first);
         QFileInfo s_info(folder->absolutePath() + QDir::separator() +  second);
         return f_info.suffix() > s_info.suffix();
