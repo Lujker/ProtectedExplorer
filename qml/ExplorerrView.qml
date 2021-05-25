@@ -5,8 +5,8 @@ import QtQuick.Controls 1.0
 
 Rectangle {
     id: explWindow
-    property bool focusOfView: fileList.focus
     property alias listModel: fileList.model
+    property bool focusOfView: fileList.focus
     property bool inputName: false
     signal pressToElement(int index)
     signal copyElements(int start, int end)

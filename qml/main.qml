@@ -20,12 +20,9 @@ ApplicationWindow {
         }
         AppComboBox {
             id: dirComboBox
-            model: ["Файловая система", "Сетевые папки"]
+            currentIndex: 0
             width: dirView.width / 2
-            height: 25
             anchors.top: _dropArea.top
-            anchors.topMargin: 5
-            anchors.leftMargin: 10
             anchors.left: dirView.left
             onActivated: {
                 switch (index) {
@@ -40,14 +37,12 @@ ApplicationWindow {
                 }
             }
         }
+
         AppComboBox {
             id: subComboBox
-            model: ["Сетевые папки", "Файловая система"]
-            height: 25
             width: subView.width / 2
             anchors.top: _dropArea.top
-            anchors.topMargin: 5
-            anchors.leftMargin: 10
+            currentIndex: 1
             anchors.left: subView.left
             onActivated: {
                 switch (index) {
