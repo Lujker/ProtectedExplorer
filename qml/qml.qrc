@@ -1,4 +1,4 @@
-<RCC>
+﻿<RCC>
     <qresource prefix="/">
         <file>main.qml</file>
         <file>AppButton.qml</file>
@@ -6,5 +6,6 @@
         <file>ExplorerrView.qml</file>
         <file>PopupItem.qml</file>
         <file>AppComboBox.qml</file>
+        <file alias="appIcon.png">../icons/appIcon.png</file>
     </qresource>
 </RCC>
