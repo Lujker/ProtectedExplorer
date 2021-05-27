@@ -5,20 +5,30 @@ import QtQuick.Controls 1.0
 
 Rectangle {
     id: explWindow
-    property alias listModel: fileList.model
+    property alias listModel: fileList.model ///переменная для установки модэли для отображения
     property bool focusOfView: fileList.focus
-    property bool inputName: false
+    property bool inputName: false ///проиходит ввод нового имения для файлы
+    ///Сигналы
+    ///сигнал при нажатии на элемент
     signal pressToElement(int index)
+    ///копирование элемента
     signal copyElements(int start, int end)
     signal copyElement(int index)
+    ///удаление элементов
     signal deleteItems(int start, int end)
     signal deleteItem(int index)
+    ///подпись элементов
     signal signedElements(int start, int end)
     signal signedElement(int index)
+    ///открыте папки
     signal openFolder(int index)
+    ///переименование файла под индексом
     signal renameFile(int index, string newName)
+    ///нажатие на модэль
     signal presToTable
+    ///добавить файл
     signal addNewFile
+    ///добавить папку
     signal addNewFolder
 
     TableView {
@@ -30,7 +40,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         model: dataModel
-        clip: true
+        clip: true ///разрешить перенос текста
         property bool shiftPressed: false
         property bool controlPressed: false
 
@@ -47,6 +57,7 @@ Rectangle {
                     asynchronous: true
                     sourceSize.width: 8
                     sourceSize.height: 8
+                    ///путь к инокне берез из проводника иконок из С++ кода
                     source: styleData.value ? "image://iconProvider/" + styleData.value : ""
                 }
             }
@@ -72,8 +83,8 @@ Rectangle {
             title: "Дата"
             width: 150
         }
+        ///Устанока сортировки и индикатора сортировки
         sortIndicatorVisible: true
-
         onSortIndicatorColumnChanged: {
             listModel.setSorting(sortIndicatorColumn, 0)
         }
@@ -94,6 +105,10 @@ Rectangle {
                 id: _dragArea
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
+                ///При нажатии на элемент мы устанавливем фокус и в зависимости от
+                ///нажатой кнопку мы либо выбираем элемент либо открываем контекстное меню для файла
+                ///Если нажаты кнопки Cntrl или Shift то элементы добавляются к уже выбранными
+                ///иначе выбирается только последний
                 onClicked: {
                     fileList.focus = true
                     if (mouse.button === Qt.LeftButton) {
@@ -122,6 +137,7 @@ Rectangle {
                     console.debug("Press and hold")
                     fileList.selection.select(styleData.row)
                 }
+                ///При двойном нажатии открыте файла или директории
                 onDoubleClicked: {
                     if (mouse.button === Qt.LeftButton) {
                         deselectAll()
@@ -132,7 +148,6 @@ Rectangle {
         }
 
         itemDelegate: Component {
-
             Item {
                 id: fileDelegate
                 clip: true
@@ -140,7 +155,7 @@ Rectangle {
                     id: _txtInput
                     anchors.left: parent.left
                     readOnly: styleData.column !== 1
-                    text: styleData.value
+                    text: styleData.value ///styleData - получение значения из С++
                     renderType: Text.NativeRendering
                     onAccepted: {
                         inputName = false
@@ -151,6 +166,7 @@ Rectangle {
                     }
                 }
 
+                ///Действие при нажатии как и у строки
                 MouseArea {
                     id: _dragArea
                     anchors.fill: parent
@@ -198,6 +214,7 @@ Rectangle {
                     }
                 }
 
+                ///Всплывающие подсказки
                 Popup {
                     id: _itemDelegatePopup
                     width: 100
@@ -256,6 +273,7 @@ Rectangle {
         }
     }
 
+    ///Функции для работы с файлами
     function deselectAll() {
         fileList.selection.clear()
     }
@@ -282,6 +300,7 @@ Rectangle {
     }
     function moveElement() {}
 
+    ///Обработка нажатия клавишь
     Keys.onPressed: {
         if (event.key === Qt.Key_Shift) {
             fileList.shiftPressed = true

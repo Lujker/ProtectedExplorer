@@ -1,8 +1,12 @@
-#include "loger.h"
+﻿#include "loger.h"
 
+/*!
+ * \brief Loger::init создание или открытие файла логов
+ * \param logFilePath путь к файлу логов
+ * \return успешность инициализации
+ */
 bool Loger::init(const std::string &logFilePath)
 {
-
         if(logFilePath==""||logFilePath.empty()){
             std::cout<<"Log file path is empty\n";
             return false;
@@ -23,12 +27,22 @@ bool Loger::init(const std::string &logFilePath)
         return m_isInit = true;
 }
 
+/*!
+ * \brief Loger::getInstanse получение обьекта класса как сингелтона
+ * \return статический обьект
+ */
 Loger &Loger::getInstanse()
 {
     static Loger log;
     return log;
 }
 
+/*!
+ * \brief Loger::writeMessage метод записи лог сообщения
+ * \param mes сообщение для записи
+ * \param type тип сообщения из перечисление типов логов
+ * \return успешность записи сообщения
+ */
 bool Loger::writeMessage(const char *mes, LOG_TYPE type)
 {
     return writeMessage(std::string(mes), type);
@@ -53,6 +67,11 @@ bool Loger::isInit()
     return m_isInit;
 }
 
+/*!
+ * \brief Loger::createLogFile создание файлов логов
+ * \param logFilePath путь к лог файлу
+ * \return успешность создания файла
+ */
 bool Loger::createLogFile(const std::string &logFilePath)
 {
     std::ofstream file(logFilePath, std::ios_base::out | std::ios_base::trunc);
@@ -82,6 +101,11 @@ bool Loger::logFileIsValid(const std::string &logFilePath)
     return false;
 }
 
+/*!
+ * \brief Loger::get_type получение строки информации по типу логов
+ * \param type тип из перечисления
+ * \return строка для записи типа
+ */
 std::string Loger::get_type(const LOG_TYPE &type)
 {
     std::string ret_type;

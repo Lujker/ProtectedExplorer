@@ -1,6 +1,7 @@
 ﻿#ifndef FOLDEREXPL_H
 #define FOLDEREXPL_H
 
+/// модули библиотеки Qt
 #include <QObject>
 #include <QDebug>
 #include <QDateTime>
@@ -18,14 +19,27 @@
 #include <QMimeDatabase>
 #include <QPixmap>
 
+/// stl модули
 #include <list>
 
+/// написанные модули
 #include <settingscontroller.h>
 #include <loger.h>
+
 
 class DirsModel;
 class IconProvider;
 
+/*!
+ * \brief The FolderExpl class
+ * \details Класс обертка для моделей таблиц файловой системы.
+ * Класс предназначен для установлние связей (QObject::connect)
+ * между двумя моделями и их инициализации.
+ * \author Zelenskiy V.P.
+ * \version 1.0
+ * \date 01.06.2021
+ * \warning Класс не допускает возможности наследования
+ */
 class FolderExpl : public QObject
 {
     Q_OBJECT
@@ -49,6 +63,30 @@ private:
     IconProvider* provider;
 };
 
+/*!
+ * \brief The DirsModel class
+ * \details Класс явялется моделью для таблицы файловой системы.
+ * Класс наследуется от абстрактной табличной модели Qt
+ * и переопредеяет полностью абстарктные методы доступа к значениям таблицы.
+ * Класс констурируется получая стандартные пути доступа к папкам
+ * из класса обеспечивающий чтение и запись настроек.
+ * Класс определяет множество стандартных методов работы с файловой системой.
+ *
+ * Класс содержит списки со стандартными путями дерикторий
+ * и списко файлов открытой дериктории.
+ * Также класс содерит QDir и QFileSystemWatcher обьекты
+ * которые содержат открытую сейчас дерикторию и обьект для отслеживания
+ * изменения в открытой дериктории.
+ * Уровень вложенности входа в дерикторию отслежтвается
+ * счетчиком m_level_count и обеспечивает возможность замкнутости
+ * дерикторий. Когда счетчик равен 0 не допускается выход из папки.
+ *
+ *
+ * \author Zelenskiy V.P.
+ * \version 1.0
+ * \date 01.06.2021
+ * \warning Возможны баги, класс не проходил тестирование
+ */
 class DirsModel: public QAbstractTableModel
 {
     Q_OBJECT
@@ -56,20 +94,22 @@ public:
     explicit DirsModel(std::list<std::string> dirs, QObject* parent = nullptr);
 
 public slots:
+    //Установка стандартных путей в таблице
     void refreshModel();
     void setAsSubModel();
     void setAsDirModel();
 
-
+    //Переход по дерикториями
     void openFolder(int index);
     void comeBack();
     void comeToBeginning();
-
+    //Копирование файлов
     void copySelections(int start, int end);
     void copyFile(int index);
     void copyFrom(QString path);
     void copyTo(QString path);
 
+    //Работа с дерикториями и файлами
     void derictoryChange(const QString& path);
     void addFile();
     void deleteFile(int index);
@@ -77,7 +117,7 @@ public slots:
     void addFolder();
     void deleteFolder(int index);
     void renameFile(int index, QString name);
-
+    //Сортировка файлов таблциы
     void setSorting(int column, int order);
     void sortByName(bool lower = false);
     void sortByDate(bool lower = false);
@@ -96,6 +136,7 @@ private:
     int m_level_count;
     QFileSystemWatcher* watcher;
 
+    ///Перечисление для доступа к информации в qml
     enum DirsRoles
         {
             FilePathRole = Qt::UserRole+1,
@@ -121,7 +162,17 @@ signals:
     void copyFile(QString);
 };
 
-
+/*!
+ * \brief The IconProvider class
+ * \details Класс переопределяет проводник между файловой системой и приложением.
+ * По индексу элемента таблицы мы получаем полный путь к файлу
+ * и получаем его икноку из файловой сисетмы.
+ *
+ * \author Zelenskiy V.P.
+ * \version 1.0
+ * \date 01.06.2021
+ * \warning Загрузка иконок проходит медленно
+ */
 class IconProvider : public QQuickImageProvider
 {
 public:

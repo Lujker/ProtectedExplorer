@@ -4,6 +4,10 @@ FolderExpl::FolderExpl(QObject *parent) :
     QObject(parent) , m_sub_model(nullptr), m_dir_model(nullptr), provider(nullptr)
 {}
 
+/*!
+ * \brief FolderExpl::initFromSettings
+ * Метод для инициализации моделей через файл настрек и установки связей между ними
+ */
 void FolderExpl::initFromSettings()
 {
     clear_members();
@@ -17,6 +21,11 @@ void FolderExpl::initFromSettings()
     }
 }
 
+/*!
+ * \brief FolderExpl::init инициализация по готовым обьектам
+ * \param subs - метод инициализации модели сетевых папок
+ * \param dirs - метод иницилизации модели доступных папок
+ */
 void FolderExpl::init(DirsModel *subs, DirsModel *dirs)
 {
     clear_members();
@@ -24,6 +33,10 @@ void FolderExpl::init(DirsModel *subs, DirsModel *dirs)
     m_dir_model = dirs;
 }
 
+/*!
+ * \brief FolderExpl::clear_members
+ * Очистка всех обьектов моделей и иконок
+ */
 void FolderExpl::clear_members()
 {
     if(m_sub_model!=nullptr){
@@ -60,6 +73,10 @@ void FolderExpl::setProvider(IconProvider *value)
     provider = value;
 }
 
+/*!
+ * \brief DirsModel::DirsModel инициализация модели
+ * \param dirs списко доступных папок
+ */
 DirsModel::DirsModel(std::list<std::string> dirs, QObject *parent):
     folder(nullptr),  m_level_count(0),  watcher(new QFileSystemWatcher)
 {
@@ -71,6 +88,10 @@ DirsModel::DirsModel(std::list<std::string> dirs, QObject *parent):
     refreshModel();
 }
 
+/*!
+ * \brief DirsModel::openFolder метод открытия файла под индексом
+ * \param index переход или открытие файла под индексом
+ */
 void DirsModel::openFolder(int index)
 {
 //    qDebug()<<index;
@@ -103,6 +124,9 @@ void DirsModel::openFolder(int index)
     refreshModel();
 }
 
+/*!
+ * \brief DirsModel::comeBack переход к верхней папке
+ */
 void DirsModel::comeBack()
 {
     if(m_level_count!=1){
@@ -118,6 +142,9 @@ void DirsModel::comeBack()
     refreshModel();
 }
 
+/*!
+ * \brief DirsModel::comeToBeginning переход к вернхним папкам
+ */
 void DirsModel::comeToBeginning()
 {
     watcher->removePath(folder->absolutePath());
@@ -127,11 +154,19 @@ void DirsModel::comeToBeginning()
     refreshModel();
 }
 
+/*!
+ * \brief DirsModel::derictoryChange
+ * слот принимащий сигнал при изменении в текущей деректории
+ * \param path путь дериктории
+ */
 void DirsModel::derictoryChange(const QString& path)
 {
     refreshModel();
 }
 
+/*!
+ * \brief DirsModel::refreshModel обновление списка файлов и модели
+ */
 void DirsModel::refreshModel()
 {
     beginResetModel();
@@ -155,6 +190,9 @@ void DirsModel::refreshModel()
     endResetModel();
 }
 
+/*!
+ * \brief DirsModel::setAsSubModel установка модели по списку сетевых папок
+ */
 void DirsModel::setAsSubModel()
 {
     beginResetModel();
@@ -180,6 +218,9 @@ void DirsModel::setAsSubModel()
     endResetModel();
 }
 
+/*!
+ * \brief DirsModel::setAsDirModel установка модели по списку доступным папок
+ */
 void DirsModel::setAsDirModel()
 {
     beginResetModel();
@@ -201,6 +242,9 @@ void DirsModel::setAsDirModel()
     endResetModel();
 }
 
+/*!
+ * \brief DirsModel::addFile создание нового текстового файла в данной дериктории
+ */
 void DirsModel::addFile()
 {
     if(folder==nullptr) return;
@@ -219,6 +263,10 @@ void DirsModel::addFile()
     }
 }
 
+/*!
+ * \brief DirsModel::deleteFile удаление файла в модели под индексом
+ * \param index индекс в списке файлов
+ */
 void DirsModel::deleteFile(int index)
 {
     if(index<=0 || index>=m_filenames.size()) return;
@@ -237,6 +285,11 @@ void DirsModel::deleteFile(int index)
     }
 }
 
+/*!
+ * \brief DirsModel::deleteFiles удаление списка файлов
+ * \param start индекс начала списка файлов
+ * \param end индекс конца списка
+ */
 void DirsModel::deleteFiles(int start, int end)
 {
     if(folder!=nullptr){
@@ -264,11 +317,15 @@ void DirsModel::deleteFiles(int start, int end)
     }
 }
 
+/*!
+ * \brief DirsModel::addFolder создание новой папки в дериктории
+ */
 void DirsModel::addFolder()
 {
     if(folder==nullptr) return;
     QString filename = QString("Новая папка");
     int count = 1;
+    ///если у нас уже есть такой файл или папка то добавляем к ней цифру под счетчиком
     while(folder->exists(folder->filePath(folder->absolutePath() + QDir::separator() + filename))){
         filename = QString("Новый папка(") + QString::number(count) + QString(")");
         ++count;
@@ -277,11 +334,20 @@ void DirsModel::addFolder()
     folder->mkdir(filename);
 }
 
+/*!
+ * \brief DirsModel::deleteFolder удаление папки под индексом в списке файлов
+ * \param index индекс папки в списке
+ */
 void DirsModel::deleteFolder(int index)
 {
     folder->rmdir(m_filenames.at(index));
 }
 
+/*!
+ * \brief DirsModel::renameFile переименование файла
+ * \param index индекс файла в списке файлов
+ * \param name новое имя
+ */
 void DirsModel::renameFile(int index, QString name)
 {
     qDebug()<<index << name;
@@ -298,6 +364,11 @@ void DirsModel::renameFile(int index, QString name)
     }
 }
 
+/*!
+ * \brief DirsModel::setSorting устновка сортировки по индексу и правилу
+ * \param column индекс колонки
+ * \param order правило сортировки
+ */
 void DirsModel::setSorting(int column, int order)
 {
     beginResetModel();
@@ -345,7 +416,7 @@ void DirsModel::sortByDate(bool lower)
 }
 
 void DirsModel::sortBySize(bool lower)
-{    
+{
     if(lower)
         std::sort(++m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
             QFileInfo f_info(folder->absolutePath() + QDir::separator() +  first);
@@ -360,7 +431,7 @@ void DirsModel::sortBySize(bool lower)
 }
 
 void DirsModel::sortBySuffix(bool lower)
-{    
+{
     if(lower)
         std::sort(++m_filenames.begin(), m_filenames.end(), [&](QString& first, QString& second){
             QFileInfo f_info(folder->absolutePath() + QDir::separator() +  first);
@@ -374,6 +445,11 @@ void DirsModel::sortBySuffix(bool lower)
     });
 }
 
+/*!
+ * \brief DirsModel::copyPath копирование путей
+ * \param src исходный
+ * \param dst указанный
+ */
 void DirsModel::copyPath(QString src, QString dst)
 {
     QDir dir(src);
@@ -391,24 +467,37 @@ void DirsModel::copyPath(QString src, QString dst)
     }
 }
 
-
-
+/*!
+ * \brief DirsModel::copySelections копирование выбранных файлов
+ * \param start индекс перовго файла
+ * \param end индекс последнего файла
+ */
 void DirsModel::copySelections(int start, int end)
 {
     if(folder!=nullptr)
     for(int i = start; i<=end; ++i){
         if(i>0 && i<m_filenames.size())
+            ///сигнал для второй таблицы
             copyTo(folder->absoluteFilePath(m_filenames[i]));
     }
 
 }
 
+/*!
+ * \brief DirsModel::copyFile копирование файла под индексом
+ * \param index индекс файла в списке файлов
+ */
 void DirsModel::copyFile(int index)
 {
     if(index>0 && index<m_filenames.size())
+        ///сигнал отправляемый второй таблице
         copyTo(folder->absoluteFilePath(m_filenames[index]));
 }
 
+/*!
+ * \brief DirsModel::copyFrom слот для копирования переданного файла
+ * \param path путь для копирования
+ */
 void DirsModel::copyFrom(QString path)
 {
     if(folder!=nullptr){
@@ -430,10 +519,15 @@ void DirsModel::copyFrom(QString path)
     }
 }
 
+/*!
+ * \brief DirsModel::copyTo метод для отправки сигнала из qml
+ * \param path путь к файлу
+ */
 void DirsModel::copyTo(QString path)
 {
     emit copyFile(path);
 }
+
 
 QModelIndex DirsModel::index(int row, int column, const QModelIndex &parent) const
 {
@@ -466,6 +560,12 @@ int DirsModel::columnCount(const QModelIndex &parent) const
     return 1;
 }
 
+/*!
+ * \brief DirsModel::data метод который передает в отображение инормацию под конкретным индексом и ролью
+ * \param index индекс
+ * \param role роль
+ * \return информация под конкретной ролью файла
+ */
 QVariant DirsModel::data(const QModelIndex &index, int role) const
 {
     QString filepath;
@@ -507,6 +607,10 @@ QVariant DirsModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+/*!
+ * \brief DirsModel::roleNames формирование списка ролей для qml
+ * \return списко ролей и их имен
+ */
 QHash<int, QByteArray> DirsModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -522,6 +626,13 @@ QHash<int, QByteArray> DirsModel::roleNames() const
 IconProvider :: IconProvider (): QQuickImageProvider (QQuickImageProvider :: Pixmap)
 {}
 
+/*!
+ * \brief IconProvider::requestPixmap получение иконки для файла из qml
+ * \param id индекс элемента
+ * \param size размер иконки
+ * \param requiredSize предпочтительный размер
+ * \return инока из файловой системы для конкретного пути
+ */
 QPixmap IconProvider :: requestPixmap(const QString & id, QSize * size, const QSize & requiredSize)
 {
     int width = requiredSize.width ()> 0? requiredSize.width (): 8;

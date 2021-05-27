@@ -6,7 +6,7 @@ Rectangle {
     border.color: "black"
     color: "skyblue"
     signal buttonClicked
-    property string toolTipText: ""
+    property string toolTipText: "" ///подсказку, иконку и текст устанавливаю на верхнем уровне
     property alias text: txt.text
     property alias icon: _icon.source
     property bool isHovered: false
@@ -22,7 +22,7 @@ Rectangle {
         ToolTip.visible: toolTipText ? (containsMouse
                                         && mainWindow.help) : false ///когда отображать подсказку
         anchors.fill: parent
-        hoverEnabled: true
+        hoverEnabled: true /// разрешить перекрытие
         onHoveredChanged: {
             myButton.isHovered = !myButton.isHovered
         }
@@ -31,12 +31,13 @@ Rectangle {
             myButton.buttonClicked()
         }
         onPressed: {
-            myButton.border.color = "green"
+            myButton.border.color = "green" ///при нажатии границы кнопки подсвечивать зеленым
         }
         onReleased: {
             myButton.border.color = "black"
         }
     }
+    ///по умолчанию кнопка без текста и иконки
     Image {
         id: _icon
         source: ""

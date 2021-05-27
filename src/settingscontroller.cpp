@@ -29,13 +29,20 @@ std::vector<std::string> split(const std::string &s, char delim)
     return result;
 }
 
-
+/*!
+ * \brief SettingsController::get_instanse получение сингелтон обьекта
+ * \return возвращает статический обьект
+ */
 SettingsController &SettingsController::get_instanse()
 {
     static SettingsController sett;
     return sett;
 }
 
+/*!
+ * \brief SettingsController::parse_args парсинг аргументов командной строки для поиска пути к файлу настроек
+ * \param app обьект ядра приложения Qt
+ */
 void SettingsController::parse_args(const QCoreApplication &app)
 {
     QCommandLineParser parser;
@@ -53,6 +60,10 @@ void SettingsController::parse_args(const QCoreApplication &app)
       }
 }
 
+/*!
+ * \brief SettingsController::save_settings сохранить XML файл настроек из структуры
+ * \param path_to_save_file путь к файлу настреок для записи
+ */
 void SettingsController::save_settings(std::string path_to_save_file)
 {
     QFile file(QString::fromStdString(path_to_save_file));
@@ -89,6 +100,9 @@ void SettingsController::save_settings(std::string path_to_save_file)
     file.close();   // Закрываем файл
 }
 
+/*!
+ * \brief SettingsController::read_settings чтение файла настроек по xml
+ */
 void SettingsController::read_settings()
 {
     QString path;
@@ -133,7 +147,7 @@ void SettingsController::read_settings()
                                 else
                                     m_set.log_file_path = attribute_value.toStdString();
                             }
-                        }                   
+                        }
                 }
                 xmlReader.readNext(); // Переходим к следующему элементу файла
     }
@@ -165,11 +179,15 @@ QString SettingsController::dir_list()
     return QString::fromStdString(m_set.dir_list);
 }
 
+/*!
+ * \brief SettingsController::parse_dir_list парсинг списка дерикторий в список строк по разделителю
+ * \return список путей к дерикториям
+ */
 std::list<std::string> SettingsController::parse_dir_list()
 {
     std::list<std::string> lst;
     if(!m_set.dir_list.empty()){
-        auto vect = split(m_set.dir_list,';');
+        auto vect = split(m_set.dir_list,PATH_SEPARATOR);
         if(vect.empty()){
             return lst;
         }
@@ -182,11 +200,15 @@ std::list<std::string> SettingsController::parse_dir_list()
     return lst;
 }
 
+/*!
+ * \brief SettingsController::parse_sub_list парсинг списка сетевых папок в список строк по разделителю
+ * \return список путей к дерикториям
+ */
 std::list<std::string> SettingsController::parse_sub_list()
 {
     std::list<std::string> lst;
     if(!m_set.sub_list_dirs.empty()){
-        auto vect = split(m_set.sub_list_dirs,';');
+        auto vect = split(m_set.sub_list_dirs,PATH_SEPARATOR);
         if(vect.empty()){
             return lst;
         }
