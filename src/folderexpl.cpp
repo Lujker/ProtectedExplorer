@@ -352,7 +352,6 @@ void DirsModel::renameFile(int index, QString name)
 {
     qDebug()<<index << name;
     if(folder==nullptr) return;
-    QFileInfo f_info(folder->absolutePath() + QDir::separator() +  m_filenames.at(index));
     QFile file(folder->absolutePath() + QDir::separator() +  m_filenames.at(index));
     if(file.exists()){
         if(file.rename(folder->absolutePath() + QDir::separator() + name)){
