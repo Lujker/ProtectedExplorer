@@ -12,7 +12,6 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setApplicationName("ProtectedExplorer");
     app.setApplicationVersion("1.0.0");
-    app.setWindowIcon(QIcon("../icons/appIcon.png"));
 
     ///Client code for init app
 

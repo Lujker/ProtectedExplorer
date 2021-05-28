@@ -6,7 +6,6 @@
         <file>ExplorerrView.qml</file>
         <file>PopupItem.qml</file>
         <file>AppComboBox.qml</file>
-        <file alias="appIcon.png">../icons/appIcon.png</file>
         <file>../icons/add_file.png</file>
         <file>../icons/add-folder.png</file>
         <file>../icons/delete_file.png</file>

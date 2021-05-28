@@ -51,12 +51,12 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR})
 else()
     if(ANDROID)
-        add_library(ProtectedExplorer SHARED
+        add_library(ProtectedExplorer WIN32 SHARED
             ${PROJECT_SOURCES} ${HEADER_FILE_ONLY}
         )
     else()
-        add_executable(ProtectedExplorer
-          ${PROJECT_SOURCES} ${HEADER_FILE_ONLY}
+        add_executable(ProtectedExplorer WIN32
+          ${PROJECT_SOURCES} ${HEADER_FILE_ONLY} ./qml/resource.rc
         )
     endif()
 
