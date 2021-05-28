@@ -21,6 +21,7 @@ MenuBar {
         MenuItem {
             CheckBox {
                 text: qsTr("Подсказки")
+                checked: true
                 onClicked: mainWindow.help = !mainWindow.help
             }
         }

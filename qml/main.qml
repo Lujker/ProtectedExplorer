@@ -9,7 +9,7 @@ ApplicationWindow {
     minimumWidth: 1020
     minimumHeight: 640
     visible: true
-    property bool help: false
+    property bool help: true
     title: qsTr("ProtectedExplorer")
     menuBar: mainAppMenu
     DropArea {
@@ -47,10 +47,10 @@ ApplicationWindow {
             onActivated: {
                 switch (index) {
                 case 0:
-                    SubModel.setAsSubModel()
+                    SubModel.setAsDirModel()
                     break
                 case 1:
-                    SubModel.setAsDirModel()
+                    SubModel.setAsSubModel()
                     break
                 default:
                     return

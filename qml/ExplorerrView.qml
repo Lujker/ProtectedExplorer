@@ -300,7 +300,7 @@ Rectangle {
     }
     function moveElement() {}
 
-    ///Обработка нажатия клавишь
+    ///Обработка нажатия клавиш
     Keys.onPressed: {
         if (event.key === Qt.Key_Shift) {
             fileList.shiftPressed = true
