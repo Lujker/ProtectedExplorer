@@ -90,6 +90,10 @@ ApplicationWindow {
                 if (focusOfView === true)
                     listModel.addFolder()
             }
+            onSignedElement: {
+                if (focusOfView === true)
+                    listModel.signedFile(index)
+            }
         }
 
         ExplorerrView {
@@ -124,6 +128,10 @@ ApplicationWindow {
             onAddNewFolder: {
                 if (focusOfView === true)
                     listModel.addFolder()
+            }
+            onSignedElement: {
+                if (focusOfView === true)
+                    listModel.signedFile(index)
             }
         }
 
@@ -168,6 +176,10 @@ ApplicationWindow {
                 id: _signature
                 icon: "qrc:/../icons/edit_file.png"
                 toolTipText: "Подписать выбранные файлы"
+                onButtonClicked: {
+                    subView.signedFiles()
+                    dirView.signedFiles()
+                }
             }
         }
     }

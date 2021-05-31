@@ -12,17 +12,17 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setApplicationName("ProtectedExplorer");
     app.setApplicationVersion("1.0.0");
-
-    ///Client code for init app
-
+    ///Чтение переданных параметров командной строки и инициализцация настроек
     SettingsController::get_instanse().parse_args(app);
     SettingsController::get_instanse().read_settings();
+    ///Инициализация лог файла приложения
     Loger::getInstanse().init(
                 SettingsController::get_instanse().
                 log_file_path().toStdString());
+    ///Инициализация проводника
     FolderExpl expl;
     expl.initFromSettings();
-
+    ///Запуск движка QML
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         if (!obj && url == objUrl)
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
-
+    ///Загрузка объектов в контекст QML интерфейса
     QQmlContext* ctxt = engine.rootContext();
     ctxt->setContextProperty(QLatin1String("AppSettings"), &SettingsController::get_instanse());
     ctxt->setContextProperty(QLatin1String("DirModel"), expl.dir_model());
