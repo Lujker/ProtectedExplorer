@@ -15,6 +15,7 @@
 #include <QCommandLineParser>
 
 #define SET_PATH "../settings/set.xml"
+#define RESERV_SET_PATH "./settings/set.xml"
 #define SET_DIR "../settings"
 #define PATH_SEPARATOR ';' ///Разделитель для списка путей
 

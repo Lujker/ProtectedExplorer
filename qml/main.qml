@@ -10,7 +10,7 @@ ApplicationWindow {
     minimumHeight: 640
     visible: true
     property bool help: true
-    title: qsTr("ProtectedExplorer")
+    title: qsTr("Модуль взаимодействия со шлюзом обмена данными ")
     menuBar: mainAppMenu
     DropArea {
         id: _dropArea

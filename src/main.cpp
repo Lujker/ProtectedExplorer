@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
     QApplication app(argc, argv);
-    app.setApplicationName("ProtectedExplorer");
+    app.setApplicationName("Модуль взаимодействия со шлюзом обмена данными ");
     app.setApplicationVersion("1.0.0");
     ///Чтение переданных параметров командной строки и инициализцация настроек
     SettingsController::get_instanse().parse_args(app);

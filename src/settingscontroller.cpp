@@ -106,8 +106,12 @@ void SettingsController::save_settings(std::string path_to_save_file)
 void SettingsController::read_settings()
 {
     QString path;
-    if(m_path_to_file.empty())
-       path = SET_PATH;
+    if(m_path_to_file.empty()){
+        if(QFile::exists(SET_PATH))
+            path = SET_PATH;
+        else
+            path = RESERV_SET_PATH;
+    }
     else path = QString::fromStdString(m_path_to_file);
 
     QFile file(path);
