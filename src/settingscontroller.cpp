@@ -192,8 +192,22 @@ std::list<std::string> SettingsController::parse_dir_list()
             return lst;
         }
         else{
+            ///проверка имени дериктории по абсолютному пути
+            /// если такой нет то создаем ее в home дериктории пользователя если ее еще не создали
             for(const auto& it : vect){
-                lst.push_back(it);
+                QDir dir(QString::fromStdString(it));
+                if(!dir.exists()){
+                    QString iter_dir_path(QDir::homePath()+
+                                          QDir::separator()+
+                                          QString::fromStdString(it));
+                    QDir dir_in_home(iter_dir_path);
+                    if(!dir_in_home.exists()){
+                        QDir home = QDir::home();
+                        home.mkpath(QString::fromStdString(it));
+                    }
+                    lst.push_back((iter_dir_path).toStdString());
+                }
+                else    lst.push_back(it);
             }
         }
     }
