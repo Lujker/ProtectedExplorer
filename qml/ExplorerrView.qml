@@ -101,10 +101,9 @@ Rectangle {
         DropArea {
             anchors.fill: parent
             onEntered: {
-                console.debug("Entered")
+
             }
             onDropped: {
-                console.debug("Dropped")
                 endDragElem()
             }
         }
@@ -144,8 +143,8 @@ Rectangle {
                         _itemDelegatePopup.open()
                     }
                 }
+
                 onPressAndHold: {
-                    console.debug("Press and hold")
                     fileList.selection.select(styleData.row)
                     strartDragElem()
                 }
@@ -212,7 +211,6 @@ Rectangle {
                     }
                     onPressAndHold: {
                         inputName = false
-                        console.debug("Press and hold")
                         fileList.selection.select(styleData.row)
                         strartDragElem()
                     }
@@ -318,7 +316,6 @@ Rectangle {
             })
         }
     }
-
     ///Обработка нажатия клавиш
     Keys.onPressed: {
         if (event.key === Qt.Key_Shift) {
@@ -336,16 +333,21 @@ Rectangle {
             fileList.controlPressed = false
         }
 
-        if (event.key === Qt.Key_Delete) {
-            if (inputName === false)
-                deleteSelected()
-        }
-        if (event.key === Qt.Key_Backspace) {
+        if ((event.key === Qt.Key_Delete) || (event.key === Qt.Key_Backspace)) {
             if (inputName === false)
                 deleteSelected()
         }
         if (event.key === Qt.Key_F5) {
             sendFiles()
+        }
+        if ((event.key === Qt.Key_Return) || (event.key === Qt.Key_Enter)) {
+            var lastIndex
+            if (fileList.selection.count > 0) {
+                fileList.selection.forEach(function (rowIndex) {
+                    lastIndex = rowIndex
+                })
+            }
+            openFolder(lastIndex)
         }
     }
 }

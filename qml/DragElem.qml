@@ -6,6 +6,7 @@ Item {
     visible: false
     Drag.imageSource: "qrc:/../icons/add_file.png"
     Drag.dragType: Drag.Automatic
+
     Drag.active: dragActive
     Drag.onDragStarted: {
         visible = true

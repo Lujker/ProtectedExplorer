@@ -25,23 +25,6 @@ ApplicationWindow {
         MainMenuBar {
             id: mainAppMenu
         }
-
-        //        MouseArea {
-        //            anchors.fill: parent
-        //            onPressAndHold: {
-        //                draggable.dragActive = true
-        //            }
-        //            onReleased: {
-        //                draggable.dragActive = false
-        //            }
-
-        //            onMouseXChanged: {
-        //                draggable.x = mouseX - draggable.width / 2
-        //            }
-        //            onMouseYChanged: {
-        //                draggable.y = mouseY - draggable.height / 2
-        //            }
-        //        }
         AppComboBox {
             id: dirComboBox
             currentIndex: 0
@@ -124,6 +107,7 @@ ApplicationWindow {
             }
             onStrartDragElem: {
                 draggable.dragActive = true
+                subView.deselectAll()
             }
             onEndDragElem: {
                 draggable.dragActive = false
@@ -173,6 +157,7 @@ ApplicationWindow {
             }
             onStrartDragElem: {
                 draggable.dragActive = true
+                dirView.deselectAll()
             }
             onEndDragElem: {
                 draggable.dragActive = false
