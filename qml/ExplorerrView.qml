@@ -20,6 +20,9 @@ Rectangle {
     ///подпись элементов
     signal signedElements(int start, int end)
     signal signedElement(int index)
+    ///перемещение файлов
+    signal moveItems(int start, int end)
+    signal moveItem(int index)
     ///открыте папки
     signal openFolder(int index)
     ///переименование файла под индексом
@@ -30,6 +33,10 @@ Rectangle {
     signal addNewFile
     ///добавить папку
     signal addNewFolder
+    ///сигнал при перетаскивании элемента
+    signal strartDragElem
+    ///сигнал при завершении перетаскивания
+    signal endDragElem
 
     TableView {
         id: fileList
@@ -94,7 +101,11 @@ Rectangle {
         DropArea {
             anchors.fill: parent
             onEntered: {
-
+                console.debug("Entered")
+            }
+            onDropped: {
+                console.debug("Dropped")
+                endDragElem()
             }
         }
         rowDelegate: Rectangle {
@@ -136,6 +147,7 @@ Rectangle {
                 onPressAndHold: {
                     console.debug("Press and hold")
                     fileList.selection.select(styleData.row)
+                    strartDragElem()
                 }
                 ///При двойном нажатии открыте файла или директории
                 onDoubleClicked: {
@@ -202,6 +214,7 @@ Rectangle {
                         inputName = false
                         console.debug("Press and hold")
                         fileList.selection.select(styleData.row)
+                        strartDragElem()
                     }
 
                     onDoubleClicked: {
@@ -298,7 +311,13 @@ Rectangle {
             })
         }
     }
-    function moveElement() {}
+    function moveElement() {
+        if (fileList.selection.count > 0) {
+            fileList.selection.forEach(function (rowIndex) {
+                moveItem(rowIndex)
+            })
+        }
+    }
 
     ///Обработка нажатия клавиш
     Keys.onPressed: {

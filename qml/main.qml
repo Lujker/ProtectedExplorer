@@ -10,14 +10,38 @@ ApplicationWindow {
     minimumHeight: 640
     visible: true
     property bool help: true
+
     title: qsTr("Модуль взаимодействия со шлюзом обмена данными ")
     menuBar: mainAppMenu
+
+    DragElem {
+        parent: _dropArea
+        id: draggable
+    }
+
     DropArea {
         id: _dropArea
         anchors.fill: parent
         MainMenuBar {
             id: mainAppMenu
         }
+
+        //        MouseArea {
+        //            anchors.fill: parent
+        //            onPressAndHold: {
+        //                draggable.dragActive = true
+        //            }
+        //            onReleased: {
+        //                draggable.dragActive = false
+        //            }
+
+        //            onMouseXChanged: {
+        //                draggable.x = mouseX - draggable.width / 2
+        //            }
+        //            onMouseYChanged: {
+        //                draggable.y = mouseY - draggable.height / 2
+        //            }
+        //        }
         AppComboBox {
             id: dirComboBox
             currentIndex: 0
@@ -75,6 +99,10 @@ ApplicationWindow {
             onDeleteItem: {
                 listModel.deleteFile(index)
             }
+            onMoveItem: {
+                listModel.moveFile(index)
+            }
+
             onCopyElement: {
                 listModel.copyFile(index)
             }
@@ -93,6 +121,13 @@ ApplicationWindow {
             onSignedElement: {
                 if (focusOfView === true)
                     listModel.signedFile(index)
+            }
+            onStrartDragElem: {
+                draggable.dragActive = true
+            }
+            onEndDragElem: {
+                draggable.dragActive = false
+                subView.moveElement()
             }
         }
 
@@ -114,6 +149,9 @@ ApplicationWindow {
             onDeleteItem: {
                 listModel.deleteFile(index)
             }
+            onMoveItem: {
+                listModel.moveFile(index)
+            }
             onCopyElement: {
                 listModel.copyFile(index)
             }
@@ -132,6 +170,13 @@ ApplicationWindow {
             onSignedElement: {
                 if (focusOfView === true)
                     listModel.signedFile(index)
+            }
+            onStrartDragElem: {
+                draggable.dragActive = true
+            }
+            onEndDragElem: {
+                draggable.dragActive = false
+                dirView.moveElement()
             }
         }
 

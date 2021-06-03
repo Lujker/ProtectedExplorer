@@ -107,6 +107,7 @@ public slots:
     //Копирование файлов
     void copySelections(int start, int end);
     void copyFile(int index);
+    void moveFile(int index);
     void signedFile(int index);
     void copyFrom(QString path);
     void copyTo(QString path);

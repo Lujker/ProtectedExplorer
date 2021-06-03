@@ -12,5 +12,6 @@
         <file>../icons/edit_file.png</file>
         <file>../icons/sent.png</file>
         <file>../icons/trash.png</file>
+        <file>DragElem.qml</file>
     </qresource>
 </RCC>

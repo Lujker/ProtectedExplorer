@@ -350,15 +350,13 @@ void DirsModel::deleteFolder(int index)
  */
 void DirsModel::renameFile(int index, QString name)
 {
-    qDebug()<<index << name;
     if(folder==nullptr) return;
     QFile file(folder->absolutePath() + QDir::separator() +  m_filenames.at(index));
     if(file.exists()){
         if(file.rename(folder->absolutePath() + QDir::separator() + name)){
-            qDebug()<<"good rename";
         }
         else {
-            qDebug()<< "bad rename";
+            qDebug()<< "rename error";
         }
     }
 }
@@ -504,6 +502,14 @@ void DirsModel::copyFile(int index)
     if(index>0 && index<m_filenames.size())
         ///сигнал отправляемый второй таблице
         copyTo(folder->absoluteFilePath(m_filenames[index]));
+}
+
+void DirsModel::moveFile(int index)
+{
+    if(index>0 && index<m_filenames.size()){
+        copyTo(folder->absoluteFilePath(m_filenames[index]));
+        deleteFile(index);
+    }
 }
 
 void DirsModel::signedFile(int index)
