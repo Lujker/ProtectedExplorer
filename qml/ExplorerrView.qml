@@ -1,4 +1,4 @@
-﻿import QtQuick 2.0
+﻿import QtQuick 2.9
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 1.0
@@ -120,6 +120,7 @@ Rectangle {
 
             MouseArea {
                 id: _dragArea
+                pressAndHoldInterval: 100
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 ///При нажатии на элемент мы устанавливем фокус и в зависимости от
@@ -194,6 +195,7 @@ Rectangle {
                 MouseArea {
                     id: _dragArea
                     anchors.fill: parent
+                    pressAndHoldInterval: 100
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: {
                         inputName = false
