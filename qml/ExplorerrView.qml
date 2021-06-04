@@ -8,6 +8,7 @@ Rectangle {
     property alias listModel: fileList.model ///переменная для установки модэли для отображения
     property bool focusOfView: fileList.focus
     property bool inputName: false ///проиходит ввод нового имения для файлы
+    property alias curDir: _curFolder.text
     ///Сигналы
     ///сигнал при нажатии на элемент
     signal pressToElement(int index)
@@ -107,10 +108,8 @@ Rectangle {
             listModel.setSorting(sortIndicatorColumn, sortIndicatorOrder)
         }
         DropArea {
+            id: _droped
             anchors.fill: parent
-            onEntered: {
-
-            }
             onDropped: {
                 endDragElem()
             }
@@ -129,6 +128,8 @@ Rectangle {
                 ///иначе выбирается только последний
                 onClicked: {
                     fileList.focus = true
+                    inputName = false
+                    parent.forceActiveFocus()
                     if (mouse.button === Qt.LeftButton) {
                         if (fileList.controlPressed) {
                             fileList.selection.select(styleData.row)
@@ -153,7 +154,7 @@ Rectangle {
                 }
                 ///Перетаскивание вызывает сигнал начала Drag события передающееся в main, где
                 ///затем создается иконка перетаскивания
-                onMouseXChanged: {
+                onPressAndHold: {
                     if (mouse.button === Qt.LeftButton) {
                         inputName = false
                         fileList.selection.select(styleData.row)
@@ -221,14 +222,14 @@ Rectangle {
                             _itemDelegatePopup.open()
                         }
                     }
-                    onMouseXChanged: {
+
+                    onPressAndHold: {
                         if (mouse.button === Qt.LeftButton) {
                             inputName = false
                             fileList.selection.select(styleData.row)
                             strartDragElem()
                         }
                     }
-
                     onDoubleClicked: {
                         inputName = false
                         parent.forceActiveFocus()

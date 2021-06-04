@@ -110,7 +110,9 @@ ApplicationWindow {
             }
             onEndDragElem: {
                 draggable.dragActive = false
-                subView.moveElement()
+                if (dirView.curDir.length !== 0) {
+                    subView.moveElement()
+                }
             }
         }
 
@@ -160,7 +162,9 @@ ApplicationWindow {
             }
             onEndDragElem: {
                 draggable.dragActive = false
-                dirView.moveElement()
+                if (subView.curDir.length !== 0) {
+                    dirView.moveElement()
+                }
             }
         }
 
