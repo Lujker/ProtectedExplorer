@@ -39,8 +39,10 @@ Rectangle {
     ///сигнал при завершении перетаскивания
     signal endDragElem
 
-    Label {
+    TextInput {
         id: _curFolder
+        readOnly: true
+        clip: true
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.margins: 10
