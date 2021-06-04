@@ -506,10 +506,11 @@ void DirsModel::copyFile(int index)
 
 void DirsModel::moveFile(int index)
 {
-    if(index>0 && index<m_filenames.size()){
-        copyTo(folder->absoluteFilePath(m_filenames[index]));
-        deleteFile(index);
-    }
+    if(folder!=nullptr)
+        if(index>0 && index<m_filenames.size()){
+            copyTo(folder->absoluteFilePath(m_filenames[index]));
+            deleteFile(index);
+        }
 }
 
 void DirsModel::signedFile(int index)

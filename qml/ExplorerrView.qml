@@ -143,10 +143,14 @@ Rectangle {
                         _itemDelegatePopup.open()
                     }
                 }
-
-                onPressAndHold: {
-                    fileList.selection.select(styleData.row)
-                    strartDragElem()
+                ///Перетаскивание вызывает сигнал начала Drag события передающееся в main, где
+                ///затем создается иконка перетаскивания
+                onMouseXChanged: {
+                    if (mouse.button === Qt.LeftButton) {
+                        inputName = false
+                        fileList.selection.select(styleData.row)
+                        strartDragElem()
+                    }
                 }
                 ///При двойном нажатии открыте файла или директории
                 onDoubleClicked: {
@@ -209,10 +213,12 @@ Rectangle {
                             _itemDelegatePopup.open()
                         }
                     }
-                    onPressAndHold: {
-                        inputName = false
-                        fileList.selection.select(styleData.row)
-                        strartDragElem()
+                    onMouseXChanged: {
+                        if (mouse.button === Qt.LeftButton) {
+                            inputName = false
+                            fileList.selection.select(styleData.row)
+                            strartDragElem()
+                        }
                     }
 
                     onDoubleClicked: {

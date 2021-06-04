@@ -13,5 +13,6 @@
         <file>../icons/sent.png</file>
         <file>../icons/trash.png</file>
         <file>DragElem.qml</file>
+        <file>../icons/move_file.png</file>
     </qresource>
 </RCC>
