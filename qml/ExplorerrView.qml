@@ -38,11 +38,19 @@ Rectangle {
     ///сигнал при завершении перетаскивания
     signal endDragElem
 
+    Label {
+        id: _curFolder
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.margins: 10
+        text: listModel.current_dir
+    }
+
     TableView {
         id: fileList
         parent: explWindow
         anchors.margins: 10
-        anchors.top: parent.top
+        anchors.top: _curFolder.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom

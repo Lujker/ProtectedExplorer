@@ -91,8 +91,12 @@ private:
 class DirsModel: public QAbstractTableModel
 {
     Q_OBJECT
+
+    Q_PROPERTY(QString current_dir READ current_dir NOTIFY current_dir_change)
+
 public:
     explicit DirsModel(std::list<std::string> dirs, QObject* parent = nullptr);
+    QString current_dir();
 
 public slots:
     //Установка стандартных путей в таблице
@@ -138,6 +142,7 @@ private:
     ///уровень вхождения
     int m_level_count;
     QFileSystemWatcher* watcher;
+    std::string m_current_dir;
 
     ///Перечисление для доступа к информации в qml
     enum DirsRoles
@@ -163,6 +168,7 @@ public:
 
 signals:
     void copyFile(QString);
+    void current_dir_change(QString);
 };
 
 /*!

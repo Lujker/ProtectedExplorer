@@ -88,6 +88,14 @@ DirsModel::DirsModel(std::list<std::string> dirs, QObject *parent):
     refreshModel();
 }
 
+QString DirsModel::current_dir()
+{
+    if(folder!=nullptr){
+        return QString::fromStdString(m_current_dir);
+    }
+    else return QString();
+}
+
 /*!
  * \brief DirsModel::openFolder метод открытия файла под индексом
  * \param index переход или открытие файла под индексом
@@ -95,7 +103,7 @@ DirsModel::DirsModel(std::list<std::string> dirs, QObject *parent):
 void DirsModel::openFolder(int index)
 {
 //    qDebug()<<index;
-    if(index<0){
+    if(index<0 || index >= m_filenames.size()){
         return;
     }
 
@@ -113,11 +121,15 @@ void DirsModel::openFolder(int index)
         else if(info.isDir()){
             watcher->removePath(folder->absolutePath());
             folder->cd(m_filenames.at(index));
+            m_current_dir += "/" + (folder->dirName().toStdString());
+            emit current_dir_change(QString::fromStdString(m_current_dir));
         }
         else return;
     }
     else{
         folder = new QDir(m_dirs.at(index));
+        m_current_dir = folder->dirName().toStdString();
+        emit current_dir_change(QString::fromStdString(m_current_dir));
     }
     ++m_level_count;
     watcher->addPath(folder->absolutePath());
@@ -132,6 +144,10 @@ void DirsModel::comeBack()
     if(m_level_count!=1){
         watcher->removePath(folder->absolutePath());
         folder->cdUp();
+        auto pos = m_current_dir.find_last_of('/');
+            if (pos != std::string::npos)
+                m_current_dir.erase(pos, std::numeric_limits<std::string::size_type>::max());
+        emit current_dir_change(QString::fromStdString(m_current_dir));
         --m_level_count;
         watcher->addPath(folder->absolutePath());
     }
@@ -150,6 +166,8 @@ void DirsModel::comeToBeginning()
     watcher->removePath(folder->absolutePath());
     delete folder;
     folder = nullptr;
+    m_current_dir.clear();
+    emit current_dir_change(QString::fromStdString(m_current_dir));
     m_level_count = 0;
     refreshModel();
 }
@@ -215,6 +233,7 @@ void DirsModel::setAsSubModel()
         QDir dir(it);
         m_filenames.push_back(dir.dirName());
     }
+    emit current_dir_change(QString());
     endResetModel();
 }
 
@@ -239,6 +258,7 @@ void DirsModel::setAsDirModel()
         QDir dir(it);
         m_filenames.push_back(dir.dirName());
     }
+    emit current_dir_change(QString());
     endResetModel();
 }
 
