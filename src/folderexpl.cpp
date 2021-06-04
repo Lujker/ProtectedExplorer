@@ -215,8 +215,6 @@ void DirsModel::setAsSubModel()
 {
     beginResetModel();
     m_filenames.clear();
-
-
     m_level_count = 0;
     if(folder!=nullptr){
         watcher->removePath(folder->absolutePath());
@@ -244,6 +242,7 @@ void DirsModel::setAsDirModel()
 {
     beginResetModel();
     m_filenames.clear();
+    m_level_count = 0;
     if(folder!=nullptr){
         watcher->removePath(folder->absolutePath());
         delete folder;
