@@ -15,5 +15,6 @@
         <file>DragElem.qml</file>
         <file>../icons/move_file.png</file>
         <file>DragWidthRect.qml</file>
+        <file>appIcon.ico</file>
     </qresource>
 </RCC>

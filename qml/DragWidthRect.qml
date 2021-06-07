@@ -16,7 +16,13 @@ Rectangle {
         }
         onMouseXChanged: {
             if (drag.active) {
-                parent.x = parent.x + mouseX
+                var newX = parent.x + mouseX
+                if (newX > 1010)
+                    parent.x = 1010
+                else if (newX < 10)
+                    parent.x = 10
+                else
+                    parent.x = newX
             }
         }
     }

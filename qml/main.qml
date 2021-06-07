@@ -1,6 +1,6 @@
 ﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
-import QtQuick.Dialogs 1.2
+import QtQuick.Dialogs 1.3
 import QtQuick.Layouts 1.3
 
 ApplicationWindow {
@@ -9,7 +9,6 @@ ApplicationWindow {
     minimumHeight: 640
     visible: true
     property bool help: true
-
     title: qsTr("Модуль взаимодействия со шлюзом обмена данными")
     menuBar: mainAppMenu
 
@@ -17,6 +16,43 @@ ApplicationWindow {
     DragElem {
         parent: _dropArea
         id: draggable
+    }
+
+    Dialog {
+        id: _dialogNewFile
+        title: "Введите имя для файла"
+        height: 100
+        width: 200
+
+        TextField {
+            id: _txtFieldFile
+            anchors.fill: parent
+            anchors.centerIn: parent.Center
+        }
+
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        onAccepted: {
+            dirView.addNewFile(_txtFieldFile.text)
+            subView.addNewFile(_txtFieldFile.text)
+        }
+    }
+    Dialog {
+        id: _dialogNewFolder
+        title: "Введите имя для папки"
+        height: 100
+        width: 200
+
+        TextField {
+            id: _txtFieldFolder
+            anchors.fill: parent
+            anchors.centerIn: parent.Center
+        }
+
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        onAccepted: {
+            dirView.addNewFolder(_txtFieldFolder.text)
+            subView.addNewFolder(_txtFieldFolder.text)
+        }
     }
 
     DropArea {
@@ -98,11 +134,11 @@ ApplicationWindow {
             }
             onAddNewFile: {
                 if (focusOfView === true)
-                    listModel.addFile()
+                    listModel.addFile(name)
             }
             onAddNewFolder: {
                 if (focusOfView === true)
-                    listModel.addFolder()
+                    listModel.addFolder(name)
             }
             onSignedElement: {
                 if (focusOfView === true)
@@ -119,7 +155,7 @@ ApplicationWindow {
                 }
             }
         }
-        ///Элемент для изменения размеров таблиц
+        ///Элемент для изменения ширины таблиц
         DragWidthRect {
             id: _rectWidth
             x: mainWindow.width / 2
@@ -159,11 +195,11 @@ ApplicationWindow {
             }
             onAddNewFile: {
                 if (focusOfView === true)
-                    listModel.addFile()
+                    listModel.addFile(name)
             }
             onAddNewFolder: {
                 if (focusOfView === true)
-                    listModel.addFolder()
+                    listModel.addFolder(name)
             }
             onSignedElement: {
                 if (focusOfView === true)
@@ -191,16 +227,18 @@ ApplicationWindow {
                 icon: "qrc:/../icons/add_file.png"
                 toolTipText: "Создать файл в открытом каталоге таблицы"
                 onButtonClicked: {
-                    subView.addNewFile()
-                    dirView.addNewFile()
+                    _dialogNewFile.open()
+                    //                    subView.addNewFile()
+                    //                    dirView.addNewFile()
                 }
             }
             AppButton {
                 icon: "qrc:/../icons/add-folder.png"
                 toolTipText: "Создать папку в открытом каталоге таблицы"
                 onButtonClicked: {
-                    subView.addNewFolder()
-                    dirView.addNewFolder()
+                    _dialogNewFolder.open()
+                    //                    subView.addNewFolder()
+                    //                    dirView.addNewFolder()
                 }
             }
             AppButton {

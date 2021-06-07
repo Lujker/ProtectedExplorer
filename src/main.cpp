@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setApplicationName("Модуль взаимодействия со шлюзом обмена данными ");
     app.setApplicationVersion("1.0.0");
+    app.setWindowIcon(QIcon(":/appIcon.ico"));
     ///Чтение переданных параметров командной строки и инициализцация настроек
     SettingsController::get_instanse().parse_args(app);
     SettingsController::get_instanse().read_settings();

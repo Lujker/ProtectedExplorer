@@ -7,7 +7,7 @@ Rectangle {
     id: explWindow
     property alias listModel: fileList.model ///переменная для установки модэли для отображения
     property bool focusOfView: fileList.focus
-    property bool inputName: false ///проиходит ввод нового имения для файлы
+    property bool inputName: false ///проиcходит ввод нового имения для файлы
     property alias curDir: _curFolder.text
     ///Сигналы
     ///сигнал при нажатии на элемент
@@ -31,9 +31,9 @@ Rectangle {
     ///нажатие на модэль
     signal presToTable
     ///добавить файл
-    signal addNewFile
+    signal addNewFile(string name)
     ///добавить папку
-    signal addNewFolder
+    signal addNewFolder(string name)
     ///сигнал при перетаскивании элемента
     signal strartDragElem
     ///сигнал при завершении перетаскивания
@@ -162,6 +162,7 @@ Rectangle {
                 ///Перетаскивание вызывает сигнал начала Drag события передающееся в main, где
                 ///затем создается иконка перетаскивания
                 onPressAndHold: {
+                    //                    deselectAll()
                     if (mouse.button === Qt.LeftButton) {
                         inputName = false
                         fileList.selection.select(styleData.row)
@@ -232,6 +233,7 @@ Rectangle {
                     }
 
                     onPressAndHold: {
+                        //                        deselectAll()
                         if (mouse.button === Qt.LeftButton) {
                             inputName = false
                             fileList.selection.select(styleData.row)
@@ -363,15 +365,16 @@ Rectangle {
         if (event.key === Qt.Key_F5) {
             sendFiles()
         }
-        if ((event.key === Qt.Key_Return) || (event.key === Qt.Key_Enter)) {
-            var lastIndex
-            if (fileList.selection.count > 0) {
-                fileList.selection.forEach(function (rowIndex) {
-                    lastIndex = rowIndex
-                })
-            }
-            openFolder(lastIndex)
-        }
+        //        if ((event.key === Qt.Key_Return) || (event.key === Qt.Key_Enter)) {
+        //            var lastIndex
+        //            if (fileList.selection.count > 0) {
+        //                fileList.selection.forEach(function (rowIndex) {
+        //                    lastIndex = rowIndex
+        //                })
+        //            }
+        //            if (!inputName)
+        //                openFolder(lastIndex)
+        //        }
     }
 }
 

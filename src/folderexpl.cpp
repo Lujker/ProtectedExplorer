@@ -264,10 +264,13 @@ void DirsModel::setAsDirModel()
 /*!
  * \brief DirsModel::addFile создание нового текстового файла в данной дериктории
  */
-void DirsModel::addFile()
+void DirsModel::addFile(QString name)
 {
     if(folder==nullptr) return;
-    QString filename = QString("Новый файл.txt");
+    QString filename;
+    if(name.isEmpty())
+        filename = QString("Новый файл.txt");
+    else filename = name;
     int count = 1;
     while(folder->exists(folder->filePath(folder->absolutePath() + QDir::separator() + filename))){
         filename = QString("Новый файл(") + QString::number(count) + QString(").txt");
@@ -339,10 +342,13 @@ void DirsModel::deleteFiles(int start, int end)
 /*!
  * \brief DirsModel::addFolder создание новой папки в дериктории
  */
-void DirsModel::addFolder()
+void DirsModel::addFolder(QString name)
 {
     if(folder==nullptr) return;
-    QString filename = QString("Новая папка");
+    QString filename;
+    if(name.isEmpty())
+        filename = QString("Новая папка");
+    else filename = name;
     int count = 1;
     ///если у нас уже есть такой файл или папка то добавляем к ней цифру под счетчиком
     while(folder->exists(folder->filePath(folder->absolutePath() + QDir::separator() + filename))){

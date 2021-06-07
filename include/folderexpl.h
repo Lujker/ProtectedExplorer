@@ -124,10 +124,10 @@ public slots:
 
     //Работа с дерикториями и файлами
     void derictoryChange(const QString& path);
-    void addFile();
+    void addFile(QString name);
     void deleteFile(int index);
     void deleteFiles(int start, int end);
-    void addFolder();
+    void addFolder(QString name);
     void deleteFolder(int index);
     void renameFile(int index, QString name);
     //Сортировка файлов таблциы
