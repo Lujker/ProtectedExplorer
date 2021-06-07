@@ -41,13 +41,13 @@ Rectangle {
     anchors.topMargin: 10
     anchors.bottomMargin: 10
 
-    //    anchors.rightMargin: 10
     TextInput {
         id: _curFolder
         readOnly: true
         clip: true
         anchors.top: parent.top
         anchors.left: parent.left
+        anchors.leftMargin: 10
         text: listModel.current_dir
     }
 
