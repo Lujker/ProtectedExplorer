@@ -4,20 +4,26 @@
 /// модули библиотеки Qt
 #include <QObject>
 #include <QDebug>
-#include <QDateTime>
 #include <QList>
+#include <QDateTime>
 #include <QAbstractListModel>
+///модули QFilesystem
+#include <QUrl>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QFileSystemWatcher>
 #include <QFileIconProvider>
 #include <QDesktopServices>
-#include <QUrl>
 #include <QQuickImageProvider>
 #include <QFileIconProvider>
 #include <QMimeDatabase>
 #include <QPixmap>
+/// модули SQL
+#include <QSql>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlError>
 
 /// stl модули
 #include <list>
@@ -169,6 +175,11 @@ public:
 signals:
     void copyFile(QString);
     void current_dir_change(QString);
+};
+
+class EmailModel: public QAbstractListModel
+{
+
 };
 
 /*!

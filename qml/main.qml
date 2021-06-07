@@ -10,9 +10,10 @@ ApplicationWindow {
     visible: true
     property bool help: true
 
-    title: qsTr("Модуль взаимодействия со шлюзом обмена данными ")
+    title: qsTr("Модуль взаимодействия со шлюзом обмена данными")
     menuBar: mainAppMenu
 
+    ///Статичный член для перетаскивания
     DragElem {
         parent: _dropArea
         id: draggable
@@ -24,10 +25,11 @@ ApplicationWindow {
         MainMenuBar {
             id: mainAppMenu
         }
+        ///Комбо боксы для имзиенения отображений таблиц
         AppComboBox {
             id: dirComboBox
             currentIndex: 0
-            width: dirView.width / 2
+            width: 180
             anchors.top: _dropArea.top
             anchors.left: dirView.left
             onActivated: {
@@ -46,7 +48,7 @@ ApplicationWindow {
 
         AppComboBox {
             id: subComboBox
-            width: subView.width / 2
+            width: 180
             anchors.top: _dropArea.top
             currentIndex: 1
             anchors.left: subView.left
@@ -64,14 +66,16 @@ ApplicationWindow {
             }
         }
 
+        ///Отображение таблицы (1) (по-умолчанию доступных пользовательских папок)
         ExplorerrView {
             id: dirView
             parent: _dropArea
             listModel: DirModel
-            width: parent.width / 2
             height: parent.height - _rowLayoutTableButtom.height - dirComboBox.height
             anchors.top: dirComboBox.bottom
             anchors.bottom: _rowLayoutTableButtom.top
+            anchors.right: _rectWidth.left
+            anchors.left: parent.left
             onPressToElement: {
                 subView.deselectAll()
             }
@@ -115,16 +119,25 @@ ApplicationWindow {
                 }
             }
         }
+        ///Элемент для изменения размеров таблиц
+        DragWidthRect {
+            id: _rectWidth
+            x: mainWindow.width / 2
+            height: parent.height - _rowLayoutTableButtom.height - subComboBox.height - 20
+            anchors.top: subComboBox.bottom
+        }
 
+        ///Отображение таблицы (2) (по-умолчанию сетевых папок)
         ExplorerrView {
             id: subView
             parent: _dropArea
             listModel: SubModel
-            width: parent.width / 2
             height: parent.height - _rowLayoutTableButtom.height - subComboBox.height
             anchors.top: subComboBox.bottom
             anchors.bottom: _rowLayoutTableButtom.top
+            anchors.left: _rectWidth.right
             anchors.right: parent.right
+
             onPressToElement: {
                 dirView.deselectAll()
             }
@@ -168,6 +181,7 @@ ApplicationWindow {
             }
         }
 
+        ///строка с кнопками
         RowLayout {
             id: _rowLayoutTableButtom
             anchors.bottom: parent.bottom

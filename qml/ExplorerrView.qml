@@ -38,22 +38,25 @@ Rectangle {
     signal strartDragElem
     ///сигнал при завершении перетаскивания
     signal endDragElem
+    anchors.topMargin: 10
+    anchors.bottomMargin: 10
 
+    //    anchors.rightMargin: 10
     TextInput {
         id: _curFolder
         readOnly: true
         clip: true
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.margins: 10
         text: listModel.current_dir
     }
 
     TableView {
         id: fileList
         parent: explWindow
-        anchors.margins: 10
+
         anchors.top: _curFolder.bottom
+        anchors.topMargin: 10
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -84,7 +87,8 @@ Rectangle {
         TableViewColumn {
             role: "name"
             title: "Имя"
-            width: explWindow.width - 341
+            //            width: explWindow.width - 341
+            width: 180
         }
         TableViewColumn {
             role: "suffix"

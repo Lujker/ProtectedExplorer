@@ -14,5 +14,6 @@
         <file>../icons/trash.png</file>
         <file>DragElem.qml</file>
         <file>../icons/move_file.png</file>
+        <file>DragWidthRect.qml</file>
     </qresource>
 </RCC>
