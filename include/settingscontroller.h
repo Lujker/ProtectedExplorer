@@ -6,6 +6,7 @@
 #include <list>
 #include <vector>
 #include <utility>
+#include <iostream>
 
 #include <QObject>
 #include <QDebug>

@@ -117,7 +117,7 @@ void SettingsController::save_settings(std::string path_to_save_file)
     if(m_set.log_file_path.empty())
         xmlWriter.writeAttribute("path", "../logfile.log");
     else
-        xmlWriter.writeAttribute("string", QString::fromStdString(m_set.log_file_path));
+        xmlWriter.writeAttribute("path", QString::fromStdString(m_set.log_file_path));
     xmlWriter.writeEndElement();
 
     xmlWriter.writeEndElement();
@@ -190,17 +190,21 @@ void SettingsController::read_settings()
                                   new_abonent.sys_name = attr.value().toString().toStdString();
                               }
                               else if(attr.name().toString() == "id"){
-                                  new_abonent.sys_name = attr.value().toString().toStdString();
+                                  new_abonent.db_id = attr.value().toInt();
                               }
                           }
                           for(int i=0;i<2;++i){
-                              xmlReader.readNext();
+                              xmlReader.readNextStartElement();
                               if(xmlReader.name()=="outbox")
                                   new_abonent.outbox_path=xmlReader.readElementText().toStdString();
                               else if(xmlReader.name()=="inbox")
                                   new_abonent.inbox_path=xmlReader.readElementText().toStdString();
                           }
+//                          qDebug()<<new_abonent.db_id << " " << QString::fromStdString(new_abonent.sys_name) << " " << QString::fromStdString(new_abonent.inbox_path)
+//                                 << " "<< QString::fromStdString(new_abonent.outbox_path);
                           m_set.abonents.push_back(new_abonent);
+
+                          xmlReader.readNextStartElement();
                           xmlReader.readNextStartElement();
                       }
                     }
@@ -213,7 +217,7 @@ void SettingsController::read_settings()
                                 else
                                     m_set.log_file_path = attribute_value.toStdString();
                             }
-                        }
+                    }
                 }
                 xmlReader.readNext();
     }
