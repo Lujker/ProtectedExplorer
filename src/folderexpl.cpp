@@ -125,7 +125,12 @@ void DirsModel::openFolder(int index)
     }
     else{
         folder = new QDir(QString::fromStdString(m_dirs.at(index).second));
-        m_current_dir = m_dirs.at(index).first;
+        if(!m_dirs.at(index).first.empty()){
+            m_current_dir = m_dirs.at(index).first;
+        }
+        else {
+            m_current_dir = folder->dirName().toStdString();
+        }
         emit current_dir_change(QString::fromStdString(m_dirs.at(index).first));
     }
     ++m_level_count;
@@ -189,7 +194,11 @@ void DirsModel::refreshModel()
         m_filenames.clear();
         for(const auto &it : qAsConst(m_dirs)){
             ///заполнение списка именами папок
-            m_filenames.push_back(QString::fromStdString(it.first));
+            if(!it.first.empty())
+                m_filenames.push_back(QString::fromStdString(it.first));
+            else {
+                m_filenames.push_back(QDir(QString::fromStdString(it.second)).dirName());
+            }
         }
     }
     else{
@@ -620,7 +629,12 @@ QVariant DirsModel::data(const QModelIndex &index, int role) const
         return info.absoluteFilePath();
         break;
     case NameRole:
-        if(folder==nullptr) return QString::fromStdString(m_dirs.at(index.row()).first);
+        if(folder==nullptr){
+            if(m_dirs.at(index.row()).first.empty()){
+                return QDir(QString::fromStdString(m_dirs.at(index.row()).second)).dirName();
+            }
+            else    return QString::fromStdString(m_dirs.at(index.row()).first);
+        }
         else return info.fileName();
         break;
     case DateRole:
