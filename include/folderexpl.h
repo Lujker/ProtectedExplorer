@@ -101,7 +101,7 @@ class DirsModel: public QAbstractTableModel
     Q_PROPERTY(QString current_dir READ current_dir NOTIFY current_dir_change)
 
 public:
-    explicit DirsModel(std::list<std::string> dirs, QObject* parent = nullptr);
+    explicit DirsModel(std::vector<std::pair<std::string,std::string>> dirs, QObject* parent = nullptr);
     QString current_dir();
 
 public slots:
@@ -140,7 +140,7 @@ public slots:
 
 private:
     ///список даступных папок с их вложением
-    QList<QString> m_dirs;
+    std::vector<std::pair<std::string,std::string>> m_dirs;
     ///открытая сейчас дериктория
     QDir* folder;
     ///списко имен папок и файлов для отображения

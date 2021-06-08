@@ -77,18 +77,45 @@ void SettingsController::save_settings(std::string path_to_save_file)
     xmlWriter.setAutoFormatting(true);  // Устанавливаем автоформатирование текста
     xmlWriter.writeStartDocument();     // Запускаем запись в документ
     xmlWriter.writeStartElement("Settings");   // Записываем первый элемент с его именем
+    xmlWriter.writeStartElement("work_dirs");
 
-    xmlWriter.writeStartElement("sub_list_dirs");  // Записываем тег с именем для первого чекбокса
-    xmlWriter.writeAttribute("string", QString::fromStdString(m_set.sub_list_dirs));
-    xmlWriter.writeEndElement();        // Закрываем тег
+    for(const auto &it : m_set.dir_list){
+        xmlWriter.writeStartElement("dir");  // Записываем тег с именем для первого чекбокса
+        xmlWriter.writeAttribute("title", QString::fromStdString(it.first));
+        xmlWriter.writeAttribute("driver", "localdir");
+        xmlWriter.writeCharacters(QString::fromStdString(it.second));
+        xmlWriter.writeEndElement();        // Закрываем тег
+    }
 
-    xmlWriter.writeStartElement("dir_list");  // Записываем тег с именем для первого чекбокса
-    xmlWriter.writeAttribute("string", QString::fromStdString(m_set.dir_list));
+    for(const auto &it : m_set.shared_list){
+        xmlWriter.writeStartElement("dir");  // Записываем тег с именем для первого чекбокса
+        xmlWriter.writeAttribute("title", QString::fromStdString(it.first));
+        xmlWriter.writeAttribute("driver", "ftp");
+        xmlWriter.writeCharacters(QString::fromStdString(it.second));
+        xmlWriter.writeEndElement();        // Закрываем тег
+    }
     xmlWriter.writeEndElement();
 
-    xmlWriter.writeStartElement("log_file_path");  // Записываем тег с именем для первого чекбокса
+    xmlWriter.writeStartElement("mail");
+    xmlWriter.writeStartElement("addressbook");
+    for(const auto &it : m_set.abonents){
+        xmlWriter.writeStartElement("system");  // Записываем тег с именем для первого чекбокса
+        xmlWriter.writeAttribute("id", QString::number(it.db_id));
+        xmlWriter.writeAttribute("name", QString::fromStdString(it.sys_name));
+        xmlWriter.writeStartElement("outbox");
+        xmlWriter.writeCharacters(QString::fromStdString(it.outbox_path));
+        xmlWriter.writeEndElement();
+        xmlWriter.writeStartElement("inbox");
+        xmlWriter.writeCharacters(QString::fromStdString(it.inbox_path));
+        xmlWriter.writeEndElement();
+        xmlWriter.writeEndElement();        // Закрываем тег
+    }
+    xmlWriter.writeEndElement();
+    xmlWriter.writeEndElement();
+
+    xmlWriter.writeStartElement("log_file");  // Записываем тег с именем для первого чекбокса
     if(m_set.log_file_path.empty())
-        xmlWriter.writeAttribute("string", "../logfile.log");
+        xmlWriter.writeAttribute("path", "../logfile.log");
     else
         xmlWriter.writeAttribute("string", QString::fromStdString(m_set.log_file_path));
     xmlWriter.writeEndElement();
@@ -128,23 +155,58 @@ void SettingsController::read_settings()
                  * */
                 if(xmlReader.isStartElement())
                 {
-                    if(xmlReader.name() == "sub_list_dirs")
+                    if(xmlReader.name() == "work_dirs"){
+                        xmlReader.readNextStartElement();
+                         while(xmlReader.name() == "dir"){
+                             QString title;
+                             QString driver;
+                             QString path;
+                             for(const auto &attr : xmlReader.attributes()) {
+                                 if (attr.name().toString() == "title") {
+                                     title = attr.value().toString();
+                                 }
+                                 else if(attr.name().toString() == "driver"){
+                                     driver = attr.value().toString();
+                                 }
+                             }
+                             path = xmlReader.readElementText();
+                             if(driver == "ftp"){
+                                 m_set.shared_list.push_back(
+                                             std::make_pair(title.toStdString(), path.toStdString()));
+                             }
+                             else if (driver == "localdir"){
+                                 m_set.dir_list.push_back(
+                                             std::make_pair(title.toStdString(), checkFolder(path.toStdString())));
+                             }
+                             xmlReader.readNextStartElement();
+                         }
+                    }
+                    if(xmlReader.name() == "addressbook"){
+                        xmlReader.readNextStartElement();
+                        while(xmlReader.name()=="system"){
+                          Abonent new_abonent;
+                          for(const auto &attr : xmlReader.attributes()) {
+                              if (attr.name().toString() == "name") {
+                                  new_abonent.sys_name = attr.value().toString().toStdString();
+                              }
+                              else if(attr.name().toString() == "id"){
+                                  new_abonent.sys_name = attr.value().toString().toStdString();
+                              }
+                          }
+                          for(int i=0;i<2;++i){
+                              xmlReader.readNext();
+                              if(xmlReader.name()=="outbox")
+                                  new_abonent.outbox_path=xmlReader.readElementText().toStdString();
+                              else if(xmlReader.name()=="inbox")
+                                  new_abonent.inbox_path=xmlReader.readElementText().toStdString();
+                          }
+                          m_set.abonents.push_back(new_abonent);
+                          xmlReader.readNextStartElement();
+                      }
+                    }
+                    if(xmlReader.name() == "log_file")
                         for(const auto &attr : xmlReader.attributes()) {
-                            if (attr.name().toString() == "string") {
-                                QString attribute_value = attr.value().toString();
-                                m_set.sub_list_dirs = attribute_value.toStdString();
-                            }
-                        }
-                    if(xmlReader.name() == "dir_list")
-                        for(const auto &attr : xmlReader.attributes()) {
-                            if (attr.name().toString() == "string") {
-                                QString attribute_value = attr.value().toString();
-                                m_set.dir_list = attribute_value.toStdString();
-                            }
-                        }
-                    if(xmlReader.name() == "log_file_path")
-                        for(const auto &attr : xmlReader.attributes()) {
-                            if (attr.name().toString() == "string") {
+                            if (attr.name().toString() == "path") {
                                 QString attribute_value = attr.value().toString();
                                 if(attribute_value.isEmpty())
                                    m_set.log_file_path = "../logfile.log";
@@ -153,7 +215,7 @@ void SettingsController::read_settings()
                             }
                         }
                 }
-                xmlReader.readNext(); // Переходим к следующему элементу файла
+                xmlReader.readNext();
     }
     file.close(); // Закрываем файл
 }
@@ -168,9 +230,9 @@ const Settings &SettingsController::get_settings()
     return this->m_set;
 }
 
-QString SettingsController::sub_list_dirs()
+std::vector<std::pair<std::string,std::string>> SettingsController::sub_list_dirs()
 {
-    return QString::fromStdString(m_set.sub_list_dirs);
+    return m_set.shared_list;
 }
 
 QString SettingsController::log_file_path()
@@ -178,73 +240,78 @@ QString SettingsController::log_file_path()
     return QString::fromStdString(m_set.log_file_path);
 }
 
-QString SettingsController::dir_list()
+std::vector<std::pair<std::string,std::string>> SettingsController::dir_list()
 {
-    return QString::fromStdString(m_set.dir_list);
+    return m_set.dir_list;
 }
 
-/*!
- * \brief SettingsController::parse_dir_list парсинг списка дерикторий в список строк по разделителю
- * \return список путей к дерикториям
- */
-std::list<std::string> SettingsController::parse_dir_list()
+std::vector<Abonent> SettingsController::abonents()
 {
-    std::list<std::string> lst;
-    if(!m_set.dir_list.empty()){
-        auto vect = split(m_set.dir_list,PATH_SEPARATOR);
-        if(vect.empty()){
-            return lst;
-        }
-        else{
-            ///проверка имени дериктории по абсолютному пути
-            /// если такой нет то создаем ее в home дериктории пользователя если ее еще не создали
-            for(const auto& it : vect){
-                QDir dir(QString::fromStdString(it));
-                if(!dir.exists()){
-                    QString iter_dir_path(QDir::homePath()+
-                                          QDir::separator()+
-                                          QString::fromStdString(it));
-                    QDir dir_in_home(iter_dir_path);
-                    if(!dir_in_home.exists()){
-                        QDir home = QDir::home();
-                        home.mkpath(QString::fromStdString(it));
-                    }
-                    lst.push_back((iter_dir_path).toStdString());
-                }
-                else    lst.push_back(it);
-            }
-        }
-    }
-    return lst;
+    return m_set.abonents;
 }
 
-/*!
- * \brief SettingsController::parse_sub_list парсинг списка сетевых папок в список строк по разделителю
- * \return список путей к дерикториям
- */
-std::list<std::string> SettingsController::parse_sub_list()
-{
-    std::list<std::string> lst;
-    if(!m_set.sub_list_dirs.empty()){
-        auto vect = split(m_set.sub_list_dirs,PATH_SEPARATOR);
-        if(vect.empty()){
-            return lst;
-        }
-        else{
-            for(const auto& it : vect){
-                lst.push_back(it);
-            }
-        }
-    }
-    return lst;
-}
+///*!
+// * \brief SettingsController::parse_dir_list парсинг списка дерикторий в список строк по разделителю
+// * \return список путей к дерикториям
+// */
+//std::list<std::string> SettingsController::parse_dir_list()
+//{
+//    std::list<std::string> lst;
+//    if(!m_set.dir_list.empty()){
+//        auto vect = split(m_set.dir_list,PATH_SEPARATOR);
+//        if(vect.empty()){
+//            return lst;
+//        }
+//        else{
+//            ///проверка имени дериктории по абсолютному пути
+//            /// если такой нет то создаем ее в home дериктории пользователя если ее еще не создали
+//            for(const auto& it : vect){
+//                QDir dir(QString::fromStdString(it));
+//                if(!dir.exists()){
+//                    QString iter_dir_path(QDir::homePath()+
+//                                          QDir::separator()+
+//                                          QString::fromStdString(it));
+//                    QDir dir_in_home(iter_dir_path);
+//                    if(!dir_in_home.exists()){
+//                        QDir home = QDir::home();
+//                        home.mkpath(QString::fromStdString(it));
+//                    }
+//                    lst.push_back((iter_dir_path).toStdString());
+//                }
+//                else    lst.push_back(it);
+//            }
+//        }
+//    }
+//    return lst;
+//}
 
-void SettingsController::set_sub_list_dirs(const QString &name)
-{
-    auto list = name.split("///");
-    m_set.sub_list_dirs = list.at(list.size()-1).toStdString();
-    emit sub_list_dirs_change(QString::fromStdString(m_set.sub_list_dirs));
-}
+///*!
+// * \brief SettingsController::parse_sub_list парсинг списка сетевых папок в список строк по разделителю
+// * \return список путей к дерикториям
+// */
+//std::list<std::string> SettingsController::parse_sub_list()
+//{
+//    std::list<std::string> lst;
+//    if(!m_set.sub_list_dirs.empty()){
+//        auto vect = split(m_set.sub_list_dirs,PATH_SEPARATOR);
+//        if(vect.empty()){
+//            return lst;
+//        }
+//        else{
+//            for(const auto& it : vect){
+//                lst.push_back(it);
+//            }
+//        }
+//    }
+//    return lst;
+//}
+
+//void SettingsController::set_sub_list_dirs(const QString &name)
+//{
+//    auto list = name.split("///");
+//    m_set.sub_list_dirs = list.at(list.size()-1).toStdString();
+//    emit sub_list_dirs_change(QString::fromStdString(m_set.sub_list_dirs));
+//}
 
 void SettingsController::save_app_settings()
 {
@@ -260,14 +327,6 @@ void SettingsController::set_log_file_path(const QString &path)
     emit log_file_path_change(path);
 }
 
-void SettingsController::set_dir_list(const QString &dir_list)
-{
-    if(!dir_list.isEmpty()){
-        m_set.dir_list = dir_list.toStdString();
-        emit dir_list_change(dir_list);
-    }
-}
-
 SettingsController::SettingsController(QObject *parent)
 {
     Q_UNUSED(parent)
@@ -275,3 +334,23 @@ SettingsController::SettingsController(QObject *parent)
 
 SettingsController::~SettingsController()
 {}
+
+std::string SettingsController::checkFolder(const std::string &absPath)
+{
+    ///проверка имени дериктории по абсолютному пути
+    /// если такой нет то создаем ее в home дериктории пользователя если ее еще не создали
+
+    QDir dir(QString::fromStdString(absPath));
+    if(!dir.exists()){
+        QString iter_dir_path(QDir::homePath()+
+                              QDir::separator()+
+                              QString::fromStdString(absPath));
+        QDir dir_in_home(iter_dir_path);
+        if(!dir_in_home.exists()){
+            QDir home = QDir::home();
+            home.mkpath(QString::fromStdString(absPath));
+        }
+        return iter_dir_path.toStdString();
+    }
+    return absPath;
+}

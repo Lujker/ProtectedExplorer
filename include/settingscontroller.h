@@ -5,8 +5,10 @@
 #include <sstream>
 #include <list>
 #include <vector>
+#include <utility>
 
 #include <QObject>
+#include <QDebug>
 #include <QFile>
 #include <QDir>
 #include <QXmlStreamWriter>
@@ -19,14 +21,21 @@
 #define SET_DIR "../settings"
 #define PATH_SEPARATOR ';' ///–азделитель дл€ списка путей
 
-
+struct Abonent
+{
+    std::string sys_name;
+    int db_id;
+    std::string outbox_path;
+    std::string inbox_path;
+};
 /*!
     \brief —труктура хран€ща€ основные настройки приложени€
 */
 struct Settings{
-    std::string sub_list_dirs;
+    std::vector<std::pair<std::string,std::string>> shared_list;
+    std::vector<std::pair<std::string,std::string>> dir_list;
+    std::vector<Abonent> abonents;
     std::string log_file_path;
-    std::string dir_list;
 };
 
 ///функции получающии из одной строки вектор строк по разделителю
@@ -53,8 +62,8 @@ class SettingsController: public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString sub_list_dirs READ sub_list_dirs WRITE set_sub_list_dirs NOTIFY sub_list_dirs_change)
-    Q_PROPERTY(QString dir_list READ dir_list WRITE set_dir_list NOTIFY dir_list_change)
+//    Q_PROPERTY(QString sub_list_dirs READ sub_list_dirs WRITE set_sub_list_dirs NOTIFY sub_list_dirs_change)
+//    Q_PROPERTY(QString dir_list READ dir_list WRITE set_dir_list NOTIFY dir_list_change)
 
 public:
     static SettingsController &get_instanse();
@@ -65,17 +74,18 @@ public:
     const Settings &get_settings();
 
     ///PROPERTY_GET
-    QString sub_list_dirs();
+    std::vector<std::pair<std::string,std::string>> sub_list_dirs();
     QString log_file_path();
-    QString dir_list();
-    std::list<std::string> parse_dir_list();
-    std::list<std::string> parse_sub_list();
+    std::vector<std::pair<std::string,std::string>> dir_list();
+    std::vector<Abonent> abonents();
+//    std::list<std::string> parse_dir_list();
+//    std::list<std::string> parse_sub_list();
 
     ///PROPERTY_SET
 public slots:
-    void set_sub_list_dirs(const QString &name);
+//    void set_sub_list_dirs(const QString &name);
     void set_log_file_path(const QString& path);
-    void set_dir_list(const QString& dir_list);
+//    void set_dir_list(const QString& dir_list);
     void save_app_settings();
     ///PROPERTY_NOTIFY
 signals:
@@ -89,6 +99,7 @@ private:
     SettingsController(SettingsController&&)=delete;
     SettingsController& operator=(SettingsController&)=delete;
     virtual ~SettingsController();
+    std::string checkFolder(const std::string &absPath);
 
     ///структура дл€ свойств настроек
     Settings m_set;
