@@ -78,7 +78,7 @@ Rectangle {
                     asynchronous: true
                     sourceSize.width: 8
                     sourceSize.height: 8
-                    ///путь к инокне берез из проводника иконок из С++ кода
+                    ///путь к инокне берет из проводника иконок из С++ кода
                     source: styleData.value ? "image://iconProvider/" + styleData.value : ""
                 }
             }
@@ -141,7 +141,7 @@ Rectangle {
                         if (fileList.controlPressed) {
                             fileList.selection.select(styleData.row)
                         } else if (fileList.shiftPressed) {
-                            var lowIndex = fileList.rowCount + 1
+                            var lowIndex = fileList.rowCount
                             fileList.selection.forEach(function (rowIndex) {
                                 if (lowIndex > rowIndex)
                                     lowIndex = rowIndex
@@ -204,7 +204,7 @@ Rectangle {
                     anchors.fill: parent
                     pressAndHoldInterval: 100
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
-                    onClicked: {
+                    onPressed: {
                         inputName = false
                         parent.forceActiveFocus()
                         fileList.focus = true
@@ -212,7 +212,7 @@ Rectangle {
                             if (fileList.controlPressed) {
                                 fileList.selection.select(styleData.row)
                             } else if (fileList.shiftPressed) {
-                                var lowIndex = fileList.rowCount + 1
+                                var lowIndex = fileList.rowCount
                                 fileList.selection.forEach(function (rowIndex) {
                                     if (lowIndex > rowIndex)
                                         lowIndex = rowIndex

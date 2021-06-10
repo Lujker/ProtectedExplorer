@@ -112,6 +112,7 @@ ApplicationWindow {
             anchors.bottom: _rowLayoutTableButtom.top
             anchors.right: _rectWidth.left
             anchors.left: parent.left
+            anchors.leftMargin: 5
             onPressToElement: {
                 subView.deselectAll()
             }
@@ -172,6 +173,7 @@ ApplicationWindow {
             anchors.top: subComboBox.bottom
             anchors.bottom: _rowLayoutTableButtom.top
             anchors.left: _rectWidth.right
+            anchors.rightMargin: 5
             anchors.right: parent.right
 
             onPressToElement: {
@@ -228,8 +230,6 @@ ApplicationWindow {
                 toolTipText: "Создать файл в открытом каталоге таблицы"
                 onButtonClicked: {
                     _dialogNewFile.open()
-                    //                    subView.addNewFile()
-                    //                    dirView.addNewFile()
                 }
             }
             AppButton {
@@ -237,8 +237,6 @@ ApplicationWindow {
                 toolTipText: "Создать папку в открытом каталоге таблицы"
                 onButtonClicked: {
                     _dialogNewFolder.open()
-                    //                    subView.addNewFolder()
-                    //                    dirView.addNewFolder()
                 }
             }
             AppButton {

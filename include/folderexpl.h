@@ -32,6 +32,8 @@
 /// написанные модули
 #include <settingscontroller.h>
 #include <loger.h>
+#include <databaseaccessor.h>
+#include <databasequery.h>
 
 
 class DirsModel;
