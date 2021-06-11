@@ -4,7 +4,7 @@ import QtQuick.Controls 2.15
 ComboBox {
     id: dirComboBox
     height: 25
-    model: ["Файловая система", "Сетевые папки"]
+    model: ["Файловая система", "Сетевые папки", "Входящие", "Исходящие"]
     anchors.topMargin: 5
     anchors.leftMargin: 10
 }

@@ -263,7 +263,7 @@ Rectangle {
                         anchors.fill: parent
                         spacing: 2
 
-                        PopupItem {
+                        PopupFMItem {
                             text: qsTr("Удалить")
                             onButtonPress: {
                                 deleteSelected()
@@ -272,7 +272,7 @@ Rectangle {
                                 _itemDelegatePopup.close()
                             }
                         }
-                        PopupItem {
+                        PopupFMItem {
                             text: qsTr("Переименовать")
                             onButtonPress: {
                                 inputName = true
@@ -283,7 +283,7 @@ Rectangle {
                                 _itemDelegatePopup.close()
                             }
                         }
-                        PopupItem {
+                        PopupFMItem {
 
                             text: qsTr("Отправить")
 
@@ -294,7 +294,7 @@ Rectangle {
                                 _itemDelegatePopup.close()
                             }
                         }
-                        PopupItem {
+                        PopupFMItem {
                             text: qsTr("Подписать")
                             onButtonPress: {
                                 signedFiles()

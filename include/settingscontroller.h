@@ -25,7 +25,7 @@
 struct Abonent
 {
     std::string sys_name;
-    int db_id;
+    int db_type_id;
     std::string outbox_path;
     std::string inbox_path;
 };
@@ -78,7 +78,7 @@ public:
     std::vector<std::pair<std::string,std::string>> sub_list_dirs();
     QString log_file_path();
     std::vector<std::pair<std::string,std::string>> dir_list();
-    std::vector<Abonent> abonents();
+    std::vector<Abonent> &abonents();
 //    std::list<std::string> parse_dir_list();
 //    std::list<std::string> parse_sub_list();
 

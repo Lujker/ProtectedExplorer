@@ -100,7 +100,7 @@ void SettingsController::save_settings(std::string path_to_save_file)
     xmlWriter.writeStartElement("addressbook");
     for(const auto &it : m_set.abonents){
         xmlWriter.writeStartElement("system");  // Записываем тег с именем для первого чекбокса
-        xmlWriter.writeAttribute("id", QString::number(it.db_id));
+        xmlWriter.writeAttribute("type_id", QString::number(it.db_type_id));
         xmlWriter.writeAttribute("name", QString::fromStdString(it.sys_name));
         xmlWriter.writeStartElement("outbox");
         xmlWriter.writeCharacters(QString::fromStdString(it.outbox_path));
@@ -189,8 +189,8 @@ void SettingsController::read_settings()
                               if (attr.name().toString() == "name") {
                                   new_abonent.sys_name = attr.value().toString().toStdString();
                               }
-                              else if(attr.name().toString() == "id"){
-                                  new_abonent.db_id = attr.value().toInt();
+                              else if(attr.name().toString() == "type_id"){
+                                  new_abonent.db_type_id = attr.value().toInt();
                               }
                           }
                           for(int i=0;i<2;++i){
@@ -249,73 +249,10 @@ std::vector<std::pair<std::string,std::string>> SettingsController::dir_list()
     return m_set.dir_list;
 }
 
-std::vector<Abonent> SettingsController::abonents()
+std::vector<Abonent>& SettingsController::abonents()
 {
     return m_set.abonents;
 }
-
-///*!
-// * \brief SettingsController::parse_dir_list парсинг списка дерикторий в список строк по разделителю
-// * \return список путей к дерикториям
-// */
-//std::list<std::string> SettingsController::parse_dir_list()
-//{
-//    std::list<std::string> lst;
-//    if(!m_set.dir_list.empty()){
-//        auto vect = split(m_set.dir_list,PATH_SEPARATOR);
-//        if(vect.empty()){
-//            return lst;
-//        }
-//        else{
-//            ///проверка имени дериктории по абсолютному пути
-//            /// если такой нет то создаем ее в home дериктории пользователя если ее еще не создали
-//            for(const auto& it : vect){
-//                QDir dir(QString::fromStdString(it));
-//                if(!dir.exists()){
-//                    QString iter_dir_path(QDir::homePath()+
-//                                          QDir::separator()+
-//                                          QString::fromStdString(it));
-//                    QDir dir_in_home(iter_dir_path);
-//                    if(!dir_in_home.exists()){
-//                        QDir home = QDir::home();
-//                        home.mkpath(QString::fromStdString(it));
-//                    }
-//                    lst.push_back((iter_dir_path).toStdString());
-//                }
-//                else    lst.push_back(it);
-//            }
-//        }
-//    }
-//    return lst;
-//}
-
-///*!
-// * \brief SettingsController::parse_sub_list парсинг списка сетевых папок в список строк по разделителю
-// * \return список путей к дерикториям
-// */
-//std::list<std::string> SettingsController::parse_sub_list()
-//{
-//    std::list<std::string> lst;
-//    if(!m_set.sub_list_dirs.empty()){
-//        auto vect = split(m_set.sub_list_dirs,PATH_SEPARATOR);
-//        if(vect.empty()){
-//            return lst;
-//        }
-//        else{
-//            for(const auto& it : vect){
-//                lst.push_back(it);
-//            }
-//        }
-//    }
-//    return lst;
-//}
-
-//void SettingsController::set_sub_list_dirs(const QString &name)
-//{
-//    auto list = name.split("///");
-//    m_set.sub_list_dirs = list.at(list.size()-1).toStdString();
-//    emit sub_list_dirs_change(QString::fromStdString(m_set.sub_list_dirs));
-//}
 
 void SettingsController::save_app_settings()
 {

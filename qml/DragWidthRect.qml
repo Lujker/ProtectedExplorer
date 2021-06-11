@@ -17,10 +17,10 @@ Rectangle {
         onMouseXChanged: {
             if (drag.active) {
                 var newX = parent.x + mouseX
-                if (newX > 1010)
-                    parent.x = 1010
-                else if (newX < 10)
-                    parent.x = 10
+                if (newX > mainWindow.width - 20)
+                    parent.x = mainWindow.width - 20
+                else if (newX < 20)
+                    parent.x = 20
                 else
                     parent.x = newX
             }

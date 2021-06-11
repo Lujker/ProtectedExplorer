@@ -38,12 +38,13 @@
 
 class DirsModel;
 class IconProvider;
+class EmailModel;
 
 /*!
  * \brief The FolderExpl class
  * \details Класс обертка для моделей таблиц файловой системы.
  * Класс предназначен для установлние связей (QObject::connect)
- * между двумя моделями и их инициализации.
+ * между двумя моделями и почтовой моделью, и их инициализации.
  * \author Zelenskiy V.P.
  * \version 1.0
  * \date 01.06.2021
@@ -55,7 +56,7 @@ class FolderExpl : public QObject
 public:
     explicit FolderExpl(QObject *parent = nullptr);
     void initFromSettings();
-    void init(DirsModel *subs, DirsModel* dirs);
+    void init(DirsModel *subs, DirsModel* dirs, EmailModel* mail = nullptr);
     void clear_members();
 
     DirsModel *sub_model() const;
@@ -63,13 +64,11 @@ public:
 
     IconProvider *getProvider() const;
     void setProvider(IconProvider *value);
-
-signals:
-
 private:
-    DirsModel* m_sub_model;
-    DirsModel* m_dir_model;
-    IconProvider* provider;
+    DirsModel*      m_sub_model;
+    DirsModel*      m_dir_model;
+    EmailModel*     m_mail_model;
+    IconProvider*       provider;
 };
 
 /*!
@@ -144,12 +143,12 @@ private:
     ///список даступных папок с их вложением
     std::vector<std::pair<std::string,std::string>> m_dirs;
     ///открытая сейчас дериктория
-    QDir* folder;
+    QDir* m_folder;
     ///списко имен папок и файлов для отображения
     QList<QString> m_filenames;
     ///уровень вхождения
     int m_level_count;
-    QFileSystemWatcher* watcher;
+    QFileSystemWatcher* m_watcher;
     std::string m_current_dir;
 
     ///Перечисление для доступа к информации в qml
@@ -167,21 +166,50 @@ private:
 
     /// QAbstractItemModel interface
 public:
-    QModelIndex index(int row, int column, const QModelIndex &parent) const;
-    QModelIndex parent(const QModelIndex &child) const;
-    int rowCount(const QModelIndex &parent) const;
-    int columnCount(const QModelIndex &parent) const;
-    QVariant data(const QModelIndex &index, int role) const;
-    QHash<int, QByteArray> roleNames() const;
+    QModelIndex index(int row, int column, const QModelIndex &parent) const override;
+    QModelIndex parent(const QModelIndex &child) const override;
+    int rowCount(const QModelIndex &parent) const override;
+    int columnCount(const QModelIndex &parent) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
 
 signals:
     void copyFile(QString);
     void current_dir_change(QString);
 };
 
+/*!
+ * \brief The EmailModel class
+ * \details Класс определяет почтовый виджет для работы с формированием и отправкой/принятем контейнеров
+ * из черного ящика.
+ *
+ * \author Zelenskiy V.P.
+ * \version 1.0
+ * \date 10.06.2021
+ * \warning
+ */
 class EmailModel: public QAbstractListModel
 {
+public:
+    explicit EmailModel(const std::vector<Abonent>& abonents, QObject* parent = nullptr);
+    void initModelData();
+    void initAddressBook();
 
+    int status() const;
+    void setStatus(int status);
+    // QAbstractItemModel interface
+public:
+    QModelIndex index(int row, int column, const QModelIndex &parent) const override;
+    QModelIndex parent(const QModelIndex &child) const override;
+    int rowCount(const QModelIndex &parent) const override;
+    int columnCount(const QModelIndex &parent) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
+
+
+private:
+    const std::vector<Abonent>& m_ref_abonents;
+    int                         m_status;
 };
 
 /*!
@@ -203,8 +231,6 @@ public:
 protected:
     QFileIconProvider m_provider;
     QMimeDatabase m_mimeDB;
-signals:
-public slots:
 };
 
 #endif // FOLDEREXPL_H

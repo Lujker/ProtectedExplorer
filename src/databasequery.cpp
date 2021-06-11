@@ -16,7 +16,7 @@ RESULT DatabaseQuery::generate_delete_ls_vf_id(int vf_id, int ls_cat)
          return exec_request(qu);
 
 #else
-     QString str = "DELETE FROM \"public\"."+ db::DatabaseAccessor::ls_vf_NamedTable +
+     QString str = "DELETE FROM \"public\"."+
              QString(" WHERE vf_id=\'") + (vf_id) +
              QString("\' AND ls_cat_id=") +
              QString::number((ls_cat));
@@ -58,7 +58,7 @@ RESULT DatabaseQuery::generate_insert_ls_vf(int vf_id, int ls_cat,
 
     return exec_request(qu);
 #else
-    QString str = "INSERT INTO \"public\"."+ db::DatabaseAccessor::ls_vf_NamedTable +
+    QString str = "INSERT INTO \"public\"." +
             QString(" (vf_id, ls_cat_id, count_st, count_real, count_list, count_sick, count_dead)") +
             QString(" VALUES (\'") + (vf_id) + "\'," +
             QString::number((ls_cat)) + ","  + QString::number(count_st)+ "," +
@@ -87,7 +87,7 @@ RESULT DatabaseQuery::generate_delete_vvt_id(int vf_id, std::string ls_cat)
     return exec_request(qu);
 #else
 
-    QString str = "DELETE FROM \"public\"."+ db::DatabaseAccessor::vvt_NamedTable +
+    QString str = "DELETE FROM \"public\"." +
             QString(" WHERE vf_id=\'") + (vf_id) +
             QString("\' AND vvt_type_id=\'") + n_s + "\'";
 
@@ -125,7 +125,7 @@ RESULT DatabaseQuery::generate_insert_vvt(int vf_id, std::string code_pr, int st
     QByteArray b_arr = QByteArray::fromStdString(code_pr);
     QString n_s = codec->toUnicode(b_arr);
 
-    QString str = "INSERT INTO \"public\"."+ db::DatabaseAccessor::vvt_NamedTable +
+    QString str = "INSERT INTO \"public\"." +
             QString(" (vf_id, vvt_type_id, count_st, count_own)")+
             QString(" VALUES (\'") + (vf_id) + "\',\'" + n_s + "\'," +
             QString::number(staff_pr)+ "," + QString::number(presence_pr) + ")";

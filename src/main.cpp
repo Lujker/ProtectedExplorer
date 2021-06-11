@@ -36,7 +36,9 @@ int main(int argc, char *argv[])
     ctxt->setContextProperty(QLatin1String("AppSettings"), &SettingsController::get_instanse());
     ctxt->setContextProperty(QLatin1String("DirModel"), expl.dir_model());
     ctxt->setContextProperty(QLatin1String("SubModel"), expl.sub_model());
+    ///устновка постовщика изображений
     engine.addImageProvider(QLatin1String("iconProvider"), expl.getProvider());
+    ///загрузка входного модуля
     engine.load(url);
 
     return app.exec();

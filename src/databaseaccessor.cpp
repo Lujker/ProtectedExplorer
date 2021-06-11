@@ -3,8 +3,6 @@
 namespace db {
 ///инициализация статических переменных для доступа к ним в других классах проекта
 QString DatabaseAccessor::dbName=nullptr;
-QString DatabaseAccessor::ls_vf_NamedTable=nullptr;
-QString DatabaseAccessor::vvt_NamedTable=nullptr;
 int     DatabaseAccessor::m_state=0;
 
 /*!

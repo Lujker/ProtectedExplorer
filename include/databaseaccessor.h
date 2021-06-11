@@ -11,8 +11,6 @@
 
 
 namespace db {
-
-
 enum DBState{
                      OK=20,
            ERROR_NO_DRIVER,
@@ -64,8 +62,8 @@ namespace
  * получения его инстенса. Это используется в конструкторе главного окна.
  *
  *  \author Z.V.P
- *  \version 1.1
- *  \date 04.02.2021
+ *  \version 1.2
+ *  \date 10.06.2021
  *
  * */
 class DatabaseAccessor: public QObject
@@ -76,11 +74,8 @@ public:
     ///получение экземпляра базы данных
     static DatabaseAccessor* getInstanse();
     ///параметры настроек для подключения к базе данных
-    static QString dbName;
-    ///названия таблиц которые мы передаем в класс query при запросах
-    static QString ls_vf_NamedTable;
-    static QString vvt_NamedTable;
-    static int     m_state;
+    static QString   dbName;
+    static int      m_state;
 
 
 public:
@@ -100,8 +95,6 @@ private:
     ~DatabaseAccessor();
     DatabaseAccessor(const DatabaseAccessor&) =delete;
     DatabaseAccessor& operator=(const DatabaseAccessor& )=delete;
-    //move construct and move operator= not create, bec we have constructor&
-
     //database referense
     std::unique_ptr<QSqlDatabase,DBCloser> db;
 };
