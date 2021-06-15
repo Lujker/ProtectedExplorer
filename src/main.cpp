@@ -34,8 +34,8 @@ int main(int argc, char *argv[])
     ///Загрузка объектов в контекст QML интерфейса
     QQmlContext* ctxt = engine.rootContext();
     ctxt->setContextProperty(QLatin1String("AppSettings"), &SettingsController::get_instanse());
-    ctxt->setContextProperty(QLatin1String("DirModel"), expl.dir_model());
-    ctxt->setContextProperty(QLatin1String("SubModel"), expl.sub_model());
+    ctxt->setContextProperty(QLatin1String("DirModel"), expl.getDir_models().at(0));
+    ctxt->setContextProperty(QLatin1String("SubModel"), expl.getDir_models().at(1));
     ///устновка постовщика изображений
     engine.addImageProvider(QLatin1String("iconProvider"), expl.getProvider());
     ///загрузка входного модуля

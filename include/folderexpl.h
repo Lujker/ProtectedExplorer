@@ -49,19 +49,22 @@ class FolderExpl : public QObject
     Q_OBJECT
 public:
     explicit FolderExpl(QObject *parent = nullptr);
+    ~FolderExpl();
     void initFromSettings();
-    void init(DirsModel *subs, DirsModel* dirs, EmailModel* mail = nullptr);
+    void init(DirsModel *subs, DirsModel* dirs);
     void clear_members();
-
-    DirsModel *sub_model() const;
-    DirsModel *dir_model() const;
 
     IconProvider *getProvider() const;
     void setProvider(IconProvider *value);
+    std::vector<DirsModel *> getDir_models() const;
+    void setDir_models(const std::vector<DirsModel *> &dir_models);
+
+    std::vector<EmailModel *> getEmail_models() const;
+    void setEmail_models(const std::vector<EmailModel *> &email_models);
+
 private:
-    DirsModel*      m_sub_model;
-    DirsModel*      m_dir_model;
-    EmailModel*     m_mail_model;
+    std::vector<DirsModel*>     m_dir_models;
+    std::vector<EmailModel*>    m_email_models;
     IconProvider*       provider;
 };
 

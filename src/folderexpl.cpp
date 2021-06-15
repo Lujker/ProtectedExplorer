@@ -1,8 +1,13 @@
 ﻿#include "folderexpl.h"
 
 FolderExpl::FolderExpl(QObject *parent) :
-    QObject(parent) , m_sub_model(nullptr), m_dir_model(nullptr), m_mail_model(nullptr), provider(nullptr)
+    QObject(parent), provider(nullptr)
 {}
+
+FolderExpl::~FolderExpl()
+{
+    clear_members();
+}
 
 /*!
  * \brief FolderExpl::initFromSettings
@@ -11,18 +16,19 @@ FolderExpl::FolderExpl(QObject *parent) :
 void FolderExpl::initFromSettings()
 {
     clear_members();
-    m_dir_model = new DirsModel(SettingsController::get_instanse().dir_list());
-    m_sub_model = new DirsModel(SettingsController::get_instanse().sub_list_dirs());
-    m_mail_model = new EmailModel(SettingsController::get_instanse().abonents());
+    m_dir_models.push_back(new DirsModel(SettingsController::get_instanse().dir_list()));
+    m_dir_models.push_back(new DirsModel(SettingsController::get_instanse().sub_list_dirs()));
+    m_email_models.push_back(new EmailModel(SettingsController::get_instanse().abonents()));
+    m_email_models.push_back(new EmailModel(SettingsController::get_instanse().abonents()));
     provider = new IconProvider;
 
-    if(m_sub_model!=nullptr && m_dir_model!=nullptr){
-        QObject::connect(m_sub_model,SIGNAL(copyFile(QString)),m_dir_model,SLOT(copyFrom(QString)));
-        QObject::connect(m_dir_model,SIGNAL(copyFile(QString)),m_sub_model,SLOT(copyFrom(QString)));
+    if(m_dir_models.size()==2){
+        QObject::connect(m_dir_models.at(1),SIGNAL(copyFile(QString)),m_dir_models.at(0),SLOT(copyFrom(QString)));
+        QObject::connect(m_dir_models.at(0),SIGNAL(copyFile(QString)),m_dir_models.at(1),SLOT(copyFrom(QString)));
     }
-    if(m_mail_model->status() == 0){
-        m_mail_model->initAddressBook();    /// синхронизация адресной книги из настроек и БД
-        m_mail_model->initModelData();      /// синхронизация сообщений из БД и моделью
+    for(const auto& it : m_email_models){
+        it->initAddressBook();    /// синхронизация адресной книги из настроек и БД
+        it->initModelData();      /// синхронизация сообщений из БД и моделью
     }
 }
 
@@ -31,11 +37,11 @@ void FolderExpl::initFromSettings()
  * \param subs - метод инициализации модели сетевых папок
  * \param dirs - метод иницилизации модели доступных папок
  */
-void FolderExpl::init(DirsModel *subs, DirsModel *dirs, EmailModel* mail)
+void FolderExpl::init(DirsModel *subs, DirsModel *dirs)
 {
     clear_members();
-    m_sub_model = subs;
-    m_dir_model = dirs;
+    m_dir_models.push_back(subs);
+    m_dir_models.push_back(dirs);
 }
 
 /*!
@@ -44,33 +50,22 @@ void FolderExpl::init(DirsModel *subs, DirsModel *dirs, EmailModel* mail)
  */
 void FolderExpl::clear_members()
 {
-    if(m_sub_model!=nullptr){
-        delete m_sub_model;
-        m_dir_model = nullptr;
+
+    for(unsigned long i = 0 ; i < m_dir_models.size();++i){
+        delete m_dir_models[i];
     }
-    if(m_dir_model!=nullptr){
-        delete m_dir_model;
-        m_dir_model = nullptr;
-    }
+    m_dir_models.clear();
+
     if(provider!=nullptr){
         delete  provider;
         provider = nullptr;
     }
-    if(m_mail_model!=nullptr){
-        delete m_mail_model;
-        m_mail_model = nullptr;
+    for(unsigned long i = 0 ; i < m_email_models.size();++i){
+        delete m_email_models[i];
     }
+    m_email_models.clear();
 }
 
-DirsModel *FolderExpl::sub_model() const
-{
-    return m_sub_model;
-}
-
-DirsModel *FolderExpl::dir_model() const
-{
-    return m_dir_model;
-}
 
 IconProvider *FolderExpl::getProvider() const
 {
@@ -80,6 +75,26 @@ IconProvider *FolderExpl::getProvider() const
 void FolderExpl::setProvider(IconProvider *value)
 {
     provider = value;
+}
+
+std::vector<DirsModel *> FolderExpl::getDir_models() const
+{
+    return m_dir_models;
+}
+
+void FolderExpl::setDir_models(const std::vector<DirsModel *> &dir_models)
+{
+    m_dir_models = dir_models;
+}
+
+std::vector<EmailModel *> FolderExpl::getEmail_models() const
+{
+    return m_email_models;
+}
+
+void FolderExpl::setEmail_models(const std::vector<EmailModel *> &email_models)
+{
+    m_email_models = email_models;
 }
 
 /*!

@@ -67,6 +67,16 @@ void EmailModel::setStatus(int status)
     m_status = status;
 }
 
+void EmailModel::setOutputLetters()
+{
+
+}
+
+void EmailModel::setInputLetters()
+{
+
+}
+
 QModelIndex EmailModel::index(int row, int column, const QModelIndex &parent) const
 {
        Q_UNUSED(column)
