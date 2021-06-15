@@ -19,17 +19,9 @@
 #include <QFileIconProvider>
 #include <QMimeDatabase>
 #include <QPixmap>
-/// модули SQL
-#include <QSql>
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlError>
-
 /// stl модули
 #include <list>
 #include <algorithm>
-#include <set>
-
 /// написанные модули
 #include <settingscontroller.h>
 #include <loger.h>

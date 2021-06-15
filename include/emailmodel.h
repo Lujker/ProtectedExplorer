@@ -8,7 +8,6 @@
 #include <list>
 #include <algorithm>
 #include <set>
-
 /// написанные модули
 #include <settingscontroller.h>
 #include <loger.h>
@@ -32,6 +31,7 @@
  */
 class EmailModel: public QAbstractListModel
 {
+    Q_OBJECT
 public:
     explicit EmailModel(const std::vector<Abonent>& abonents, QObject* parent = nullptr);
     void initModelData();

@@ -87,7 +87,7 @@ bool DatabaseAccessor::driver_check()
  */
 DatabaseAccessor::DatabaseAccessor()
 {
-    auto database = new QSqlDatabase(QSqlDatabase::addDatabase("QPSQL"));
+    auto database = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
     db.reset(database);
     db->setDatabaseName(dbName);
 
