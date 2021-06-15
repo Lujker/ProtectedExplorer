@@ -295,3 +295,18 @@ std::string SettingsController::checkFolder(const std::string &absPath)
     }
     return absPath;
 }
+
+bool Abonent::operator==(const Abonent &ab) const
+{
+    return this->sys_name==ab.sys_name;
+}
+
+bool Abonent::operator!=(const Abonent &ab) const
+{
+    return !(*this==ab);
+}
+
+bool Abonent::operator<(const Abonent &ab) const
+{
+    return this->sys_name<ab.sys_name;
+}

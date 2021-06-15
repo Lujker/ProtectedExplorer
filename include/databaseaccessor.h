@@ -1,7 +1,7 @@
 ﻿#ifndef DATABASEACCESSOR_H
 #define DATABASEACCESSOR_H
 
-//Qt libs
+///Qt libs
 #include <QObject>
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -16,7 +16,6 @@ enum DBState{
            ERROR_NO_DRIVER,
              ERROR_OPENING,
                ERROR_QUERY,
-                ERROR_BASU,
   ERROR_NOT_EXIST_SETTINGS
 };
 
@@ -64,7 +63,6 @@ namespace
  *  \author Z.V.P
  *  \version 1.2
  *  \date 10.06.2021
- *
  * */
 class DatabaseAccessor: public QObject
 {
@@ -85,9 +83,10 @@ public:
     bool db_is_valid();
     bool check_tables();
     bool create_tables();
+    bool driver_check();
     static void setState(int state);
     static int getState();
-    static void close();
+    void close();
 
 
 private:

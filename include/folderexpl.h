@@ -28,12 +28,14 @@
 /// stl модули
 #include <list>
 #include <algorithm>
+#include <set>
 
 /// написанные модули
 #include <settingscontroller.h>
 #include <loger.h>
 #include <databaseaccessor.h>
 #include <databasequery.h>
+#include <emailmodel.h>
 
 
 class DirsModel;
@@ -137,32 +139,8 @@ public slots:
     void sortByDate(bool lower = false);
     void sortBySize(bool lower = false);
     void sortBySuffix(bool lower = false);
-
-
-private:
-    ///список даступных папок с их вложением
-    std::vector<std::pair<std::string,std::string>> m_dirs;
-    ///открытая сейчас дериктория
-    QDir* m_folder;
-    ///списко имен папок и файлов для отображения
-    QList<QString> m_filenames;
-    ///уровень вхождения
-    int m_level_count;
-    QFileSystemWatcher* m_watcher;
-    std::string m_current_dir;
-
-    ///Перечисление для доступа к информации в qml
-    enum DirsRoles
-        {
-            FilePathRole = Qt::UserRole+1,
-            NameRole,
-            SuffixRole,
-            SizeRole,
-            isFolderRole,
-            DateRole
-        };
-
     void copyPath(QString src, QString dst);
+
 
     /// QAbstractItemModel interface
 public:
@@ -176,40 +154,29 @@ public:
 signals:
     void copyFile(QString);
     void current_dir_change(QString);
-};
-
-/*!
- * \brief The EmailModel class
- * \details Класс определяет почтовый виджет для работы с формированием и отправкой/принятем контейнеров
- * из черного ящика.
- *
- * \author Zelenskiy V.P.
- * \version 1.0
- * \date 10.06.2021
- * \warning
- */
-class EmailModel: public QAbstractListModel
-{
-public:
-    explicit EmailModel(const std::vector<Abonent>& abonents, QObject* parent = nullptr);
-    void initModelData();
-    void initAddressBook();
-
-    int status() const;
-    void setStatus(int status);
-    // QAbstractItemModel interface
-public:
-    QModelIndex index(int row, int column, const QModelIndex &parent) const override;
-    QModelIndex parent(const QModelIndex &child) const override;
-    int rowCount(const QModelIndex &parent) const override;
-    int columnCount(const QModelIndex &parent) const override;
-    QVariant data(const QModelIndex &index, int role) const override;
-    QHash<int, QByteArray> roleNames() const override;
-
 
 private:
-    const std::vector<Abonent>& m_ref_abonents;
-    int                         m_status;
+        ///список даступных папок с их вложением
+        std::vector<std::pair<std::string,std::string>> m_dirs;
+        ///открытая сейчас дериктория
+        QDir* m_folder;
+        ///списко имен папок и файлов для отображения
+        QList<QString> m_filenames;
+        ///уровень вхождения
+        int m_level_count;
+        QFileSystemWatcher* m_watcher;
+        std::string m_current_dir;
+
+        ///Перечисление для доступа к информации в qml
+        enum DirsRoles
+            {
+                FilePathRole = Qt::UserRole+1,
+                NameRole,
+                SuffixRole,
+                SizeRole,
+                isFolderRole,
+                DateRole
+        };
 };
 
 /*!

@@ -25,7 +25,8 @@ int DatabaseAccessor::getState()
  */
 void DatabaseAccessor::close()
 {
-    DBCloser(db);
+    this->close();
+    db.get_deleter()(this->db.get());
 }
 
 void DatabaseAccessor::setState(int state)
@@ -57,17 +58,26 @@ bool DatabaseAccessor::is_open()
     return db->isOpen();
 }
 
+///\brief проврека наличия и подключения к БД
 bool DatabaseAccessor::db_is_valid()
 {
     return db->isValid();
 }
 
+///\brief провекра наличия таблиц
 bool DatabaseAccessor::check_tables()
 {
     return false;
 }
 
+///\brief запускаем скрипт создания базы данных
 bool DatabaseAccessor::create_tables()
+{
+    return false;
+}
+
+///\brief проверка наличия драйвера
+bool DatabaseAccessor::driver_check()
 {
     return false;
 }

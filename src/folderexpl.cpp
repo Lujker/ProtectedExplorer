@@ -21,8 +21,8 @@ void FolderExpl::initFromSettings()
         QObject::connect(m_dir_model,SIGNAL(copyFile(QString)),m_sub_model,SLOT(copyFrom(QString)));
     }
     if(m_mail_model->status() == 0){
-        m_mail_model->initAddressBook();
-        m_mail_model->initModelData();
+        m_mail_model->initAddressBook();    /// синхронизация адресной книги из настроек и БД
+        m_mail_model->initModelData();      /// синхронизация сообщений из БД и моделью
     }
 }
 
@@ -713,18 +713,4 @@ QPixmap IconProvider :: requestPixmap(const QString & id, QSize * size, const QS
         return m_provider.icon (info) .pixmap (width, height);
     }
     return QPixmap();
-}
-
-EmailModel::EmailModel(const std::vector<Abonent> &abonents, QObject *parent):
-    m_ref_abonents(abonents), m_status(0)
-{}
-
-int EmailModel::status() const
-{
-    return m_status;
-}
-
-void EmailModel::setStatus(int status)
-{
-    m_status = status;
 }

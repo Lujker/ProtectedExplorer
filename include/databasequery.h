@@ -4,7 +4,7 @@
 ///Incl moduls
 #include "databaseaccessor.h"
 
-//Qt libs
+///Qt libs
 #include <QObject>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -13,7 +13,7 @@
 #include <QTextCodec>
 #include <QByteArray>
 
-//C and C++ libs
+///C and C++ libs
 #include <cmath>
 #include <map>
 #include <set>
@@ -39,10 +39,20 @@ namespace db {
 class DatabaseQuery
 {
 public:
-    static RESULT generate_delete_ls_vf_id(int vf_id, int ls_cat);
-    static RESULT generate_insert_ls_vf(int vf_id, int ls_cat, int count_st, int count_real, int count_list, int count_sick, int count_dead);
-    static RESULT generate_delete_vvt_id(int vf_id, std::string ls_cat);
-    static RESULT generate_insert_vvt(int vf_id, std::string code_pr, int staff_pr, int presence_pr);
+    ///Abonents_table
+    static RESULT generate_select_abonents();
+    static RESULT generate_select_abonent_input_dir();
+    static RESULT generate_select_abonent_output_dir();
+    static RESULT generate_delete_abonent();
+    static RESULT generate_insert_abonent();
+    static RESULT generate_update_abonent();
+
+    static RESULT generate_select_all_letters();
+    static RESULT generate_select_input_letters();
+    static RESULT generate_select_output_letters();
+    static RESULT generate_insert_letters();
+    static RESULT generate_delete_letters();
+    static RESULT generate_update_letters();
 
     static RESULT generate_create_table();
     static RESULT generate_check_table();

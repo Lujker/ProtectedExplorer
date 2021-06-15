@@ -24,10 +24,16 @@
 
 struct Abonent
 {
+    Abonent(): db_type_id(0)
+    {}
     std::string sys_name;
-    int db_type_id;
     std::string outbox_path;
     std::string inbox_path;
+    int db_type_id;
+
+    bool operator==(const Abonent& ab) const;
+    bool operator!=(const Abonent& ab) const;
+    bool operator<(const Abonent& ab) const;
 };
 /*!
     \brief Структура хранящая основные настройки приложения
@@ -62,10 +68,6 @@ std::vector<std::string> split (const std::string&, char);
 class SettingsController: public QObject
 {
     Q_OBJECT
-
-//    Q_PROPERTY(QString sub_list_dirs READ sub_list_dirs WRITE set_sub_list_dirs NOTIFY sub_list_dirs_change)
-//    Q_PROPERTY(QString dir_list READ dir_list WRITE set_dir_list NOTIFY dir_list_change)
-
 public:
     static SettingsController &get_instanse();
     static void parse_args(const QCoreApplication &app);
@@ -79,14 +81,9 @@ public:
     QString log_file_path();
     std::vector<std::pair<std::string,std::string>> dir_list();
     std::vector<Abonent> &abonents();
-//    std::list<std::string> parse_dir_list();
-//    std::list<std::string> parse_sub_list();
-
     ///PROPERTY_SET
 public slots:
-//    void set_sub_list_dirs(const QString &name);
     void set_log_file_path(const QString& path);
-//    void set_dir_list(const QString& dir_list);
     void save_app_settings();
     ///PROPERTY_NOTIFY
 signals:

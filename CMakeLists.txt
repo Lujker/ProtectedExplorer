@@ -36,6 +36,7 @@ set(PROJECT_SOURCES
         ./src/folderexpl.cpp
         ./src/databasequery.cpp
         ./src/databaseaccessor.cpp
+        ./src/emailmodel.cpp
         ./qml/qml.qrc
 )
 
@@ -45,6 +46,7 @@ set(HEADER_FILE_ONLY
         ./include/settingscontroller.h
         ./include/databasequery.h
         ./include/databaseaccessor.h
+        ./include/emailmodel.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
