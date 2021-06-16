@@ -83,6 +83,12 @@ public:
         DATE
     };
 
+    enum AbonentTypes{
+        BLACKBOX = 1,
+        NETFOLDER,
+        UNDEFINED
+    };
+
 
 private:
     const std::vector<Abonent>& m_ref_abonents;

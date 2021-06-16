@@ -43,8 +43,11 @@ public:
     static RESULT generate_select_abonents();
     static RESULT generate_select_abonent_input_dir();
     static RESULT generate_select_abonent_output_dir();
+    static RESULT generate_update_abonent_type(const size_t &type_id, const std::string &sys_name);
+    static RESULT generate_update_abonent_path(const std::string& input, const std::string& output, const std::string &sys_name);
+
     static RESULT generate_delete_abonent();
-    static RESULT generate_insert_abonent();
+    static RESULT generate_insert_abonent(const size_t &db_id, const std::string &sys_name, const std::string& input, const std::string& output, const size_t &type_id);
     static RESULT generate_update_abonent();
 
     static RESULT generate_select_all_letters();

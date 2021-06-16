@@ -24,12 +24,13 @@
 
 struct Abonent
 {
-    Abonent(): db_type_id(0)
+    Abonent(): db_type_id(0), db_id(0)
     {}
     std::string sys_name;
     std::string outbox_path;
     std::string inbox_path;
     int db_type_id;
+    int db_id;
 
     bool operator==(const Abonent& ab) const;
     bool operator!=(const Abonent& ab) const;

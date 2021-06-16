@@ -2,7 +2,7 @@
 
 namespace db {
 ///инициализация статических переменных для доступа к ним в других классах проекта
-QString DatabaseAccessor::dbName=nullptr;
+QString DatabaseAccessor::dbName="prtexp.db";
 int     DatabaseAccessor::m_state=0;
 
 /*!
@@ -37,9 +37,15 @@ void DatabaseAccessor::setState(int state)
 RESULT DatabaseAccessor::executeQuery(const QString& query)
 {
     QSqlQuery qu(*db);
-    if(!qu.exec(query)&&qu.lastError().isValid())
+
+    if(query.isEmpty()) return std::make_pair(DBResult::FAIL,qu);
+    if(qu.exec(query) && !qu.lastError().isValid()){
         return std::make_pair(DBResult::ISOK,qu);
-    else return std::make_pair(DBResult::FAIL,qu);
+    }
+    else{
+        qDebug()<<qu.lastError().text();
+        return std::make_pair(DBResult::FAIL,qu);
+    }
 }
 
 bool DatabaseAccessor::try_open()
@@ -90,7 +96,6 @@ DatabaseAccessor::DatabaseAccessor()
     auto database = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
     db.reset(database);
     db->setDatabaseName(dbName);
-
     if(!db->open()){
        qDebug()<<db->lastError().text();
     }
