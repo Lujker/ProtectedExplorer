@@ -189,7 +189,7 @@ class IconProvider : public QQuickImageProvider
 {
 public:
     IconProvider();
-    QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize);
+    QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize) override;
 protected:
     QFileIconProvider m_provider;
     QMimeDatabase m_mimeDB;

@@ -222,6 +222,8 @@ void SettingsController::read_settings()
                 xmlReader.readNext();
     }
     file.close(); // Закрываем файл
+
+    set_cl(); ///Заполнение класификаторов из базы данных
 }
 
 bool SettingsController::is_init()
@@ -232,6 +234,12 @@ bool SettingsController::is_init()
 const Settings &SettingsController::get_settings()
 {
     return this->m_set;
+}
+
+void SettingsController::set_cl()
+{
+    db::DatabaseQuery::generate_select_cl_abonent_type(m_set.cl_abonent_type);
+    db::DatabaseQuery::generate_select_cl_status(m_set.cl_status);
 }
 
 std::vector<std::pair<std::string,std::string>> SettingsController::sub_list_dirs()
@@ -309,4 +317,19 @@ bool Abonent::operator!=(const Abonent &ab) const
 bool Abonent::operator<(const Abonent &ab) const
 {
     return this->sys_name<ab.sys_name;
+}
+
+bool Letter::operator==(const Letter &let) const
+{
+    return this->let_id == let.let_id;
+}
+
+bool Letter::operator!=(const Letter &let) const
+{
+    return !(*this==let);
+}
+
+bool Letter::operator<(const Letter &let) const
+{
+    return this->let_id<let.let_id;
 }

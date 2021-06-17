@@ -3,6 +3,7 @@
 
 ///Incl moduls
 #include "databaseaccessor.h"
+#include "settingscontroller.h"
 
 ///Qt libs
 #include <QObject>
@@ -13,12 +14,8 @@
 #include <QTextCodec>
 #include <QByteArray>
 
-///C and C++ libs
-#include <cmath>
-#include <map>
-#include <set>
-#include <iostream>
-#include <iterator>
+struct Abonent;
+struct Letter;
 
 namespace db {
 
@@ -39,23 +36,38 @@ namespace db {
 class DatabaseQuery
 {
 public:
+
+    ///Classificator reading
+    static bool generate_select_cl_status(std::map<std::string, size_t> &cl_status);
+    static bool generate_select_cl_abonent_type(std::map<std::string, size_t>& cl_abonent_type);
+
     ///Abonents_table
     static RESULT generate_select_abonents();
     static RESULT generate_select_abonent_input_dir();
     static RESULT generate_select_abonent_output_dir();
-    static RESULT generate_update_abonent_type(const size_t &type_id, const std::string &sys_name);
-    static RESULT generate_update_abonent_path(const std::string& input, const std::string& output, const std::string &sys_name);
+    static unsigned int generate_select_abonent_count();
 
-    static RESULT generate_delete_abonent();
-    static RESULT generate_insert_abonent(const size_t &db_id, const std::string &sys_name, const std::string& input, const std::string& output, const size_t &type_id);
-    static RESULT generate_update_abonent();
+    static RESULT generate_update_abonent_type(const Abonent& abonent);
 
+    static RESULT generate_update_abonent_path(const Abonent& abonent);
+
+    static RESULT generate_delete_abonent(const Abonent& abonent);
+
+    static RESULT generate_insert_abonent(const Abonent& abonent);
+
+    static RESULT generate_update_abonent(const Abonent& abonent);
+
+    ///Letters table
     static RESULT generate_select_all_letters();
     static RESULT generate_select_input_letters();
     static RESULT generate_select_output_letters();
-    static RESULT generate_insert_letters();
-    static RESULT generate_delete_letters();
-    static RESULT generate_update_letters();
+    static unsigned int generate_select_letters_count();
+
+    static RESULT generate_insert_letters(Letter& letter);
+
+    static RESULT generate_delete_letters(Letter& letter);
+
+    static RESULT generate_update_letters(const Letter& letter);
 
     static RESULT generate_create_table();
     static RESULT generate_check_table();

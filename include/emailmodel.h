@@ -33,41 +33,24 @@ class EmailModel: public QAbstractListModel
 {
     Q_OBJECT
 public:
-    explicit EmailModel(const std::vector<Abonent>& abonents, QObject* parent = nullptr);
-    void initModelData();
-    void initAddressBook();
-    int status() const;
-    void setStatus(int status);
+    explicit EmailModel(std::vector<Abonent>& abonents, QObject* parent = nullptr);
+    void    initModelData();
+    void    initAddressBook();
+    int     status() const;
+    void    setStatus(int status);
 
 public slots:
-    void setOutputLetters();
-    void setInputLetters();
+    void    setOutputLetters();
+    void    setInputLetters();
 
     // QAbstractItemModel interface
 public:
     QModelIndex index(int row, int column, const QModelIndex &parent) const override;
     QModelIndex parent(const QModelIndex &child) const override;
-    int rowCount(const QModelIndex &parent) const override;
-    int columnCount(const QModelIndex &parent) const override;
-    QVariant data(const QModelIndex &index, int role) const override;
+    int         rowCount(const QModelIndex &parent) const override;
+    int         columnCount(const QModelIndex &parent) const override;
+    QVariant    data(const QModelIndex &index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
-
-    /*!
-     * \brief The Letter struct описывает структуру одного сообщения
-     */
-    struct Letter{
-        Letter(): let_id(0), let_status(0)
-        {}
-        int         let_id;     ///id сообщения в БД
-        int         let_status; ///id статуса сообщения
-        std::string let_path;   ///путь к контейнеру письма
-        std::string title;      ///название сообщения
-        std::string date;       ///дата получения/отправки
-
-        bool operator==(const Letter& let) const;
-        bool operator!=(const Letter& let) const;
-        bool operator<(const Letter& let) const;
-    };
 
     enum Status{
         EMPTY = 0,
@@ -83,15 +66,11 @@ public:
         DATE
     };
 
-    enum AbonentTypes{
-        BLACKBOX = 1,
-        NETFOLDER,
-        UNDEFINED
-    };
-
-
 private:
-    const std::vector<Abonent>& m_ref_abonents;
+    void setAbonentsFromRESULT(db::RESULT& result, std::set<Abonent> &ab_arr);
+    void setLettersFromRESULT(db::RESULT& result, std::vector<Letter>& let_arr);
+
+    std::vector<Abonent>& m_ref_abonents;
     std::vector<Letter>         m_letters;
     int                         m_status;
 };

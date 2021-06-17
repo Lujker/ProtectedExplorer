@@ -8,6 +8,8 @@
 #include <utility>
 #include <iostream>
 
+#include "databasequery.h"
+
 #include <QObject>
 #include <QDebug>
 #include <QFile>
@@ -22,6 +24,9 @@
 #define SET_DIR "../settings"
 #define PATH_SEPARATOR ';' ///–азделитель дл€ списка путей
 
+/*!
+ * \brief The Abonent struct описывает структуру абонента в адресной книге
+ */
 struct Abonent
 {
     Abonent(): db_type_id(0), db_id(0)
@@ -36,12 +41,34 @@ struct Abonent
     bool operator!=(const Abonent& ab) const;
     bool operator<(const Abonent& ab) const;
 };
+
+/*!
+ * \brief The Letter struct описывает структуру одного сообщени€
+ */
+struct Letter{
+    Letter(): let_id(0), let_status(0)
+    {}
+    size_t              let_id;     ///id сообщени€ в Ѕƒ
+    size_t              let_status; ///id статуса сообщени€
+    std::string         let_path;   ///путь к контейнеру письма
+    std::string         title;      ///название сообщени€
+    std::string         date;       ///дата получени€/отправки
+    size_t              to_id;
+    size_t              from_id;
+
+    bool operator==(const Letter& let) const;
+    bool operator!=(const Letter& let) const;
+    bool operator<(const Letter& let) const;
+};
+
 /*!
     \brief —труктура хран€ща€ основные настройки приложени€
 */
 struct Settings{
     std::vector<std::pair<std::string,std::string>> shared_list;
     std::vector<std::pair<std::string,std::string>> dir_list;
+    std::map<std::string, size_t> cl_status;
+    std::map<std::string, size_t> cl_abonent_type;
     std::vector<Abonent> abonents;
     std::string log_file_path;
 };
@@ -76,6 +103,7 @@ public:
     void read_settings();
     bool is_init();
     const Settings &get_settings();
+    void set_cl();
 
     ///PROPERTY_GET
     std::vector<std::pair<std::string,std::string>> sub_list_dirs();
