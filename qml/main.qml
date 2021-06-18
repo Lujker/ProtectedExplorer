@@ -71,10 +71,18 @@ ApplicationWindow {
             onActivated: {
                 switch (index) {
                 case 0:
+                    emailView.visible = false
                     DirModel.setAsDirModel()
                     break
                 case 1:
+                    emailView.visible = false
                     DirModel.setAsSubModel()
+                    break
+                case 2:
+                    emailView.visible = true
+                    break
+                case 3:
+                    emailView.visible = true
                     break
                 default:
                     return
@@ -156,6 +164,19 @@ ApplicationWindow {
                 }
             }
         }
+        EmailView {
+            id: emailView
+            parent: _dropArea
+            visible: false
+            listModel: DirModel
+            height: parent.height - _rowLayoutTableButtom.height - dirComboBox.height
+            anchors.top: dirComboBox.bottom
+            anchors.bottom: _rowLayoutTableButtom.top
+            anchors.right: _rectWidth.left
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+        }
+
         ///Элемент для изменения ширины таблиц
         DragWidthRect {
             id: _rectWidth

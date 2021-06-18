@@ -1,11 +1,12 @@
-﻿import QtQuick 2.0
+﻿import QtQuick 2.12
+import QtQuick.Controls 2.12
+import QtQml 2.15
 
 Rectangle {
     id: explWindow
-    property alias listModel: MessageList.model ///переменная для установки модэли для отображения
-    property bool focusOfView: MessageList.focus
+    property alias listModel: messageList.model ///переменная для установки модэли для отображения
+    property bool focusOfView: messageList.focus
     property bool inputName: false ///проиcходит ввод нового имения для файлы
-    property alias curDir: _curFolder.text
     ///Сигналы
     ///сигнал при нажатии на элемент
     signal pressToElement(int index)
@@ -37,30 +38,74 @@ Rectangle {
     signal endDragElem
     anchors.topMargin: 10
     anchors.bottomMargin: 10
+    border.width: 1
 
-    //    TextInput {
-    //        id: _curFolder
-    //        readOnly: true
-    //        clip: true
-    //        anchors.top: parent.top
-    //        anchors.left: parent.left
-    //        anchors.leftMargin: 10
-    //        text: listModel.current_dir
-    //    }
+    Component {
+        id: contentDeleagte
+        Item {
+            anchors.left: parent.left
+            anchors.right: parent.right
 
-    //    ListView {
-    //        id: MessageList
-    //        parent: explWindow
+            Rectangle {
+                id: _mesIcon
+                border.width: 1
+                border.color: "black"
+                radius: 10
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: parent.width / 10
+                anchors.left: parent.left
+                anchors.leftMargin: 5
+                Text {
+                    anchors.fill: parent
+                    text: qsTr("lol")
+                    //                    font: {
+                    //                        pointSize: Math.min(parent.width, parent.height) / 3
+                    //                        bold: true
+                    //                    }
+                }
+            }
+            Rectangle {
+                id: _mesTitle
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: parent.width / 2
+                anchors.left: _mesIcon.right
+                Text {
+                    anchors.fill: parent
+                    text: qsTr("text")
+                }
+            }
+            Rectangle {
+                id: _mesDate
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: parent.width / 10
+                anchors.right: parent.right
+                Text {
+                    anchors.fill: parent
+                    text: qsTr("text")
+                }
+            }
+        }
+    }
 
-    //        anchors.top: _curFolder.bottom
-    //        anchors.topMargin: 10
-    //        anchors.left: parent.left
-    //        anchors.right: parent.right
-    //        anchors.bottom: parent.bottom
-    //        model: dataModel
-    //        clip: true ///разрешить перенос текста
-    //        property bool shiftPressed: false
-    //        property bool controlPressed: false
+    ListView {
+        id: messageList
+        parent: explWindow
+        anchors.fill: parent
+        model: dataModel
+        focus: true
+        clip: true ///разрешить перенос текста
+        property bool shiftPressed: false
+        property bool controlPressed: false
+        highlight: Rectangle {
+            color: "lightsteelblue"
+            radius: 5
+        }
+
+        delegate: contentDeleagte
+    }
 
     //        TableViewColumn {
     //            role: "filepath"
