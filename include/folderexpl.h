@@ -55,8 +55,8 @@ public:
     void clear_members();
 
     IconProvider *getProvider() const;
-    void setProvider(IconProvider *value);
     std::vector<DirsModel *> getDir_models() const;
+    void setProvider(IconProvider *value);
     void setDir_models(const std::vector<DirsModel *> &dir_models);
 
     std::vector<EmailModel *> getEmail_models() const;
@@ -90,7 +90,7 @@ private:
  * \author Zelenskiy V.P.
  * \version 1.0
  * \date 01.06.2021
- * \warning Возможны баги, класс не проходил тестирование
+ * \warning Возможны баги, класс не проходил тестирование. Насоедование не желательно (нужно исправить)
  */
 class DirsModel: public QAbstractTableModel
 {
@@ -100,6 +100,7 @@ class DirsModel: public QAbstractTableModel
 
 public:
     explicit DirsModel(std::vector<std::pair<std::string,std::string>> dirs, QObject* parent = nullptr);
+    ~DirsModel();
     QString current_dir();
 
 public slots:

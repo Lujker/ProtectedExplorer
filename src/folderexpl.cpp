@@ -6,7 +6,15 @@ FolderExpl::FolderExpl(QObject *parent) :
 
 FolderExpl::~FolderExpl()
 {
-    clear_members();
+    try{
+        clear_members();
+    }
+    catch(std::exception& exep){
+        qDebug()<<exep.what();
+    }
+    catch (...) {
+
+    }
 }
 
 /*!
@@ -101,12 +109,32 @@ void FolderExpl::setEmail_models(const std::vector<EmailModel *> &email_models)
  * \brief DirsModel::DirsModel инициализация модели
  * \param dirs списко доступных папок
  */
-DirsModel::DirsModel(std::vector<std::pair<std::string, std::string> > dirs, QObject *parent):
+DirsModel::DirsModel(std::vector<std::pair<std::string, std::string> > dirs, QObject *parent): QAbstractTableModel(parent),
     m_dirs(dirs), m_folder(nullptr),  m_level_count(0),  m_watcher(new QFileSystemWatcher)
 {
-    Q_UNUSED(parent);
-    connect(m_watcher, SIGNAL(directoryChanged(const QString &)), this, SLOT(derictoryChange(const QString &)));
+    connect(m_watcher, SIGNAL(directoryChanged(const QString &)),
+            this, SLOT(derictoryChange(const QString &)));
     refreshModel();
+}
+
+DirsModel::~DirsModel()
+{
+    try {
+        if(m_folder!=nullptr){
+            delete m_folder;
+            m_folder = nullptr;
+        }
+        if(m_watcher!=nullptr){
+            delete m_watcher;
+            m_watcher = nullptr;
+        }
+    }
+    catch(std::exception& exep){
+        qDebug()<<exep.what();
+    }
+    catch (...) {
+
+    }
 }
 
 QString DirsModel::current_dir()

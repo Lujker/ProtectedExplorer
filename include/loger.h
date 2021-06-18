@@ -2,6 +2,7 @@
 #define LOGER_H
 
 #include <memory>
+#include <iostream>
 #include <fstream>
 #include <iostream>
 #include <mutex>

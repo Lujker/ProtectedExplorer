@@ -7,6 +7,7 @@
 #include <vector>
 #include <utility>
 #include <iostream>
+#include <string>
 
 #include "databasequery.h"
 
@@ -34,8 +35,10 @@ struct Abonent
     std::string sys_name;
     std::string outbox_path;
     std::string inbox_path;
-    int db_type_id;
-    int db_id;
+    size_t db_type_id;
+    size_t db_id;
+
+    operator std::string();
 
     bool operator==(const Abonent& ab) const;
     bool operator!=(const Abonent& ab) const;
@@ -48,13 +51,17 @@ struct Abonent
 struct Letter{
     Letter(): let_id(0), let_status(0)
     {}
-    size_t              let_id;     ///id сообщения в БД
-    size_t              let_status; ///id статуса сообщения
-    std::string         let_path;   ///путь к контейнеру письма
-    std::string         title;      ///название сообщения
-    std::string         date;       ///дата получения/отправки
+    size_t              let_id;         ///id сообщения в БД
+    size_t              let_dir_type;   ///Тип сообщения (входя/исх/...)
+    size_t              let_status;     ///id статуса сообщения
+    std::string         let_path;       ///путь к контейнеру письма
+    std::string         title;          ///название сообщения
+    std::string         date;           ///дата получения/отправки
     size_t              to_id;
     size_t              from_id;
+    size_t              attach_count;
+
+    operator std::string();
 
     bool operator==(const Letter& let) const;
     bool operator!=(const Letter& let) const;

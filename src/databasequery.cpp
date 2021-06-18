@@ -94,6 +94,7 @@ RESULT DatabaseQuery::generate_select_all_letters()
 {
     QString str = "SELECT DISTINCT"
             " letters.id,"
+            " letters.dir_type_id,"
             " letters.to_id,"
             " letters.from_id,"
             " let_status.status_id,"
@@ -115,6 +116,7 @@ RESULT DatabaseQuery::generate_select_input_letters()
 {
     QString str = "SELECT DISTINCT"
             " letters.id,"
+            " letters.dir_type_id,"
             " letters.to_id,"
             " letters.from_id,"
             " let_status.status_id,"
@@ -138,6 +140,7 @@ RESULT DatabaseQuery::generate_select_output_letters()
 {
     QString str = "SELECT DISTINCT"
             " letters.id,"
+            " letters.dir_type_id,"
             " letters.to_id,"
             " letters.from_id,"
             " let_status.status_id,"
@@ -170,8 +173,32 @@ unsigned int DatabaseQuery::generate_select_letters_count()
 
 RESULT DatabaseQuery::generate_insert_letters(Letter &letter)
 {
-    QString str;
-    return db::DatabaseAccessor::getInstanse()->executeQuery(str);
+    size_t letter_id = generate_select_letters_count();
+    if(letter_id!=0){
+        QString let_insert = "INSERT INTO letters VALUES ("
+                + QString::number(letter_id) + ", "
+                + QString::number(letter.let_dir_type) + ", "
+                + QString::number(letter.from_id) + ", "
+                + QString::number(letter.to_id) + ");";
+        RESULT res = db::DatabaseAccessor::getInstanse()->executeQuery(let_insert);
+        if(res.first != DBResult::ISOK) return res;
+
+        QString let_status_insert = "INSERT INTO let_status (let_id, date, status_id) VALUES ("
+                + QString::number(letter_id) + ", '"
+                + QString::fromStdString(letter.date) + "', "
+                + QString::number(letter.let_status) + ");";
+        res = db::DatabaseAccessor::getInstanse()->executeQuery(let_status_insert);
+        if(res.first != DBResult::ISOK) return res;
+
+        QString let_option_insert = "INSERT INTO let_status (let_id, let_path, attach_count, let_title) VALUES ("
+                + QString::number(letter_id) + ", '"
+                + QString::fromStdString(letter.let_path) + "', "
+                + QString::number(letter.attach_count) + ", '"
+                + QString::fromStdString(letter.title) + "');";
+        res = db::DatabaseAccessor::getInstanse()->executeQuery(let_option_insert);
+        if(res.first != DBResult::ISOK) return res;
+    }
+    return RESULT(DBResult::FAIL, QSqlQuery());
 }
 
 RESULT DatabaseQuery::generate_delete_letters(Letter &letter)

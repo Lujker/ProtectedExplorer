@@ -66,7 +66,6 @@ namespace
  * */
 class DatabaseAccessor: public QObject
 {
-
     Q_OBJECT
 public:
     ///получение экземпляра базы данных

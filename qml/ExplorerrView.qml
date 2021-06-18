@@ -28,7 +28,7 @@ Rectangle {
     signal openFolder(int index)
     ///переименование файла под индексом
     signal renameFile(int index, string newName)
-    ///нажатие на модэль
+    ///нажатие на модель
     signal presToTable
     ///добавить файл
     signal addNewFile(string name)

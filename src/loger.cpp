@@ -131,7 +131,15 @@ std::string Loger::get_type(const LOG_TYPE &type)
 
 Loger::~Loger()
 {
-    if(m_out.is_open()) m_out.close();
+    try{
+        if(m_out.is_open()) m_out.close();
+    }
+    catch(std::exception& exep){
+        std::cout<<exep.what();
+    }
+    catch (...) {
+
+    }
 }
 
 Loger::Loger()

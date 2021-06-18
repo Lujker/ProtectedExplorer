@@ -304,6 +304,14 @@ std::string SettingsController::checkFolder(const std::string &absPath)
     return absPath;
 }
 
+Abonent::operator std::string()
+{
+    return std::string {"Abonnent: with id '"
+                + std::to_string(this->db_id)
+                + "' and name '"
+                + this->sys_name + "'"};
+}
+
 bool Abonent::operator==(const Abonent &ab) const
 {
     return this->sys_name==ab.sys_name;
@@ -317,6 +325,14 @@ bool Abonent::operator!=(const Abonent &ab) const
 bool Abonent::operator<(const Abonent &ab) const
 {
     return this->sys_name<ab.sys_name;
+}
+
+Letter::operator std::string()
+{
+    return std::string {"Letter: with id '"
+                + std::to_string(this->let_id)
+                + "' and title '"
+                + this->title + "'"};
 }
 
 bool Letter::operator==(const Letter &let) const

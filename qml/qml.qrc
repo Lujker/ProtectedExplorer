@@ -16,5 +16,6 @@
         <file>../icons/move_file.png</file>
         <file>DragWidthRect.qml</file>
         <file>appIcon.ico</file>
+        <file>EmailView.qml</file>
     </qresource>
 </RCC>

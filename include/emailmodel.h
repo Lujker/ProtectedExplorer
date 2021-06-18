@@ -34,10 +34,11 @@ class EmailModel: public QAbstractListModel
     Q_OBJECT
 public:
     explicit EmailModel(std::vector<Abonent>& abonents, QObject* parent = nullptr);
-    void    initModelData();
-    void    initAddressBook();
+    virtual ~EmailModel();
+    virtual void    initModelData();
+    virtual void    initAddressBook();
+    virtual void    setStatus(const int status);
     int     status() const;
-    void    setStatus(int status);
 
 public slots:
     void    setOutputLetters();
@@ -45,12 +46,12 @@ public slots:
 
     // QAbstractItemModel interface
 public:
-    QModelIndex index(int row, int column, const QModelIndex &parent) const override;
-    QModelIndex parent(const QModelIndex &child) const override;
-    int         rowCount(const QModelIndex &parent) const override;
-    int         columnCount(const QModelIndex &parent) const override;
-    QVariant    data(const QModelIndex &index, int role) const override;
-    QHash<int, QByteArray> roleNames() const override;
+    virtual QModelIndex index(int row, int column, const QModelIndex &parent) const override;
+    virtual QModelIndex parent(const QModelIndex &child) const override;
+    virtual int         rowCount(const QModelIndex &parent) const override;
+    virtual int         columnCount(const QModelIndex &parent) const override;
+    virtual QVariant    data(const QModelIndex &index, int role) const override;
+    virtual QHash<int, QByteArray> roleNames() const override;
 
     enum Status{
         EMPTY = 0,
@@ -63,15 +64,19 @@ public:
     enum LetterRoles{
         TITLE = Qt::UserRole+1,
         STATUS,
-        DATE
+        DATE,
+        ATACH_COUNT,
+        FROM,
+        TO
     };
 
 private:
     void setAbonentsFromRESULT(db::RESULT& result, std::set<Abonent> &ab_arr);
     void setLettersFromRESULT(db::RESULT& result, std::vector<Letter>& let_arr);
 
-    std::vector<Abonent>& m_ref_abonents;
-    std::vector<Letter>         m_letters;
-    int                         m_status;
+protected:
+    std::vector<Abonent>&           m_ref_abonents;
+    std::vector<Letter>             m_letters;
+    int                             m_status;
 };
 #endif // EMAILMODEL_H

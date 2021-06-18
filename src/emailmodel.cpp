@@ -1,8 +1,11 @@
 ﻿#include "emailmodel.h"
 
-EmailModel::EmailModel(std::vector<Abonent> &abonents, QObject *parent):
+EmailModel::EmailModel(std::vector<Abonent> &abonents, QObject *parent): QAbstractListModel(parent),
     m_ref_abonents(abonents), m_status(EMPTY)
-{Q_UNUSED(parent);}
+{}
+
+EmailModel::~EmailModel()
+{}
 
 void EmailModel::initModelData()
 {
@@ -67,7 +70,7 @@ int EmailModel::status() const
     return m_status;
 }
 
-void EmailModel::setStatus(int status)
+void EmailModel::setStatus(const int status)
 {
     m_status = status;
 }
@@ -114,11 +117,13 @@ QModelIndex EmailModel::parent(const QModelIndex &child) const
 
 int EmailModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return m_letters.size();
 }
 
 int EmailModel::columnCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return 1;
 }
 
@@ -130,6 +135,12 @@ QVariant EmailModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> EmailModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
+    roles.insert(TITLE, QByteArray("title"));
+    roles.insert(STATUS, QByteArray("status"));
+    roles.insert(DATE, QByteArray("date"));
+    roles.insert(ATACH_COUNT, QByteArray("atach_count"));
+    roles.insert(FROM, QByteArray("from"));
+    roles.insert(TO, QByteArray("to"));
     return roles;
 }
 
@@ -142,7 +153,7 @@ void EmailModel::setAbonentsFromRESULT(db::RESULT &result, std::set<Abonent> &ab
         db_ab.inbox_path = result.second.value(2).toString().toStdString();
         db_ab.outbox_path = result.second.value(3).toString().toStdString();
         db_ab.db_type_id = result.second.value(4).toInt();
-        qDebug()<<result.second.value(1).toString();
+        qDebug()<< QString::fromStdString(db_ab);
         ab_arr.insert(std::move_if_noexcept(db_ab));
     }
 }
@@ -152,14 +163,16 @@ void EmailModel::setLettersFromRESULT(db::RESULT &result, std::vector<Letter> &l
     while(result.second.next()){
         Letter let;
         let.let_id = result.second.value(0).toUInt();
-        let.to_id = result.second.value(1).toUInt();
-        let.from_id = result.second.value(2).toUInt();
-        let.let_status = result.second.value(3).toUInt();
-        let.date = result.second.value(4).toInt();
-        let.title = result.second.value(5).toString().toStdString();
-        let.let_path = result.second.value(6).toString().toStdString();
-        qDebug()<<result.second.value(0).toString();
+        let.let_dir_type = result.second.value(1).toUInt();
+        let.to_id = result.second.value(2).toUInt();
+        let.from_id = result.second.value(3).toUInt();
+        let.let_status = result.second.value(4).toUInt();
+        let.date = result.second.value(5).toInt();
+        let.title = result.second.value(6).toString().toStdString();
+        let.let_path = result.second.value(7).toString().toStdString();
+        let.attach_count = result.second.value(8).toUInt();
         let_arr.push_back(std::move_if_noexcept(let));
+        qDebug()<< QString::fromStdString(let_arr.at(let_arr.size()-1));
     }
 }
 
