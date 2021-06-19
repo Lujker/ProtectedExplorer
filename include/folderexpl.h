@@ -65,7 +65,7 @@ public:
 private:
     std::vector<DirsModel*>     m_dir_models;
     std::vector<EmailModel*>    m_email_models;
-    IconProvider*       provider;
+    IconProvider*               provider;
 };
 
 /*!

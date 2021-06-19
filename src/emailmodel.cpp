@@ -25,7 +25,7 @@ void EmailModel::initAddressBook()
         setAbonentsFromRESULT(res, db_abonents);
         abonents_count = db_abonents.size();
     ///сравнение абонентов БД с настроечными
-        for(auto& it : m_ref_abonents){
+        for(auto& it : ref_abonents()){
             auto ab_iter = db_abonents.find(it);
             if(ab_iter != db_abonents.end()){
                 it.db_id = ab_iter->db_id;
@@ -81,7 +81,7 @@ void EmailModel::setOutputLetters()
     ///изначально считываем только входящие
     if(res.first==db::DBResult::ISOK){
         beginResetModel();
-        setLettersFromRESULT(res,m_letters);
+        setLettersFromRESULT(res, letters());
         endResetModel();
     }
 }
@@ -92,9 +92,19 @@ void EmailModel::setInputLetters()
     ///изначально считываем только входящие
     if(res.first==db::DBResult::ISOK){
         beginResetModel();
-        setLettersFromRESULT(res,m_letters);
+        setLettersFromRESULT(res, letters());
         endResetModel();
     }
+
+}
+
+void EmailModel::update()
+{
+
+}
+
+void EmailModel::updateAbonents()
+{
 
 }
 
@@ -176,3 +186,80 @@ void EmailModel::setLettersFromRESULT(db::RESULT &result, std::vector<Letter> &l
     }
 }
 
+std::vector<Letter>& EmailModel::letters()
+{
+    return m_letters;
+}
+
+void EmailModel::setLetters(const std::vector<Letter> &letters)
+{
+    m_letters = letters;
+}
+
+std::vector<Abonent> &EmailModel::ref_abonents()
+{
+    return m_ref_abonents;
+}
+
+void EmailModel::setRef_abonents(const std::vector<Abonent> &ref_abonents)
+{
+    m_ref_abonents = ref_abonents;
+}
+
+
+AbonentModel::AbonentModel(std::vector<Abonent> &abonents, QObject *parent):
+    QAbstractListModel(parent), m_ref_abonents(abonents)
+{}
+
+AbonentModel::~AbonentModel()
+{}
+
+QModelIndex AbonentModel::index(int row, int column, const QModelIndex &parent) const
+{
+    Q_UNUSED(column)
+    if (!parent.isValid())
+                return createIndex(row, 0, static_cast<quintptr>(0));
+
+    return createIndex(row, 0, parent.row() + 1);
+}
+
+QModelIndex AbonentModel::parent(const QModelIndex &child) const
+{
+    if (!child.isValid() || child.internalId() == 0)
+                   return QModelIndex();
+
+    return createIndex(child.internalId() - 1, 0, static_cast<quintptr>(0));
+}
+
+int AbonentModel::rowCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent)
+    return m_ref_abonents.size();
+}
+
+int AbonentModel::columnCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent)
+    return 1;
+}
+
+QVariant AbonentModel::data(const QModelIndex &index, int role) const
+{
+    return 0;
+}
+
+QHash<int, QByteArray> AbonentModel::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+    return roles;
+}
+
+std::vector<Abonent> &AbonentModel::ref_abonents() const
+{
+    return m_ref_abonents;
+}
+
+void AbonentModel::setRef_abonents(const std::vector<Abonent> &ref_abonents)
+{
+    m_ref_abonents = ref_abonents;
+}
