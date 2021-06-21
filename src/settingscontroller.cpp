@@ -108,6 +108,9 @@ void SettingsController::save_settings(std::string path_to_save_file)
         xmlWriter.writeStartElement("inbox");
         xmlWriter.writeCharacters(QString::fromStdString(it.inbox_path));
         xmlWriter.writeEndElement();
+        xmlWriter.writeStartElement("icon");
+        xmlWriter.writeCharacters(QString::fromStdString(it.icon_path));
+        xmlWriter.writeEndElement();
         xmlWriter.writeEndElement();        // Закрываем тег
     }
     xmlWriter.writeEndElement();
@@ -193,12 +196,14 @@ void SettingsController::read_settings()
                                   new_abonent.db_type_id = attr.value().toInt();
                               }
                           }
-                          for(int i=0;i<2;++i){
+                          for(int i=0;i<3;++i){
                               xmlReader.readNextStartElement();
                               if(xmlReader.name()=="outbox")
                                   new_abonent.outbox_path=xmlReader.readElementText().toStdString();
                               else if(xmlReader.name()=="inbox")
                                   new_abonent.inbox_path=xmlReader.readElementText().toStdString();
+                              else if(xmlReader.name()=="icon")
+                                  new_abonent.icon_path=checkIcon(xmlReader.readElementText());
                           }
 //                          qDebug()<<new_abonent.db_id << " " << QString::fromStdString(new_abonent.sys_name) << " " << QString::fromStdString(new_abonent.inbox_path)
 //                                 << " "<< QString::fromStdString(new_abonent.outbox_path);
@@ -304,6 +309,19 @@ std::string SettingsController::checkFolder(const std::string &absPath)
     return absPath;
 }
 
+std::string SettingsController::checkIcon(const QString &iconPath)
+{
+    if(QFile::exists(iconPath)){
+        QImage image(iconPath);
+        if(image.isNull()) return ":/../icons/contacts.png";
+        else {
+            qDebug()<<iconPath;
+            return "file:///" + iconPath.toStdString();
+        }
+    }
+    return ":/../icons/contacts.png";
+}
+
 Abonent::operator std::string()
 {
     return std::string {"Abonnent: with id '"
@@ -332,7 +350,10 @@ Letter::operator std::string()
     return std::string {"Letter: with id '"
                 + std::to_string(this->let_id)
                 + "' and title '"
-                + this->title + "'"};
+                + this->title + "'"
+                + " and last date: '"
+                + this->date + "'"
+                };
 }
 
 bool Letter::operator==(const Letter &let) const

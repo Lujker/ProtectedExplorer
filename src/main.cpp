@@ -36,6 +36,8 @@ int main(int argc, char *argv[])
     ctxt->setContextProperty(QLatin1String("AppSettings"), &SettingsController::get_instanse());
     ctxt->setContextProperty(QLatin1String("DirModel"), expl.getDir_models().at(0));
     ctxt->setContextProperty(QLatin1String("SubModel"), expl.getDir_models().at(1));
+    ctxt->setContextProperty(QLatin1String("EmailModelLeft"), expl.getEmail_models().at(0));
+    ctxt->setContextProperty(QLatin1String("EmailModelRight"), expl.getEmail_models().at(0));
     ///устновка постовщика изображений
     engine.addImageProvider(QLatin1String("iconProvider"), expl.getProvider());
     ///загрузка входного модуля

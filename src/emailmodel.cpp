@@ -139,18 +139,46 @@ int EmailModel::columnCount(const QModelIndex &parent) const
 
 QVariant EmailModel::data(const QModelIndex &index, int role) const
 {
-    return 0;
+    if(index.row() < m_letters.size() && index.row()>= 0){
+        auto finder = std::find_if(m_ref_abonents.begin(), m_ref_abonents.end() ,[&](const Abonent& it){
+            return it.db_id==m_letters.at(index.row()).from_id;
+        });
+        switch (role) {
+        case TITLE:
+            return QString::fromStdString(m_letters.at(index.row()).title);
+            break;
+        case DATE:
+            return QString::fromStdString(m_letters.at(index.row()).date);
+            break;
+        case ATACH_COUNT:
+            return m_letters.at(index.row()).attach_count;
+            break;
+        case ICON:
+
+            if(finder!=m_ref_abonents.end())
+                return QString::fromStdString(finder->icon_path);
+            else return ":/../icons/contacts.png";
+            break;
+        case SENDER:
+            if(finder!=m_ref_abonents.end())
+                return QString::fromStdString(finder->sys_name);
+            else return "Неизвестный абонент";
+            break;
+        }
+    }
+
+    return QVariant();
 }
 
 QHash<int, QByteArray> EmailModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
-    roles.insert(TITLE, QByteArray("title"));
-    roles.insert(STATUS, QByteArray("status"));
-    roles.insert(DATE, QByteArray("date"));
-    roles.insert(ATACH_COUNT, QByteArray("atach_count"));
-    roles.insert(FROM, QByteArray("from"));
-    roles.insert(TO, QByteArray("to"));
+    roles.insert(TITLE,         QByteArray("title"));
+    roles.insert(STATUS,        QByteArray("status"));
+    roles.insert(DATE,          QByteArray("date"));
+    roles.insert(ICON,          QByteArray("icon"));
+    roles.insert(ATACH_COUNT,   QByteArray("atach_count"));
+    roles.insert(SENDER,        QByteArray("sender"));
     return roles;
 }
 
@@ -177,12 +205,12 @@ void EmailModel::setLettersFromRESULT(db::RESULT &result, std::vector<Letter> &l
         let.to_id = result.second.value(2).toUInt();
         let.from_id = result.second.value(3).toUInt();
         let.let_status = result.second.value(4).toUInt();
-        let.date = result.second.value(5).toInt();
+        let.date = result.second.value(5).toString().toStdString();
         let.title = result.second.value(6).toString().toStdString();
         let.let_path = result.second.value(7).toString().toStdString();
         let.attach_count = result.second.value(8).toUInt();
         let_arr.push_back(std::move_if_noexcept(let));
-        qDebug()<< QString::fromStdString(let_arr.at(let_arr.size()-1));
+        qDebug()<< let.from_id <<QString::fromStdString(let_arr.at(let_arr.size()-1));
     }
 }
 
@@ -196,7 +224,7 @@ void EmailModel::setLetters(const std::vector<Letter> &letters)
     m_letters = letters;
 }
 
-std::vector<Abonent> &EmailModel::ref_abonents()
+std::vector<Abonent> &EmailModel::ref_abonents() const
 {
     return m_ref_abonents;
 }
@@ -245,17 +273,37 @@ int AbonentModel::columnCount(const QModelIndex &parent) const
 
 QVariant AbonentModel::data(const QModelIndex &index, int role) const
 {
-    return 0;
+    if(index.row() < m_ref_abonents.size() && index.row()>= 0)
+        switch (role) {
+        case NAME:
+            return QString::fromStdString(m_ref_abonents.at(index.row()).sys_name);
+            break;
+        case ICON:
+            return QString::fromStdString(m_ref_abonents.at(index.row()).icon_path);
+            break;
+        case FROM:
+            return QString::fromStdString(m_ref_abonents.at(index.row()).inbox_path);
+            break;
+        case TO:
+            return QString::fromStdString(m_ref_abonents.at(index.row()).outbox_path);
+            break;
+        }
+    return QVariant();
 }
 
 QHash<int, QByteArray> AbonentModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
+    roles.insert(ICON,  QByteArray("icon"));
+    roles.insert(NAME,  QByteArray("name"));
+    roles.insert(FROM,  QByteArray("from"));
+    roles.insert(TO,    QByteArray("to"));
     return roles;
 }
 
 std::vector<Abonent> &AbonentModel::ref_abonents() const
 {
+
     return m_ref_abonents;
 }
 

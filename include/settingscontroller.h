@@ -14,6 +14,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QFile>
+#include <QImage>
 #include <QDir>
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
@@ -35,8 +36,9 @@ struct Abonent
     std::string sys_name;
     std::string outbox_path;
     std::string inbox_path;
-    size_t db_type_id;
-    size_t db_id;
+    std::string icon_path;
+    size_t      db_type_id;
+    size_t      db_id;
 
     operator std::string();
 
@@ -134,6 +136,7 @@ private:
     SettingsController& operator=(SettingsController&)=delete;
     virtual ~SettingsController();
     std::string checkFolder(const std::string &absPath);
+    std::string checkIcon(const QString &iconPath);
 
     ///структура для свойств настроек
     Settings m_set;

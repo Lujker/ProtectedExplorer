@@ -72,17 +72,21 @@ ApplicationWindow {
                 switch (index) {
                 case 0:
                     emailView.visible = false
+                    dirView.visible = true
                     DirModel.setAsDirModel()
                     break
                 case 1:
                     emailView.visible = false
+                    dirView.visible = true
                     DirModel.setAsSubModel()
                     break
                 case 2:
                     emailView.visible = true
+                    dirView.visible = false
                     break
                 case 3:
                     emailView.visible = true
+                    dirView.visible = false
                     break
                 default:
                     return
@@ -121,6 +125,7 @@ ApplicationWindow {
             anchors.right: _rectWidth.left
             anchors.left: parent.left
             anchors.leftMargin: 5
+
             onPressToElement: {
                 subView.deselectAll()
             }
@@ -168,7 +173,7 @@ ApplicationWindow {
             id: emailView
             parent: _dropArea
             visible: false
-            listModel: DirModel
+            listModel: EmailModelLeft
             height: parent.height - _rowLayoutTableButtom.height - dirComboBox.height
             anchors.top: dirComboBox.bottom
             anchors.bottom: _rowLayoutTableButtom.top
@@ -196,6 +201,14 @@ ApplicationWindow {
             anchors.left: _rectWidth.right
             anchors.rightMargin: 5
             anchors.right: parent.right
+
+            onVisibleChanged: {
+                console.debug(parent.visible)
+                if (parent.visible === false)
+                    parent.anchors.top = _rowLayoutTableButtom.top
+                else
+                    parent.anchors.top = subComboBox.bottom
+            }
 
             onPressToElement: {
                 dirView.deselectAll()

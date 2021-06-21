@@ -17,5 +17,6 @@
         <file>DragWidthRect.qml</file>
         <file>appIcon.ico</file>
         <file>EmailView.qml</file>
+        <file>../icons/contacts.png</file>
     </qresource>
 </RCC>

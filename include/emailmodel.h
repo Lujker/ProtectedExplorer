@@ -19,6 +19,8 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
+
+const QString STANDART_ICON = "qrc:/../icons/trash.png";
 /*!
  * \brief The EmailModel class
  * \details Класс определяет почтовый виджет для работы с формированием и отправкой/принятем контейнеров
@@ -42,7 +44,7 @@ public:
     virtual void    setLetters(const std::vector<Letter> &letters);
 
     int                     status() const;
-    std::vector<Abonent>    &ref_abonents();
+    std::vector<Abonent>    &ref_abonents() const;
     std::vector<Letter>     &letters();
 
 public slots:
@@ -76,8 +78,8 @@ public:
         STATUS,
         DATE,
         ATACH_COUNT,
-        FROM,
-        TO
+        ICON,
+        SENDER
     };
 
 
@@ -117,8 +119,12 @@ public:
     virtual QVariant    data(const QModelIndex &index, int role) const override;
     virtual QHash<int, QByteArray> roleNames() const override;
 
-//    enum AbonentsRoles{
-//    };
+    enum AbonentsRoles{
+        ICON = Qt::UserRole+1,
+        NAME,
+        FROM,
+        TO
+    };
 
     std::vector<Abonent> &ref_abonents() const;
     void setRef_abonents(const std::vector<Abonent> &ref_abonents);
