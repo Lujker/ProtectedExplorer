@@ -26,10 +26,6 @@ Rectangle {
                 anchors.bottom: parent.bottom
                 anchors.left: parent.left
                 width: 48
-
-                //                onVisibleChanged: {
-                //                    console.debug(icon)
-                //                }
                 Image {
                     height: 24
                     width: 24

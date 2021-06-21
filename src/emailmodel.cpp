@@ -154,7 +154,6 @@ QVariant EmailModel::data(const QModelIndex &index, int role) const
             return m_letters.at(index.row()).attach_count;
             break;
         case ICON:
-
             if(finder!=m_ref_abonents.end())
                 return QString::fromStdString(finder->icon_path);
             else return ":/../icons/contacts.png";
