@@ -21,9 +21,7 @@ void EmailModel::initAddressBook()
     db::RESULT res = db::DatabaseQuery::generate_select_abonents();
     if(res.first==db::DBResult::ISOK){
         std::set<Abonent> db_abonents;
-        size_t abonents_count = 0;
         setAbonentsFromRESULT(res, db_abonents);
-        abonents_count = db_abonents.size();
     ///сравнение абонентов БД с настроечными
         for(auto& it : ref_abonents()){
             auto ab_iter = db_abonents.find(it);
