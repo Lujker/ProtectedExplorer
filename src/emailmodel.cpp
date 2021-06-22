@@ -1,15 +1,40 @@
 ﻿#include "emailmodel.h"
 
 EmailModel::EmailModel(std::vector<Abonent> &abonents, QObject *parent): QAbstractListModel(parent),
-    m_ref_abonents(abonents), m_status(EMPTY)
+    m_ref_abonents(abonents), m_inbox_watchers(nullptr), m_outbox_watchers(nullptr), m_status(EMPTY)
 {}
 
 EmailModel::~EmailModel()
-{}
+{
+    try {
+        if(m_inbox_watchers!=nullptr){
+            delete m_inbox_watchers;
+            m_inbox_watchers = nullptr;
+        }
+        if(m_outbox_watchers!=nullptr){
+            delete m_outbox_watchers;
+            m_outbox_watchers = nullptr;
+        }
+    }
+    catch(std::exception& exep){
+        qDebug()<<exep.what();
+    }
+    catch (...) {
+
+    }
+
+}
 
 void EmailModel::initModelData()
 {
     setInputLetters();
+    /// А теперь сравнить с тем, что действительно есть сейчас в дерикториях
+    /// И внести изменения в БД
+    /// Для этого смотрим в таблице let_option все пути и свеояем с тем что находится в дерикториях
+    /// если такого еще нет то вставляем новое входящее
+    /// можно придумать универсальную функцию проверки в дериктории нового контейнера и вставки его в БД
+    /// При этом можно его сравнивать с теми что уже есть в БД
+
 }
 
 /*!
@@ -32,11 +57,17 @@ void EmailModel::initAddressBook()
                     ///update inbox and outbox path
                     db::RESULT upd_res = db::DatabaseQuery::generate_update_abonent_path(it);
                     ///обработка ошибки обновления
+                    if(upd_res.first!=db::DBResult::ISOK){
+                        qDebug()<<"update outbox, inbox " + QString::fromStdString(it) + " is failed!";
+                    }
                 }
                 if(ab_iter->db_type_id != it.db_type_id){
                  ///update type_id
                     db::RESULT upd_res = db::DatabaseQuery::generate_update_abonent_type(it);
                     ///обработка ошибки обновления
+                    if(upd_res.first!=db::DBResult::ISOK){
+                        qDebug()<<"update type id" + QString::fromStdString(it) + " is failed!";
+                    }
                 }
                 db_abonents.erase(ab_iter);
             }
@@ -44,16 +75,30 @@ void EmailModel::initAddressBook()
                 it.db_id = db::DatabaseQuery::generate_select_abonent_count()+1;
                 db::RESULT upd_res = db::DatabaseQuery::generate_insert_abonent(it);
                 ///если не нашли такой элемент вставляем его
+                if(upd_res.first!=db::DBResult::ISOK){
+                    qDebug()<<"insert " + QString::fromStdString(it) + " is failed!";
+                }
             }
         }
         if(db_abonents.size()>0){
             for(auto it : db_abonents){
-                it.db_type_id = SettingsController::get_instanse().get_settings().cl_abonent_type.at("Неопределен");
+                try {
+                    it.db_type_id = SettingsController::get_instanse().get_settings().cl_abonent_type.at("Неопределен");
+
+                }  catch (const std::exception& exp) {
+                    qDebug()<<exp.what();
+                    it.db_type_id=0;
+                }
                 db::RESULT upd_res = db::DatabaseQuery::generate_update_abonent_type(it);
                 ///обработка ошибки обновления
+                if(upd_res.first!=db::DBResult::ISOK){
+                    qDebug()<<"update abonent type " + QString::fromStdString(it) + " is failed!";
+                }
             }
             ///если остались другие абоненты в БД то изменяем их тип на неопределенный
             }
+        ///Включение слежения за дерикториями входящих и исходящих
+            initFileSystemWatchers();
         }
     else {
         setStatus(INIT_AB_ERROR);
@@ -61,6 +106,42 @@ void EmailModel::initAddressBook()
         ///Ошибка синхронизации с БД. Почтовая служба не работает
     }
     setStatus(IS_OK);
+}
+
+void EmailModel::initFileSystemWatchers()
+{
+    try {
+        if(m_inbox_watchers!=nullptr){
+            delete m_inbox_watchers;
+            m_inbox_watchers = nullptr;
+        }
+        if(m_outbox_watchers!=nullptr){
+            delete m_outbox_watchers;
+            m_outbox_watchers = nullptr;
+        }
+    }
+    catch(std::exception& exep){
+        qDebug()<<exep.what();
+        setStatus(Status::INIT_FSW_ERROR);
+        return;
+    }
+    catch (...) {
+        qDebug()<<"unknown exeption";
+        setStatus(Status::INIT_FSW_ERROR);
+        return;
+    }
+
+    m_inbox_watchers = new QFileSystemWatcher;
+    m_outbox_watchers = new QFileSystemWatcher;
+
+    for(const auto &it : ref_abonents()){
+        m_inbox_watchers->addPath(QString::fromStdString(it.inbox_path));
+        m_outbox_watchers->addPath(QString::fromStdString(it.outbox_path));
+    }
+    connect(m_inbox_watchers, SIGNAL(directoryChanged(QString)),
+            this, SLOT(getNewInMessage(QString)));
+    connect(m_outbox_watchers, SIGNAL(directoryChanged(QString)),
+            this, SLOT(getNewOutMessage(QString)));
 }
 
 int EmailModel::status() const
@@ -102,6 +183,36 @@ void EmailModel::update()
 }
 
 void EmailModel::updateAbonents()
+{
+
+}
+
+void EmailModel::getNewInMessage(QString path)
+{
+
+}
+
+void EmailModel::getNewOutMessage(QString path)
+{
+
+}
+
+void EmailModel::sendMessage()
+{
+
+}
+
+void EmailModel::getAttacmentsList(const int index)
+{
+
+}
+
+void EmailModel::getAttacments(const int mes_index, const int dir_index)
+{
+
+}
+
+void EmailModel::deleteMessage(const int index)
 {
 
 }
@@ -159,7 +270,7 @@ QVariant EmailModel::data(const QModelIndex &index, int role) const
         case SENDER:
             if(finder!=m_ref_abonents.end())
                 return QString::fromStdString(finder->sys_name);
-            else return "Неизвестный абонент";
+            else return QString::fromLocal8Bit("Неизвестный абонент");
             break;
         }
     }
@@ -300,7 +411,6 @@ QHash<int, QByteArray> AbonentModel::roleNames() const
 
 std::vector<Abonent> &AbonentModel::ref_abonents() const
 {
-
     return m_ref_abonents;
 }
 

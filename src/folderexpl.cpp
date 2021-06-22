@@ -28,15 +28,19 @@ void FolderExpl::initFromSettings()
     m_dir_models.push_back(new DirsModel(SettingsController::get_instanse().sub_list_dirs()));
     m_email_models.push_back(new EmailModel(SettingsController::get_instanse().abonents()));
     m_email_models.push_back(new EmailModel(SettingsController::get_instanse().abonents()));
-    provider = new IconProvider;
 
+    if(provider==nullptr)
+        provider = new IconProvider;
+    ///Инициализация и подклоючените фалового менеджера
     if(m_dir_models.size()==2){
         QObject::connect(m_dir_models.at(1),SIGNAL(copyFile(QString)),m_dir_models.at(0),SLOT(copyFrom(QString)));
         QObject::connect(m_dir_models.at(0),SIGNAL(copyFile(QString)),m_dir_models.at(1),SLOT(copyFrom(QString)));
     }
+    ///Инициализация почтового класса
     for(const auto& it : m_email_models){
         it->initAddressBook();    /// синхронизация адресной книги из настроек и БД
         it->initModelData();      /// синхронизация сообщений из БД и моделью
+        it->initFileSystemWatchers();
     }
 }
 
@@ -59,17 +63,13 @@ void FolderExpl::init(DirsModel *subs, DirsModel *dirs)
 void FolderExpl::clear_members()
 {
 
-    for(unsigned long i = 0 ; i < m_dir_models.size();++i){
-        delete m_dir_models[i];
+    for(auto it : m_dir_models){
+        delete it;
     }
     m_dir_models.clear();
 
-    if(provider!=nullptr){
-        delete  provider;
-        provider = nullptr;
-    }
-    for(unsigned long i = 0 ; i < m_email_models.size();++i){
-        delete m_email_models[i];
+    for(auto it : m_email_models){
+        delete it;
     }
     m_email_models.clear();
 }
@@ -696,7 +696,7 @@ QVariant DirsModel::data(const QModelIndex &index, int role) const
         return info.suffix();
         break;
     case SizeRole:
-        if(info.isDir()) return QString::fromStdString("<Папка>");
+        if(info.isDir()) return QString::fromLocal8Bit("<Папка>");
         else {
             qint64 nSize = info.size();
             qint64 i = 0;

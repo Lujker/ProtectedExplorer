@@ -18,6 +18,16 @@ Rectangle {
         id: contentDeleagte
 
         Item {
+            id: contentItem
+            property bool isHovered: false
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onHoveredChanged: {
+                    parent.isHovered = !parent.isHovered
+                }
+            }
+
             height: 32
             width: explWindow.visible ? parent.width : 0
             Item {
@@ -47,6 +57,7 @@ Rectangle {
                     id: _txtSenderName
                     verticalAlignment: Text.AlignVCenter
                     text: qsTr(title)
+                    color: contentItem.isHovered ? "red" : "black"
                 }
             }
             Item {

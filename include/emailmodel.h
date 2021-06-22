@@ -4,6 +4,12 @@
 #include <QAbstractListModel>
 #include <QObject>
 #include <QQuickItem>
+///фаловая система
+#include <QUrl>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QFileSystemWatcher>
 /// stl модули
 #include <list>
 #include <algorithm>
@@ -19,8 +25,6 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
-
-const QString STANDART_ICON = "qrc:/../icons/trash.png";
 /*!
  * \brief The EmailModel class
  * \details Класс определяет почтовый виджет для работы с формированием и отправкой/принятем контейнеров
@@ -39,6 +43,7 @@ public:
     virtual         ~EmailModel();
     virtual void    initModelData();
     virtual void    initAddressBook();
+    virtual void    initFileSystemWatchers();
     virtual void    setStatus(const int status);
     virtual void    setRef_abonents(const std::vector<Abonent> &ref_abonents);
     virtual void    setLetters(const std::vector<Letter> &letters);
@@ -56,6 +61,18 @@ public slots:
     virtual void    update();
     ///Обновление списка абонентов и асоциаций с письмами
     virtual void    updateAbonents();
+    ///Получение нового входящего
+    virtual void    getNewInMessage(QString path);
+    ///Получение нового исходящего
+    virtual void    getNewOutMessage(QString path);
+    ///Формирование нового исходящего
+    virtual void    sendMessage();
+    ///Получение списка файлов во вложении
+    virtual void    getAttacmentsList(const int index);
+    ///Получение вложения контейнера
+    virtual void    getAttacments(const int mes_index, const int dir_index);
+    ///Удаление сообщения
+    virtual void    deleteMessage(const int index);
     /// QAbstractItemModel interface
 public:
     virtual QModelIndex index(int row, int column, const QModelIndex &parent) const override;
@@ -70,6 +87,7 @@ public:
         IS_OK = 10,
         INIT_AB_ERROR,
         INIT_LET_ERROR,
+        INIT_FSW_ERROR,
         DB_ACCEPT_FAILED
     };
 
@@ -89,8 +107,10 @@ private:
     void setLettersFromRESULT(db::RESULT& result, std::vector<Letter>& let_arr);
 
 private:
-    std::vector<Abonent>&           m_ref_abonents; ///Ссылка на список абонентов в классе настроек
-    std::vector<Letter>             m_letters;      ///Список писем
+    std::vector<Abonent>&           m_ref_abonents;         ///Ссылка на список абонентов в классе настроек
+    std::vector<Letter>             m_letters;              ///Список писем
+    QFileSystemWatcher*             m_inbox_watchers;       ///Слежка за входящими дерикториями
+    QFileSystemWatcher*             m_outbox_watchers;       ///Слежка за исходящими дерикториями
     int                             m_status;
 };
 

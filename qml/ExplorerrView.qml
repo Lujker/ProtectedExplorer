@@ -3,6 +3,10 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 1.0
 
+
+/*
+* \warning В виджете не работает работа с файлами через клавиатуру (не доделаны tab и быстрые клавишы)
+*/
 Rectangle {
     id: explWindow
     property alias listModel: fileList.model ///переменная для установки модэли для отображения

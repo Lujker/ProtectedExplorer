@@ -11,8 +11,9 @@ bool DatabaseQuery::generate_select_cl_status(std::map<std::string, size_t> &cl_
     RESULT res = db::DatabaseAccessor::getInstanse()->executeQuery("SELECT * FROM cl_status;");
     if(res.first==DBResult::ISOK){
         while (res.second.next()) {
-            cl_status.insert(std::make_pair(res.second.value(1).toString().toStdString(),
+            cl_status.insert(std::make_pair(res.second.value(1).toString().toLocal8Bit().toStdString(),
                                             res.second.value(0).toUInt()));
+            qDebug()<<res.second.value(1).toString() << " : " << res.second.value(0);
         }
         return true;
     }
@@ -24,8 +25,10 @@ bool DatabaseQuery::generate_select_cl_abonent_type(std::map<std::string, size_t
     RESULT res = db::DatabaseAccessor::getInstanse()->executeQuery("SELECT * FROM cl_abntonent_type;");
     if(res.first==DBResult::ISOK){
         while (res.second.next()) {
-            cl_abonent_type.insert(std::make_pair(res.second.value(1).toString().toStdString(),
+            cl_abonent_type.insert(std::make_pair(res.second.value(1).toString().toLocal8Bit().toStdString(),
                                             res.second.value(0).toUInt()));
+
+            qDebug()<<res.second.value(1).toString() << " : " << res.second.value(0);
         }
         return true;
     }
