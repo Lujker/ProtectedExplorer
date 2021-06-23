@@ -25,7 +25,7 @@ int DatabaseAccessor::getState()
  */
 void DatabaseAccessor::close()
 {
-    this->close();
+    db->close();
     db.get_deleter()(this->db.get());
 }
 
