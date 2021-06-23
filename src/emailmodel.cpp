@@ -1,7 +1,12 @@
 ﻿#include "emailmodel.h"
 
-EmailModel::EmailModel(std::vector<Abonent> &abonents, QObject *parent): QAbstractListModel(parent),
-    m_ref_abonents(abonents), m_inbox_watchers(nullptr), m_outbox_watchers(nullptr), m_status(EMPTY)
+EmailModel::EmailModel(std::vector<Abonent> &abonents, QObject *parent):
+    QAbstractListModel(parent),
+    m_ref_abonents(abonents),
+    m_inbox_watchers(nullptr),
+    m_outbox_watchers(nullptr),
+    m_status(EMPTY),
+    m_model_type(UNKNOWN)
 {}
 
 EmailModel::~EmailModel()
@@ -27,14 +32,19 @@ EmailModel::~EmailModel()
 
 void EmailModel::initModelData()
 {
-    setInputLetters();
+    setInputLetters(letters());
     /// А теперь сравнить с тем, что действительно есть сейчас в дерикториях
     /// И внести изменения в БД
     /// Для этого смотрим в таблице let_option все пути и свеояем с тем что находится в дерикториях
     /// если такого еще нет то вставляем новое входящее
     /// можно придумать универсальную функцию проверки в дериктории нового контейнера и вставки его в БД
     /// При этом можно его сравнивать с теми что уже есть в БД
-
+    if(getModel_type()!=FAIL)
+        for(auto const &it : m_ref_abonents){
+            addNewLettersFromDir(letters(),
+                                 QString::fromStdString(
+                                     it.inbox_path));
+        }
 }
 
 /*!
@@ -55,44 +65,61 @@ void EmailModel::initAddressBook()
                 if(ab_iter->inbox_path != it.inbox_path ||
                     ab_iter->outbox_path != it.outbox_path){
                     ///update inbox and outbox path
-                    db::RESULT upd_res = db::DatabaseQuery::generate_update_abonent_path(it);
+                    db::RESULT upd_res =
+                            db::DatabaseQuery::
+                            generate_update_abonent_path(it);
                     ///обработка ошибки обновления
                     if(upd_res.first!=db::DBResult::ISOK){
-                        qDebug()<<"update outbox, inbox " + QString::fromStdString(it) + " is failed!";
+                        qDebug()<<"update outbox, inbox "
+                                    + QString::fromStdString(it)
+                                    + " is failed!";
                     }
                 }
                 if(ab_iter->db_type_id != it.db_type_id){
                  ///update type_id
-                    db::RESULT upd_res = db::DatabaseQuery::generate_update_abonent_type(it);
+                    db::RESULT upd_res = db::DatabaseQuery::
+                            generate_update_abonent_type(it);
                     ///обработка ошибки обновления
                     if(upd_res.first!=db::DBResult::ISOK){
-                        qDebug()<<"update type id" + QString::fromStdString(it) + " is failed!";
+                        qDebug()<<"update type id"
+                                    + QString::fromStdString(it)
+                                    + " is failed!";
                     }
                 }
                 db_abonents.erase(ab_iter);
             }
             else{
-                it.db_id = db::DatabaseQuery::generate_select_abonent_count()+1;
-                db::RESULT upd_res = db::DatabaseQuery::generate_insert_abonent(it);
+                it.db_id = db::DatabaseQuery::
+                        generate_select_abonent_count()+1;
+                db::RESULT upd_res = db::DatabaseQuery::
+                        generate_insert_abonent(it);
                 ///если не нашли такой элемент вставляем его
                 if(upd_res.first!=db::DBResult::ISOK){
-                    qDebug()<<"insert " + QString::fromStdString(it) + " is failed!";
+                    qDebug()<<"insert "
+                                + QString::fromStdString(it)
+                                + " is failed!";
                 }
             }
         }
         if(db_abonents.size()>0){
             for(auto it : db_abonents){
                 try {
-                    it.db_type_id = SettingsController::get_instanse().get_settings().cl_abonent_type.at("Неопределен");
+                    std::string type_name = "Неопределен";
+                    it.db_type_id = SettingsController::
+                            get_instanse().get_settings().
+                            cl_abonent_type.at(type_name);
 
                 }  catch (const std::exception& exp) {
-                    qDebug()<<exp.what();
+                    qDebug()<<"Uncnown type"<<exp.what();
                     it.db_type_id=0;
                 }
-                db::RESULT upd_res = db::DatabaseQuery::generate_update_abonent_type(it);
+                db::RESULT upd_res = db::DatabaseQuery::
+                        generate_update_abonent_type(it);
                 ///обработка ошибки обновления
                 if(upd_res.first!=db::DBResult::ISOK){
-                    qDebug()<<"update abonent type " + QString::fromStdString(it) + " is failed!";
+                    qDebug()<<"update abonent type "
+                                + QString::fromStdString(it)
+                                + " is failed!";
                 }
             }
             ///если остались другие абоненты в БД то изменяем их тип на неопределенный
@@ -122,12 +149,12 @@ void EmailModel::initFileSystemWatchers()
     }
     catch(std::exception& exep){
         qDebug()<<exep.what();
-        setStatus(Status::INIT_FSW_ERROR);
+        setStatus(STATUS::INIT_FSW_ERROR);
         return;
     }
     catch (...) {
         qDebug()<<"unknown exeption";
-        setStatus(Status::INIT_FSW_ERROR);
+        setStatus(STATUS::INIT_FSW_ERROR);
         return;
     }
 
@@ -135,8 +162,10 @@ void EmailModel::initFileSystemWatchers()
     m_outbox_watchers = new QFileSystemWatcher;
 
     for(const auto &it : ref_abonents()){
-        m_inbox_watchers->addPath(QString::fromStdString(it.inbox_path));
-        m_outbox_watchers->addPath(QString::fromStdString(it.outbox_path));
+        m_inbox_watchers->
+                addPath(QString::fromStdString(it.inbox_path));
+        m_outbox_watchers->
+                addPath(QString::fromStdString(it.outbox_path));
     }
     connect(m_inbox_watchers, SIGNAL(directoryChanged(QString)),
             this, SLOT(getNewInMessage(QString)));
@@ -144,37 +173,56 @@ void EmailModel::initFileSystemWatchers()
             this, SLOT(getNewOutMessage(QString)));
 }
 
-int EmailModel::status() const
+enum EmailModel::STATUS EmailModel::status() const
 {
     return m_status;
 }
 
-void EmailModel::setStatus(const int status)
+void EmailModel::setOutputList()
+{
+    setOutputLetters(letters());
+}
+
+void EmailModel::setInputList()
+{
+    setInputLetters(letters());
+}
+
+void EmailModel::setStatus(enum STATUS status)
 {
     m_status = status;
 }
 
-void EmailModel::setOutputLetters()
+void EmailModel::setOutputLetters(std::vector<Letter> &letters)
 {
     db::RESULT res = db::DatabaseQuery::generate_select_output_letters();
     ///изначально считываем только входящие
     if(res.first==db::DBResult::ISOK){
         beginResetModel();
-        setLettersFromRESULT(res, letters());
+        letters.clear();
+        setLettersFromRESULT(res, letters);
         endResetModel();
+        setModel_type(OUTBOX);
+    }
+    else {
+        setModel_type(FAIL);
     }
 }
 
-void EmailModel::setInputLetters()
+void EmailModel::setInputLetters(std::vector<Letter> &letters)
 {
     db::RESULT res = db::DatabaseQuery::generate_select_input_letters();
     ///изначально считываем только входящие
     if(res.first==db::DBResult::ISOK){
         beginResetModel();
-        setLettersFromRESULT(res, letters());
+        letters.clear();
+        setLettersFromRESULT(res, letters);
         endResetModel();
+        setModel_type(INBOX);
     }
-
+    else {
+        setModel_type(FAIL);
+    }
 }
 
 void EmailModel::update()
@@ -217,11 +265,16 @@ void EmailModel::deleteMessage(const int index)
 
 }
 
-QModelIndex EmailModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex EmailModel::index(int row,
+                              int column,
+                              const QModelIndex &parent) const
 {
        Q_UNUSED(column)
        if (!parent.isValid())
-                   return createIndex(row, 0, static_cast<quintptr>(0));
+                   return createIndex(
+                               row,
+                               0,
+                               static_cast<quintptr>(0));
 
        return createIndex(row, 0, parent.row() + 1);
 }
@@ -231,7 +284,10 @@ QModelIndex EmailModel::parent(const QModelIndex &child) const
     if (!child.isValid() || child.internalId() == 0)
                    return QModelIndex();
 
-       return createIndex(child.internalId() - 1, 0, static_cast<quintptr>(0));
+       return createIndex(
+                   child.internalId() - 1,
+                   0,
+                   static_cast<quintptr>(0));
 }
 
 int EmailModel::rowCount(const QModelIndex &parent) const
@@ -249,28 +305,39 @@ int EmailModel::columnCount(const QModelIndex &parent) const
 QVariant EmailModel::data(const QModelIndex &index, int role) const
 {
     if(index.row() < m_letters.size() && index.row()>= 0){
-        auto finder = std::find_if(m_ref_abonents.begin(), m_ref_abonents.end() ,[&](const Abonent& it){
-            return it.db_id==m_letters.at(index.row()).from_id;
-        });
+        auto finder = std::find_if(
+                    m_ref_abonents.begin(),
+                    m_ref_abonents.end() ,
+                    [&](const Abonent& it){
+                    return it.db_id==m_letters.at(index.row()).from_id;
+                    }
+        );
         switch (role) {
         case TITLE:
-            return QString::fromStdString(m_letters.at(index.row()).title);
+            return QString::fromStdString(
+                        m_letters.at(index.row()).title);
             break;
         case DATE:
-            return QString::fromStdString(m_letters.at(index.row()).date);
+            return QString::fromStdString(
+                        m_letters.at(index.row()).date);
             break;
         case ATACH_COUNT:
             return m_letters.at(index.row()).attach_count;
             break;
         case ICON:
             if(finder!=m_ref_abonents.end())
-                return QString::fromStdString(finder->icon_path);
+                return QString::fromStdString(
+                            finder->icon_path);
             else return ":/../icons/contacts.png";
             break;
         case SENDER:
             if(finder!=m_ref_abonents.end())
-                return QString::fromStdString(finder->sys_name);
-            else return QString::fromLocal8Bit("Неизвестный абонент");
+                return QString::fromStdString(
+                            finder->sys_name);
+            else{
+                std::string str = "Неизвестный абонент";
+                return QString::fromStdString(str);
+            }
             break;
         }
     }
@@ -322,6 +389,46 @@ void EmailModel::setLettersFromRESULT(db::RESULT &result, std::vector<Letter> &l
     }
 }
 
+void EmailModel::addNewLettersFromDir(std::vector<Letter> &let_arr, const QString &path)
+{
+    std::vector<Letter> lettersFromDir;
+    ///Определить функцию получения информации из контейнера
+    makeLettersFromDir(lettersFromDir, path);
+    for(const auto &it: lettersFromDir){
+        auto finder = std::find_if(
+                    let_arr.begin(),
+                    let_arr.end() ,
+                    [&](const Letter& let){
+                        return let.let_path==it.let_path;
+                    }
+        );
+        if(finder==let_arr.end()){
+            auto res = db::DatabaseQuery::generate_insert_letters(*finder);
+            if(res.first==db::DBResult::ISOK){
+                let_arr.push_back(std::move(*finder));
+            }
+            else{
+                qDebug()<<"Fail with insert mess: " << QString::fromStdString(*finder);
+            }
+        }
+    }
+}
+
+void EmailModel::makeLettersFromDir(std::vector<Letter> &empty_let_arr, const QString &path)
+{
+
+}
+
+EmailModel::MODEL_TYPE EmailModel::getModel_type() const
+{
+    return m_model_type;
+}
+
+void EmailModel::setModel_type(MODEL_TYPE model_type)
+{
+    m_model_type = model_type;
+}
+
 std::vector<Letter>& EmailModel::letters()
 {
     return m_letters;
@@ -349,6 +456,11 @@ AbonentModel::AbonentModel(std::vector<Abonent> &abonents, QObject *parent):
 
 AbonentModel::~AbonentModel()
 {}
+
+void AbonentModel::Init()
+{
+
+}
 
 QModelIndex AbonentModel::index(int row, int column, const QModelIndex &parent) const
 {
@@ -384,16 +496,20 @@ QVariant AbonentModel::data(const QModelIndex &index, int role) const
     if(index.row() < m_ref_abonents.size() && index.row()>= 0)
         switch (role) {
         case NAME:
-            return QString::fromStdString(m_ref_abonents.at(index.row()).sys_name);
+            return QString::fromStdString(
+                        m_ref_abonents.at(index.row()).sys_name);
             break;
         case ICON:
-            return QString::fromStdString(m_ref_abonents.at(index.row()).icon_path);
+            return QString::fromStdString(
+                        m_ref_abonents.at(index.row()).icon_path);
             break;
         case FROM:
-            return QString::fromStdString(m_ref_abonents.at(index.row()).inbox_path);
+            return QString::fromStdString(
+                        m_ref_abonents.at(index.row()).inbox_path);
             break;
         case TO:
-            return QString::fromStdString(m_ref_abonents.at(index.row()).outbox_path);
+            return QString::fromStdString(
+                        m_ref_abonents.at(index.row()).outbox_path);
             break;
         }
     return QVariant();

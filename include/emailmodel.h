@@ -39,24 +39,55 @@ class EmailModel: public QAbstractListModel
 {
     Q_OBJECT
 public:
+
+    enum STATUS{
+        EMPTY = 0,
+        IS_OK = 10,
+        INIT_AB_ERROR,
+        INIT_LET_ERROR,
+        INIT_FSW_ERROR,
+        DB_ACCEPT_FAILED
+    };
+
+    enum MODEL_TYPE{
+        UNKNOWN = 0,
+        INBOX,
+        OUTBOX,
+        FAIL
+    };
+
+    enum LETTERS_ROLES{
+        TITLE = Qt::UserRole+1,
+        STATUS,
+        DATE,
+        ATACH_COUNT,
+        ICON,
+        SENDER
+    };
+
     explicit        EmailModel(std::vector<Abonent>& abonents, QObject* parent = nullptr);
     virtual         ~EmailModel();
+
     virtual void    initModelData();
     virtual void    initAddressBook();
     virtual void    initFileSystemWatchers();
-    virtual void    setStatus(const int status);
+    virtual void    setStatus(enum STATUS status);
+    virtual void    setModel_type(enum MODEL_TYPE model_type);
     virtual void    setRef_abonents(const std::vector<Abonent> &ref_abonents);
     virtual void    setLetters(const std::vector<Letter> &letters);
 
-    int                     status() const;
-    std::vector<Abonent>    &ref_abonents() const;
     std::vector<Letter>     &letters();
-
+    std::vector<Abonent>    &ref_abonents() const;
+    enum MODEL_TYPE         getModel_type() const;
+    enum STATUS             status() const;
 public slots:
+    ///Для QML comboBox
+    void setOutputList();
+    void setInputList();
     ///Делает запрос в БД и вызывает SetAbonentFromRESULT в случае успеха
-    virtual void    setOutputLetters();
+    virtual void    setOutputLetters(std::vector<Letter>& letters);
     ///Делает запрос в БД и вызывает SetAbonentFromRESULT в случае успеха
-    virtual void    setInputLetters();
+    virtual void    setInputLetters(std::vector<Letter> &letters);
     ///Общая перезагрузка
     virtual void    update();
     ///Обновление списка абонентов и асоциаций с письмами
@@ -82,36 +113,19 @@ public:
     virtual QVariant    data(const QModelIndex &index, int role) const override;
     virtual QHash<int, QByteArray> roleNames() const override;
 
-    enum Status{
-        EMPTY = 0,
-        IS_OK = 10,
-        INIT_AB_ERROR,
-        INIT_LET_ERROR,
-        INIT_FSW_ERROR,
-        DB_ACCEPT_FAILED
-    };
-
-    enum LetterRoles{
-        TITLE = Qt::UserRole+1,
-        STATUS,
-        DATE,
-        ATACH_COUNT,
-        ICON,
-        SENDER
-    };
-
-
-
 private:
     void setAbonentsFromRESULT(db::RESULT& result, std::set<Abonent> &ab_arr);
     void setLettersFromRESULT(db::RESULT& result, std::vector<Letter>& let_arr);
+    void addNewLettersFromDir(std::vector<Letter>& let_arr, const QString& path);
+    void makeLettersFromDir(std::vector<Letter>& empty_let_arr, const QString& path);
 
 private:
     std::vector<Abonent>&           m_ref_abonents;         ///Ссылка на список абонентов в классе настроек
     std::vector<Letter>             m_letters;              ///Список писем
     QFileSystemWatcher*             m_inbox_watchers;       ///Слежка за входящими дерикториями
     QFileSystemWatcher*             m_outbox_watchers;       ///Слежка за исходящими дерикториями
-    int                             m_status;
+    enum STATUS                          m_status;
+    enum MODEL_TYPE                      m_model_type;
 };
 
 /*!
@@ -129,7 +143,7 @@ class AbonentModel: public QAbstractListModel
 public:
     explicit        AbonentModel(std::vector<Abonent>& abonents, QObject* parent = nullptr);
     virtual         ~AbonentModel();
-
+    virtual void    Init();
     /// QAbstractItemModel interface
 public:
     virtual QModelIndex index(int row, int column, const QModelIndex &parent) const override;

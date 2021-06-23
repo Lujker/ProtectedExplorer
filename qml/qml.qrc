@@ -18,5 +18,6 @@
         <file>appIcon.ico</file>
         <file>EmailView.qml</file>
         <file>../icons/contacts.png</file>
+        <file>EmailDelegate.qml</file>
     </qresource>
 </RCC>

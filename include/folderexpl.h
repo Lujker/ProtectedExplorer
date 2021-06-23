@@ -62,9 +62,13 @@ public:
     std::vector<EmailModel *> getEmail_models() const;
     void setEmail_models(const std::vector<EmailModel *> &email_models);
 
+    AbonentModel *getAbonent_model() const;
+    void setAbonent_model(AbonentModel *abonent_model);
+
 private:
     std::vector<DirsModel*>     m_dir_models;
     std::vector<EmailModel*>    m_email_models;
+    AbonentModel*               m_abonent_model;
     IconProvider*               provider;
 };
 

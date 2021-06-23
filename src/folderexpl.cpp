@@ -1,7 +1,7 @@
 ﻿#include "folderexpl.h"
 
 FolderExpl::FolderExpl(QObject *parent) :
-    QObject(parent), provider(nullptr)
+    QObject(parent), m_abonent_model(nullptr), provider(nullptr)
 {}
 
 FolderExpl::~FolderExpl()
@@ -29,6 +29,7 @@ void FolderExpl::initFromSettings()
     m_email_models.push_back(new EmailModel(SettingsController::get_instanse().abonents()));
     m_email_models.push_back(new EmailModel(SettingsController::get_instanse().abonents()));
 
+
     if(provider==nullptr)
         provider = new IconProvider;
     ///Инициализация и подклоючените фалового менеджера
@@ -42,6 +43,8 @@ void FolderExpl::initFromSettings()
         it->initModelData();      /// синхронизация сообщений из БД и моделью
         it->initFileSystemWatchers();
     }
+    setAbonent_model(new AbonentModel(SettingsController::get_instanse().abonents()));
+    getAbonent_model()->Init();
 }
 
 /*!
@@ -72,6 +75,11 @@ void FolderExpl::clear_members()
         delete it;
     }
     m_email_models.clear();
+
+    if(m_abonent_model!=nullptr){
+        delete m_abonent_model;
+        m_abonent_model = nullptr;
+    }
 }
 
 
@@ -103,6 +111,16 @@ std::vector<EmailModel *> FolderExpl::getEmail_models() const
 void FolderExpl::setEmail_models(const std::vector<EmailModel *> &email_models)
 {
     m_email_models = email_models;
+}
+
+AbonentModel *FolderExpl::getAbonent_model() const
+{
+    return m_abonent_model;
+}
+
+void FolderExpl::setAbonent_model(AbonentModel *abonent_model)
+{
+    m_abonent_model = abonent_model;
 }
 
 /*!
@@ -696,7 +714,11 @@ QVariant DirsModel::data(const QModelIndex &index, int role) const
         return info.suffix();
         break;
     case SizeRole:
-        if(info.isDir()) return QString::fromLocal8Bit("<Папка>");
+        if(info.isDir()){
+            std::string str;
+            str = "<Папка>";
+            return QString::fromStdString(str);
+        }
         else {
             qint64 nSize = info.size();
             qint64 i = 0;

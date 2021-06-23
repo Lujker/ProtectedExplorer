@@ -71,22 +71,24 @@ ApplicationWindow {
             onActivated: {
                 switch (index) {
                 case 0:
-                    emailView.visible = false
+                    emailViewLeft.visible = false
                     dirView.visible = true
                     DirModel.setAsDirModel()
                     break
                 case 1:
-                    emailView.visible = false
+                    emailViewLeft.visible = false
                     dirView.visible = true
                     DirModel.setAsSubModel()
                     break
                 case 2:
-                    emailView.visible = true
+                    emailViewLeft.visible = true
                     dirView.visible = false
+                    EmailModelLeft.setInputList()
                     break
                 case 3:
-                    emailView.visible = true
+                    emailViewLeft.visible = true
                     dirView.visible = false
+                    EmailModelLeft.setOutputList()
                     break
                 default:
                     return
@@ -103,10 +105,24 @@ ApplicationWindow {
             onActivated: {
                 switch (index) {
                 case 0:
+                    emailViewRight.visible = false
+                    subView.visible = true
                     SubModel.setAsDirModel()
                     break
                 case 1:
+                    emailViewRight.visible = false
+                    subView.visible = true
                     SubModel.setAsSubModel()
+                    break
+                case 2:
+                    emailViewRight.visible = true
+                    subView.visible = false
+                    EmailModelRight.setInputList()
+                    break
+                case 3:
+                    emailViewRight.visible = true
+                    subView.visible = false
+                    EmailModelRight.setOutputList()
                     break
                 default:
                     return
@@ -170,7 +186,7 @@ ApplicationWindow {
             }
         }
         EmailView {
-            id: emailView
+            id: emailViewLeft
             parent: _dropArea
             visible: false
             listModel: EmailModelLeft
@@ -202,14 +218,13 @@ ApplicationWindow {
             anchors.rightMargin: 5
             anchors.right: parent.right
 
-            onVisibleChanged: {
-                console.debug(parent.visible)
-                if (parent.visible === false)
-                    parent.anchors.top = _rowLayoutTableButtom.top
-                else
-                    parent.anchors.top = subComboBox.bottom
-            }
-
+            //            onVisibleChanged: {
+            //                console.debug(parent.visible)
+            //                if (parent.visible === false)
+            //                    parent.anchors.top = _rowLayoutTableButtom.top
+            //                else
+            //                    parent.anchors.top = subComboBox.bottom
+            //            }
             onPressToElement: {
                 dirView.deselectAll()
             }
@@ -251,6 +266,19 @@ ApplicationWindow {
                     dirView.moveElement()
                 }
             }
+        }
+        EmailView {
+            id: emailViewRight
+            parent: _dropArea
+            visible: false
+            listModel: EmailModelRight
+            height: parent.height - _rowLayoutTableButtom.height - dirComboBox.height
+
+            anchors.leftMargin: 5
+            anchors.top: subComboBox.bottom
+            anchors.bottom: _rowLayoutTableButtom.top
+            anchors.left: _rectWidth.right
+            anchors.right: parent.right
         }
 
         ///строка с кнопками
