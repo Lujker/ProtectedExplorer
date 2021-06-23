@@ -33,7 +33,7 @@
  * \author Zelenskiy V.P.
  * \version 1.0
  * \date 10.06.2021
- * \warning
+ * \warning не протестированн выриант наследования и переопределения методов получения информации из БД и писем
  */
 class EmailModel: public QAbstractListModel
 {
@@ -68,9 +68,12 @@ public:
     explicit        EmailModel(std::vector<Abonent>& abonents, QObject* parent = nullptr);
     virtual         ~EmailModel();
 
+    ///\warning Методы ниже бязательно переопределяются в наслединке
     virtual void    initModelData();
     virtual void    initAddressBook();
-    virtual void    initFileSystemWatchers();
+    virtual void    initWatchers();
+
+    ///\brief Установка значений состояния программы (не обязательно переопределять)
     virtual void    setStatus(enum STATUS status);
     virtual void    setModel_type(enum MODEL_TYPE model_type);
     virtual void    setRef_abonents(const std::vector<Abonent> &ref_abonents);
@@ -81,30 +84,31 @@ public:
     enum MODEL_TYPE         getModel_type() const;
     enum STATUS             status() const;
 public slots:
-    ///Для QML comboBox
+    ///Для QML comboBox вызывает соответсвующие виртуальные функции
     void setOutputList();
     void setInputList();
-    ///Делает запрос в БД и вызывает SetAbonentFromRESULT в случае успеха
+    ///\brief Делает запрос в БД и вызывает SetAbonentFromRESULT в случае успеха
     virtual void    setOutputLetters(std::vector<Letter>& letters);
-    ///Делает запрос в БД и вызывает SetAbonentFromRESULT в случае успеха
+    ///\brief Делает запрос в БД и вызывает SetAbonentFromRESULT в случае успеха
     virtual void    setInputLetters(std::vector<Letter> &letters);
-    ///Общая перезагрузка
+    ///\brief Общая перезагрузка
     virtual void    update();
-    ///Обновление списка абонентов и асоциаций с письмами
+    ///\brief Обновление списка абонентов и асоциаций с письмами
     virtual void    updateAbonents();
-    ///Получение нового входящего
+    ///\brief Получение нового входящего (изначально соединяется с QFileSystemWatcher)
     virtual void    getNewInMessage(QString path);
-    ///Получение нового исходящего
+    ///\brief Получение нового исходящего (изначально соединяется с QFileSystemWatcher)
     virtual void    getNewOutMessage(QString path);
-    ///Формирование нового исходящего
+    ///\brief Формирование нового исходящего и отправка
     virtual void    sendMessage();
-    ///Получение списка файлов во вложении
+    ///\brief Получение списка файлов во вложении
     virtual void    getAttacmentsList(const int index);
-    ///Получение вложения контейнера
+    ///\brief Получение вложения контейнера
     virtual void    getAttacments(const int mes_index, const int dir_index);
-    ///Удаление сообщения
+    ///\brief Удаление сообщения
     virtual void    deleteMessage(const int index);
-    /// QAbstractItemModel interface
+    /// QAbstractItemModel interface доступа объектов из QML
+    ///\warning Методы ниже бязательно переопределяются в наслединке
 public:
     virtual QModelIndex index(int row, int column, const QModelIndex &parent) const override;
     virtual QModelIndex parent(const QModelIndex &child) const override;
@@ -113,6 +117,7 @@ public:
     virtual QVariant    data(const QModelIndex &index, int role) const override;
     virtual QHash<int, QByteArray> roleNames() const override;
 
+    ///\brief служебные функции только для данного класса
 private:
     void setAbonentsFromRESULT(db::RESULT& result, std::set<Abonent> &ab_arr);
     void setLettersFromRESULT(db::RESULT& result, std::vector<Letter>& let_arr);
@@ -167,7 +172,7 @@ private:
     std::vector<Abonent>&           m_ref_abonents; ///Ссылка на список абонентов в классе настроек
 
 signals:
-    void abonentChange();
+    void abonentsChange();
 };
 
 #endif // EMAILMODEL_H

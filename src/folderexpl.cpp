@@ -20,6 +20,7 @@ FolderExpl::~FolderExpl()
 /*!
  * \brief FolderExpl::initFromSettings
  * Метод для инициализации моделей через файл настрек и установки связей между ними
+ * \warning Не использовать данные метод если собиретесь работать с классами унаследованными от используемых
  */
 void FolderExpl::initFromSettings()
 {
@@ -41,22 +42,30 @@ void FolderExpl::initFromSettings()
     for(const auto& it : m_email_models){
         it->initAddressBook();    /// синхронизация адресной книги из настроек и БД
         it->initModelData();      /// синхронизация сообщений из БД и моделью
-        it->initFileSystemWatchers();
+        it->initWatchers();
     }
     setAbonent_model(new AbonentModel(SettingsController::get_instanse().abonents()));
     getAbonent_model()->Init();
 }
 
 /*!
- * \brief FolderExpl::init инициализация по готовым обьектам
- * \param subs - метод инициализации модели сетевых папок
- * \param dirs - метод иницилизации модели доступных папок
+ * \brief FolderExpl::init инициализация по готовым обьектам, просто загрузка уже инициализированных и связанных моделей
+ * \param subs - уже инициализировання модель сетевых папом
+ * \param dirs - уже инициализировання модель доступных папок
+ * \param leftModel - первая уже инициализировання моедль для сообщейний
+ * \param rightModel - уже инициализировання модель для сообщений
+ * \param abonentModel - уже инициализировання модель абонентов
  */
-void FolderExpl::init(DirsModel *subs, DirsModel *dirs)
+void FolderExpl::init(DirsModel *subs, DirsModel *dirs, EmailModel *leftModel, EmailModel *rightModel, AbonentModel* abonentModel)
 {
     clear_members();
     m_dir_models.push_back(subs);
     m_dir_models.push_back(dirs);
+    m_email_models.push_back(leftModel);
+    m_email_models.push_back(rightModel);
+    if(provider==nullptr)
+        provider = new IconProvider;
+    setAbonent_model(abonentModel);
 }
 
 /*!
@@ -130,8 +139,8 @@ void FolderExpl::setAbonent_model(AbonentModel *abonent_model)
 DirsModel::DirsModel(std::vector<std::pair<std::string, std::string> > dirs, QObject *parent): QAbstractTableModel(parent),
     m_dirs(dirs), m_folder(nullptr),  m_level_count(0),  m_watcher(new QFileSystemWatcher)
 {
-    connect(m_watcher, SIGNAL(directoryChanged(const QString &)),
-            this, SLOT(derictoryChange(const QString &)));
+    connect(m_watcher, SIGNAL(directoryChanged(QString)),
+            this, SLOT(derictoryChange(QString)));
     refreshModel();
 }
 
@@ -249,8 +258,9 @@ void DirsModel::comeToBeginning()
  * слот принимащий сигнал при изменении в текущей деректории
  * \param path путь дериктории
  */
-void DirsModel::derictoryChange(const QString& path)
+void DirsModel::derictoryChange(QString path)
 {
+    Q_UNUSED(path);
     refreshModel();
 }
 

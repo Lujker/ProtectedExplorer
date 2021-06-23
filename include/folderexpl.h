@@ -39,6 +39,7 @@ class EmailModel;
  * \details Класс обертка для моделей таблиц файловой системы.
  * Класс предназначен для установлние связей (QObject::connect)
  * между двумя моделями и почтовой моделью, и их инициализации.
+ *
  * \author Zelenskiy V.P.
  * \version 1.0
  * \date 01.06.2021
@@ -51,7 +52,9 @@ public:
     explicit FolderExpl(QObject *parent = nullptr);
     ~FolderExpl();
     void initFromSettings();
-    void init(DirsModel *subs, DirsModel* dirs);
+    void init(DirsModel *subs, DirsModel* dirs,
+              EmailModel* leftModel, EmailModel* rightModel,
+              AbonentModel *abonentModel);
     void clear_members();
 
     IconProvider *getProvider() const;
@@ -126,7 +129,7 @@ public slots:
     void copyTo(QString path);
 
     //Работа с дерикториями и файлами
-    void derictoryChange(const QString& path);
+    void derictoryChange(QString path);
     void addFile(QString name);
     void deleteFile(int index);
     void deleteFiles(int start, int end);

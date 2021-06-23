@@ -125,7 +125,7 @@ void EmailModel::initAddressBook()
             ///если остались другие абоненты в БД то изменяем их тип на неопределенный
             }
         ///Включение слежения за дерикториями входящих и исходящих
-            initFileSystemWatchers();
+            initWatchers();
         }
     else {
         setStatus(INIT_AB_ERROR);
@@ -135,7 +135,7 @@ void EmailModel::initAddressBook()
     setStatus(IS_OK);
 }
 
-void EmailModel::initFileSystemWatchers()
+void EmailModel::initWatchers()
 {
     try {
         if(m_inbox_watchers!=nullptr){

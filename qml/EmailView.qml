@@ -44,7 +44,9 @@ Rectangle {
                     parent.isHovered = !parent.isHovered
                 }
                 onClicked: {
-                    parent.isSelected = !parent.isSelected
+                    if (mouse.button === Qt.LeftButton) {
+                        parent.isSelected = !parent.isSelected
+                    }
                 }
             }
         }
@@ -63,4 +65,6 @@ Rectangle {
         delegate: contentDeleagte
         headerPositioning: ListView.OverlayHeader
     }
+
+    function deselectAll() {}
 }

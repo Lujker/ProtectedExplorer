@@ -134,7 +134,8 @@ private:
     SettingsController(SettingsController&)=delete;
     SettingsController(SettingsController&&)=delete;
     SettingsController& operator=(SettingsController&)=delete;
-    virtual ~SettingsController();
+    ~SettingsController();
+
     std::string checkFolder(const std::string &absPath);
     std::string checkIcon(const QString &iconPath);
 

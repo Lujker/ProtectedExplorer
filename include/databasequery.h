@@ -36,7 +36,6 @@ namespace db {
 class DatabaseQuery
 {
 public:
-
     ///Classificator reading
     static bool generate_select_cl_status(std::map<std::string, size_t> &cl_status);
     static bool generate_select_cl_abonent_type(std::map<std::string, size_t>& cl_abonent_type);
@@ -48,13 +47,9 @@ public:
     static unsigned int generate_select_abonent_count();
 
     static RESULT generate_update_abonent_type(const Abonent& abonent);
-
     static RESULT generate_update_abonent_path(const Abonent& abonent);
-
     static RESULT generate_delete_abonent(const Abonent& abonent);
-
     static RESULT generate_insert_abonent(const Abonent& abonent);
-
     static RESULT generate_update_abonent(const Abonent& abonent);
 
     ///Letters table
@@ -64,11 +59,10 @@ public:
     static unsigned int generate_select_letters_count();
 
     static RESULT generate_insert_letters(Letter& letter);
-
     static RESULT generate_delete_letters(Letter& letter);
-
     static RESULT generate_update_letters(const Letter& letter);
 
+    ///Creating and check func
     static RESULT generate_create_table();
     static RESULT generate_check_table();
 private:
