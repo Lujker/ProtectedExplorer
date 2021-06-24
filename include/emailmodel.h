@@ -121,7 +121,7 @@ public:
 private:
     void setAbonentsFromRESULT(db::RESULT& result, std::set<Abonent> &ab_arr);
     void setLettersFromRESULT(db::RESULT& result, std::vector<Letter>& let_arr);
-    void addNewLettersFromDir(std::vector<Letter>& let_arr, const QString& path);
+    void syncLettersWithDir(std::vector<Letter>& let_arr, const QString& path);
     void makeLettersFromDir(std::vector<Letter>& empty_let_arr, const QString& path);
 
 private:
@@ -129,8 +129,8 @@ private:
     std::vector<Letter>             m_letters;              ///Список писем
     QFileSystemWatcher*             m_inbox_watchers;       ///Слежка за входящими дерикториями
     QFileSystemWatcher*             m_outbox_watchers;       ///Слежка за исходящими дерикториями
-    enum STATUS                          m_status;
-    enum MODEL_TYPE                      m_model_type;
+    enum STATUS                     m_status;
+    enum MODEL_TYPE                 m_model_type;
 };
 
 /*!

@@ -57,22 +57,22 @@ public:
               AbonentModel *abonentModel);
     void clear_members();
 
+
     IconProvider *getProvider() const;
-    std::vector<DirsModel *> getDir_models() const;
     void setProvider(IconProvider *value);
-    void setDir_models(const std::vector<DirsModel *> &dir_models);
 
-    std::vector<EmailModel *> getEmail_models() const;
-    void setEmail_models(const std::vector<EmailModel *> &email_models);
+    const std::vector<
+    std::shared_ptr<DirsModel>>&        getDir_models() const;
+    const std::vector<
+    std::shared_ptr<EmailModel>>&       getEmail_models() const;
+    std::shared_ptr<AbonentModel>       getAbonent_model() const;
 
-    AbonentModel *getAbonent_model() const;
-    void setAbonent_model(AbonentModel *abonent_model);
 
 private:
-    std::vector<DirsModel*>     m_dir_models;
-    std::vector<EmailModel*>    m_email_models;
-    AbonentModel*               m_abonent_model;
-    IconProvider*               provider;
+    std::vector<std::shared_ptr<DirsModel>>     m_dir_models;
+    std::vector<std::shared_ptr<EmailModel>>    m_email_models;
+    std::shared_ptr<AbonentModel>               m_abonent_model;
+    IconProvider*                                provider;
 };
 
 /*!

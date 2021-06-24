@@ -41,7 +41,7 @@ void EmailModel::initModelData()
     /// При этом можно его сравнивать с теми что уже есть в БД
     if(getModel_type()!=FAIL)
         for(auto const &it : m_ref_abonents){
-            addNewLettersFromDir(letters(),
+            syncLettersWithDir(letters(),
                                  QString::fromStdString(
                                      it.inbox_path));
         }
@@ -101,6 +101,7 @@ void EmailModel::initAddressBook()
                 }
             }
         }
+        ///если остались другие абоненты в БД то изменяем их тип на неопределенный
         if(db_abonents.size()>0){
             for(auto it : db_abonents){
                 try {
@@ -122,7 +123,7 @@ void EmailModel::initAddressBook()
                                 + " is failed!";
                 }
             }
-            ///если остались другие абоненты в БД то изменяем их тип на неопределенный
+
             }
         ///Включение слежения за дерикториями входящих и исходящих
             initWatchers();
@@ -195,6 +196,7 @@ void EmailModel::setStatus(enum STATUS status)
 
 void EmailModel::setOutputLetters(std::vector<Letter> &letters)
 {
+    if(getModel_type()==OUTBOX) return;
     db::RESULT res = db::DatabaseQuery::generate_select_output_letters();
     ///изначально считываем только входящие
     if(res.first==db::DBResult::ISOK){
@@ -211,6 +213,7 @@ void EmailModel::setOutputLetters(std::vector<Letter> &letters)
 
 void EmailModel::setInputLetters(std::vector<Letter> &letters)
 {
+    if(getModel_type()==INBOX) return;
     db::RESULT res = db::DatabaseQuery::generate_select_input_letters();
     ///изначально считываем только входящие
     if(res.first==db::DBResult::ISOK){
@@ -262,7 +265,20 @@ void EmailModel::getAttacments(const int mes_index, const int dir_index)
 
 void EmailModel::deleteMessage(const int index)
 {
+    if(index<0 && index>=letters().size()) return;
 
+    auto result = db::DatabaseQuery::generate_delete_letters(letters().at(index));
+    if(result.first==db::DBResult::ISOK){
+        ///\warning нужно тестить operator= у letter
+        letters().erase(
+                    std::remove(
+                        letters().begin(), letters().end(),
+                        *(letters().begin() + index)),
+                        letters().end());
+    }
+    else {
+        qDebug()<<"Fail with deleting: " << QString::fromStdString(letters().at(index));
+    }
 }
 
 QModelIndex EmailModel::index(int row,
@@ -389,7 +405,7 @@ void EmailModel::setLettersFromRESULT(db::RESULT &result, std::vector<Letter> &l
     }
 }
 
-void EmailModel::addNewLettersFromDir(std::vector<Letter> &let_arr, const QString &path)
+void EmailModel::syncLettersWithDir(std::vector<Letter> &let_arr, const QString &path)
 {
     std::vector<Letter> lettersFromDir;
     ///Определить функцию получения информации из контейнера
@@ -406,6 +422,27 @@ void EmailModel::addNewLettersFromDir(std::vector<Letter> &let_arr, const QStrin
             auto res = db::DatabaseQuery::generate_insert_letters(*finder);
             if(res.first==db::DBResult::ISOK){
                 let_arr.push_back(std::move(*finder));
+            }
+            else{
+                qDebug()<<"Fail with insert mess: " << QString::fromStdString(*finder);
+            }
+        }
+    }
+    ///Теперь в обратном порядке смотрим какие пиьсам уже удалены но не записано об удаление в БД
+    if(lettersFromDir.size()>0)
+    for(const auto &it: let_arr){
+        auto finder = std::find_if(
+                    lettersFromDir.begin(),
+                    lettersFromDir.end() ,
+                    [&](const Letter& let){
+                        return let.let_path==it.let_path;
+                    }
+        );
+        if(finder==let_arr.end()){
+            auto res = db::DatabaseQuery::generate_delete_letters(*finder);
+            if(res.first==db::DBResult::ISOK){
+                ///\warning нужно тестить operator= у letter
+                let_arr.erase(std::remove(let_arr.begin(), let_arr.end(), it), let_arr.end());
             }
             else{
                 qDebug()<<"Fail with insert mess: " << QString::fromStdString(*finder);

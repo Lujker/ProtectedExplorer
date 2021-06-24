@@ -358,7 +358,8 @@ Letter::operator std::string()
 
 bool Letter::operator==(const Letter &let) const
 {
-    return this->let_id == let.let_id;
+    return (this->let_id == let.let_id) &&  (this->from_id == let.from_id) &&
+            (this->to_id == let.to_id)  &&  (this->let_path == let.let_path);
 }
 
 bool Letter::operator!=(const Letter &let) const
