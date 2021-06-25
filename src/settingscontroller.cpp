@@ -332,7 +332,7 @@ Abonent::operator std::string()
 
 bool Abonent::operator==(const Abonent &ab) const
 {
-    return this->sys_name==ab.sys_name;
+    return this->sys_name==ab.sys_name && this->db_id == ab.db_id;
 }
 
 bool Abonent::operator!=(const Abonent &ab) const

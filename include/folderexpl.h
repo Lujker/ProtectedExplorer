@@ -61,18 +61,20 @@ public:
     IconProvider *getProvider() const;
     void setProvider(IconProvider *value);
 
-    const std::vector<
-    std::shared_ptr<DirsModel>>&        getDir_models() const;
-    const std::vector<
-    std::shared_ptr<EmailModel>>&       getEmail_models() const;
+    std::pair<std::shared_ptr<DirsModel>, std::shared_ptr<DirsModel> > getDir_models() const;
+    std::pair<std::shared_ptr<EmailModel>, std::shared_ptr<EmailModel>> getEmail_models() const;
     std::shared_ptr<AbonentModel>       getAbonent_model() const;
 
 
 private:
-    std::vector<std::shared_ptr<DirsModel>>     m_dir_models;
-    std::vector<std::shared_ptr<EmailModel>>    m_email_models;
-    std::shared_ptr<AbonentModel>               m_abonent_model;
-    IconProvider*                                provider;
+    std::pair<
+    std::shared_ptr<DirsModel>,
+    std::shared_ptr<DirsModel>>     m_dir_models;
+    std::pair<
+    std::shared_ptr<EmailModel>,
+    std::shared_ptr<EmailModel>>    m_email_models;
+    std::shared_ptr<AbonentModel>   m_abonent_model;
+    IconProvider*                   provider;
 };
 
 /*!

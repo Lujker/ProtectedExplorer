@@ -19,5 +19,7 @@
         <file>EmailView.qml</file>
         <file>../icons/contacts.png</file>
         <file>EmailDelegate.qml</file>
+        <file>AbonentList.qml</file>
+        <file>AbonentPopupItem.qml</file>
     </qresource>
 </RCC>

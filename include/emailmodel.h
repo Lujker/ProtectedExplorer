@@ -72,7 +72,7 @@ public:
     virtual void    initModelData();
     virtual void    initAddressBook();
     virtual void    initWatchers();
-
+    virtual void    init();
     ///\brief Установка значений состояния программы (не обязательно переопределять)
     virtual void    setStatus(enum STATUS status);
     virtual void    setModel_type(enum MODEL_TYPE model_type);
@@ -131,6 +131,10 @@ private:
     QFileSystemWatcher*             m_outbox_watchers;       ///Слежка за исходящими дерикториями
     enum STATUS                     m_status;
     enum MODEL_TYPE                 m_model_type;
+
+signals:
+    void inboxChange();
+    void ouboxChange();
 };
 
 /*!
@@ -148,7 +152,7 @@ class AbonentModel: public QAbstractListModel
 public:
     explicit        AbonentModel(std::vector<Abonent>& abonents, QObject* parent = nullptr);
     virtual         ~AbonentModel();
-    virtual void    Init();
+    virtual void    init();
     /// QAbstractItemModel interface
 public:
     virtual QModelIndex index(int row, int column, const QModelIndex &parent) const override;
@@ -157,6 +161,14 @@ public:
     virtual int         columnCount(const QModelIndex &parent) const override;
     virtual QVariant    data(const QModelIndex &index, int role) const override;
     virtual QHash<int, QByteArray> roleNames() const override;
+
+    virtual void addAbonent(QString sys_name,
+                            QString inbox_path = "",
+                            QString outbox_path="",
+                            QString icon_path = "",
+                            int db_type_id=0);
+    virtual void delAbonent(int index);
+    virtual void renameAbonent(int index, QString sys_name);
 
     enum AbonentsRoles{
         ICON = Qt::UserRole+1,

@@ -174,6 +174,13 @@ void EmailModel::initWatchers()
             this, SLOT(getNewOutMessage(QString)));
 }
 
+void EmailModel::init()
+{
+    this->initAddressBook();
+    this->initModelData();
+    this->initWatchers();
+}
+
 enum EmailModel::STATUS EmailModel::status() const
 {
     return m_status;
@@ -240,12 +247,22 @@ void EmailModel::updateAbonents()
 
 void EmailModel::getNewInMessage(QString path)
 {
-
+    if(m_model_type==INBOX){
+        beginResetModel();
+        syncLettersWithDir(letters(), path);
+        endResetModel();
+    }
+    emit inboxChange();
 }
 
 void EmailModel::getNewOutMessage(QString path)
 {
-
+    if(m_model_type==OUTBOX){
+        beginResetModel();
+        syncLettersWithDir(letters(), path);
+        endResetModel();
+    }
+    emit ouboxChange();
 }
 
 void EmailModel::sendMessage()
@@ -494,7 +511,7 @@ AbonentModel::AbonentModel(std::vector<Abonent> &abonents, QObject *parent):
 AbonentModel::~AbonentModel()
 {}
 
-void AbonentModel::Init()
+void AbonentModel::init()
 {
 
 }
@@ -560,6 +577,45 @@ QHash<int, QByteArray> AbonentModel::roleNames() const
     roles.insert(FROM,  QByteArray("from"));
     roles.insert(TO,    QByteArray("to"));
     return roles;
+}
+
+void AbonentModel::addAbonent(QString sys_name,
+                              QString inbox_path,
+                              QString outbox_path,
+                              QString icon_path,
+                              int db_type_id)
+{
+    Abonent new_ab;
+    new_ab.sys_name=sys_name.toStdString();
+    new_ab.inbox_path = inbox_path.toStdString();
+    new_ab.outbox_path = outbox_path.toStdString();
+    new_ab.icon_path = icon_path.toStdString();
+    new_ab.db_type_id = db_type_id;
+    ref_abonents().push_back(new_ab);
+}
+
+void AbonentModel::delAbonent(int index)
+{
+    if(index < 0 || index >= ref_abonents().size()) return;
+
+    ref_abonents().erase(
+                std::remove(
+                    ref_abonents().begin(), ref_abonents().end(),
+                    *(ref_abonents().begin() + index)),
+                ref_abonents().end());
+}
+
+void AbonentModel::renameAbonent(int index, QString sys_name)
+{
+    if(index < 0 || index >= ref_abonents().size()) return;
+
+    std::string new_name = sys_name.toStdString();
+    auto it = std::find_if(ref_abonents().begin(),ref_abonents().end(),[&](const Abonent& ab){
+        return ab.sys_name==new_name;
+    });
+    if(it==ref_abonents().end()){
+        (ref_abonents().begin()+index)->sys_name = new_name;
+    }
 }
 
 std::vector<Abonent> &AbonentModel::ref_abonents() const

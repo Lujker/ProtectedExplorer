@@ -26,6 +26,13 @@ MenuBar {
             }
         }
         MenuItem {
+            text: "Абоненты"
+            AbonentList {
+                id: abList
+            }
+            onClicked: abList.open()
+        }
+        MenuItem {
             text: "Сохранить настройки"
             onClicked: AppSettings.save_app_settings()
         }

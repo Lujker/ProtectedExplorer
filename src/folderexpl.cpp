@@ -25,35 +25,35 @@ FolderExpl::~FolderExpl()
 void FolderExpl::initFromSettings()
 {
     clear_members();
-    m_dir_models.push_back(
+    m_dir_models.first =
                 std::make_shared<DirsModel>
-                (SettingsController::get_instanse().dir_list()));
-    m_dir_models.push_back(
+                (SettingsController::get_instanse().dir_list());
+    m_dir_models.second =
                 std::make_shared<DirsModel>
-                (SettingsController::get_instanse().sub_list_dirs()));
-    m_email_models.push_back(
+                (SettingsController::get_instanse().sub_list_dirs());
+    m_email_models.first =
                 std::make_shared<EmailModel>
-                (SettingsController::get_instanse().abonents()));
-    m_email_models.push_back(
+                (SettingsController::get_instanse().abonents());
+    m_email_models.second =
                 std::make_shared<EmailModel>
-                (SettingsController::get_instanse().abonents()));
+                (SettingsController::get_instanse().abonents());
 
 
     if(provider==nullptr)
-        provider = new IconProvider();
+        provider = new IconProvider(); ///интересно тут теряется память???
     ///Инициализация и подклоючените фалового менеджера
-    if(m_dir_models.size()==2){
-        QObject::connect(m_dir_models.at(1).get(),SIGNAL(copyFile(QString)),m_dir_models.at(0).get(),SLOT(copyFrom(QString)));
-        QObject::connect(m_dir_models.at(0).get(),SIGNAL(copyFile(QString)),m_dir_models.at(1).get(),SLOT(copyFrom(QString)));
+    if(m_dir_models.first!=nullptr && m_dir_models.second!=nullptr){
+        QObject::connect(m_dir_models.first.get(),SIGNAL(copyFile(QString)),m_dir_models.second.get(),SLOT(copyFrom(QString)));
+        QObject::connect(m_dir_models.second.get(),SIGNAL(copyFile(QString)),m_dir_models.first.get(),SLOT(copyFrom(QString)));
     }
     ///Инициализация почтового класса
-    for(const auto& it : m_email_models){
-        it->initAddressBook();    /// синхронизация адресной книги из настроек и БД
-        it->initModelData();      /// синхронизация сообщений из БД и моделью
-        it->initWatchers();
-    }
+   if(m_email_models.first!=nullptr && m_email_models.second!=nullptr){
+        m_email_models.first->init();
+        m_email_models.second->init();
+   }
+
     m_abonent_model = std::make_shared<AbonentModel>(SettingsController::get_instanse().abonents());
-    getAbonent_model()->Init();
+    getAbonent_model()->init();
 }
 
 /*!
@@ -67,10 +67,10 @@ void FolderExpl::initFromSettings()
 void FolderExpl::init(DirsModel *subs, DirsModel *dirs, EmailModel *leftModel, EmailModel *rightModel, AbonentModel* abonentModel)
 {
     clear_members();
-    m_dir_models.push_back(std::shared_ptr<DirsModel>(subs));
-    m_dir_models.push_back(std::shared_ptr<DirsModel>(dirs));
-    m_email_models.push_back(std::shared_ptr<EmailModel>(leftModel));
-    m_email_models.push_back(std::shared_ptr<EmailModel>(rightModel));
+    m_dir_models.first = (std::shared_ptr<DirsModel>(subs));
+    m_dir_models.second = (std::shared_ptr<DirsModel>(dirs));
+    m_email_models.first = (std::shared_ptr<EmailModel>(leftModel));
+    m_email_models.second =(std::shared_ptr<EmailModel>(rightModel));
     if(provider==nullptr)
         provider = new IconProvider();
     m_abonent_model.reset(abonentModel);
@@ -82,15 +82,23 @@ void FolderExpl::init(DirsModel *subs, DirsModel *dirs, EmailModel *leftModel, E
  */
 void FolderExpl::clear_members()
 {
-    for(auto it : m_dir_models){
-        it.reset();
+    if(m_dir_models.first!=nullptr){
+        m_dir_models.first.reset();
+        m_dir_models.first = nullptr;
     }
-    m_dir_models.clear();
+    if(m_dir_models.second!=nullptr){
+        m_dir_models.second.reset();
+        m_dir_models.second = nullptr;
+    }
 
-    for(auto it : m_email_models){
-        it.reset();
+    if(m_email_models.first!=nullptr){
+        m_email_models.first.reset();
+        m_email_models.first = nullptr;
     }
-    m_email_models.clear();
+    if(m_email_models.second!=nullptr){
+        m_email_models.second.reset();
+        m_email_models.second = nullptr;
+    }
 
     if(m_abonent_model.get()!=nullptr){
         m_abonent_model.reset();
@@ -109,12 +117,12 @@ void FolderExpl::setProvider(IconProvider *value)
     provider = value;
 }
 
-const std::vector<std::shared_ptr<DirsModel>>& FolderExpl::getDir_models() const
+std::pair<std::shared_ptr<DirsModel>, std::shared_ptr<DirsModel>> FolderExpl::getDir_models() const
 {
     return m_dir_models;
 }
 
-const std::vector<std::shared_ptr<EmailModel>>& FolderExpl::getEmail_models() const
+std::pair<std::shared_ptr<EmailModel>, std::shared_ptr<EmailModel>> FolderExpl::getEmail_models() const
 {
     return m_email_models;
 }

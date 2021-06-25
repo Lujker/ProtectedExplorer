@@ -196,6 +196,11 @@ ApplicationWindow {
             anchors.right: _rectWidth.left
             anchors.left: parent.left
             anchors.leftMargin: 5
+            Connections {
+                target: EmailModelLeft
+                function onInboxChange() {}
+                function onOuboxChange() {}
+            }
         }
 
         ///Элемент для изменения ширины таблиц
@@ -217,14 +222,6 @@ ApplicationWindow {
             anchors.left: _rectWidth.right
             anchors.rightMargin: 5
             anchors.right: parent.right
-
-            //            onVisibleChanged: {
-            //                console.debug(parent.visible)
-            //                if (parent.visible === false)
-            //                    parent.anchors.top = _rowLayoutTableButtom.top
-            //                else
-            //                    parent.anchors.top = subComboBox.bottom
-            //            }
             onPressToElement: {
                 dirView.deselectAll()
             }
@@ -279,6 +276,12 @@ ApplicationWindow {
             anchors.bottom: _rowLayoutTableButtom.top
             anchors.left: _rectWidth.right
             anchors.right: parent.right
+
+            Connections {
+                target: EmailModelRight
+                function onInboxChange() {}
+                function onOuboxChange() {}
+            }
         }
 
         ///строка с кнопками

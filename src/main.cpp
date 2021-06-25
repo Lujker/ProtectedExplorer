@@ -9,9 +9,10 @@ int main(int argc, char *argv[])
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
-    QApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
     app.setApplicationName("Модуль взаимодействия со шлюзом обмена данными ");
     app.setApplicationVersion("1.0.0");
+    app.setOrganizationDomain("RusBITeh");
     app.setWindowIcon(QIcon(":/appIcon.ico"));
     ///Чтение переданных параметров командной строки и инициализцация настроек
     SettingsController::get_instanse().parse_args(app);
@@ -34,10 +35,10 @@ int main(int argc, char *argv[])
     ///Загрузка объектов в контекст QML интерфейса
     QQmlContext* ctxt = engine.rootContext();
     ctxt->setContextProperty(QLatin1String("AppSettings"), &SettingsController::get_instanse());
-    ctxt->setContextProperty(QLatin1String("DirModel"), expl.getDir_models().at(0).get());
-    ctxt->setContextProperty(QLatin1String("SubModel"), expl.getDir_models().at(1).get());
-    ctxt->setContextProperty(QLatin1String("EmailModelLeft"), expl.getEmail_models().at(0).get());
-    ctxt->setContextProperty(QLatin1String("EmailModelRight"), expl.getEmail_models().at(1).get());
+    ctxt->setContextProperty(QLatin1String("DirModel"), expl.getDir_models().first.get());
+    ctxt->setContextProperty(QLatin1String("SubModel"), expl.getDir_models().second.get());
+    ctxt->setContextProperty(QLatin1String("EmailModelLeft"), expl.getEmail_models().first.get());
+    ctxt->setContextProperty(QLatin1String("EmailModelRight"), expl.getEmail_models().second.get());
     ctxt->setContextProperty(QLatin1String("AbonentModel"), expl.getAbonent_model().get());
     ///устновка постовщика изображений
     engine.addImageProvider(QLatin1String("iconProvider"), expl.getProvider());
