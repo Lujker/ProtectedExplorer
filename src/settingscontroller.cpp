@@ -196,7 +196,7 @@ void SettingsController::read_settings()
                                   new_abonent.db_type_id = attr.value().toInt();
                               }
                           }
-                          for(int i=0;i<3;++i){
+                          for(auto i=0;i<3;++i){
                               xmlReader.readNextStartElement();
                               if(xmlReader.name()=="outbox")
                                   new_abonent.outbox_path=xmlReader.readElementText().toStdString();
