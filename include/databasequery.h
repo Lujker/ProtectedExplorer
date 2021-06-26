@@ -37,8 +37,8 @@ class DatabaseQuery
 {
 public:
     ///Classificator reading
-    static bool generate_select_cl_status(std::map<std::string, size_t> &cl_status);
-    static bool generate_select_cl_abonent_type(std::map<std::string, size_t>& cl_abonent_type);
+    static bool generate_select_cl_status(std::map<QString, size_t> &cl_status);
+    static bool generate_select_cl_abonent_type(std::map<QString, size_t>& cl_abonent_type);
 
     ///Abonents_table
     static RESULT generate_select_abonents();

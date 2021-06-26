@@ -62,16 +62,17 @@ public:
         DATE,
         ATACH_COUNT,
         ICON,
-        SENDER
+        SENDER,
+        INDEX
     };
 
     explicit        EmailModel(std::vector<Abonent>& abonents, QObject* parent = nullptr);
     virtual         ~EmailModel();
 
     ///\warning Методы ниже бязательно переопределяются в наслединке
-    virtual void    initModelData();
+    virtual void    initModelData() noexcept;
     virtual void    initAddressBook();
-    virtual void    initWatchers();
+    virtual void    initWatchers() noexcept;
     virtual void    init();
     ///\brief Установка значений состояния программы (не обязательно переопределять)
     virtual void    setStatus(enum STATUS status);
@@ -79,10 +80,10 @@ public:
     virtual void    setRef_abonents(const std::vector<Abonent> &ref_abonents);
     virtual void    setLetters(const std::vector<Letter> &letters);
 
-    std::vector<Letter>     &letters();
-    std::vector<Abonent>    &ref_abonents() const;
-    enum MODEL_TYPE         getModel_type() const;
-    enum STATUS             status() const;
+    std::vector<Letter>     &letters() noexcept;
+    std::vector<Abonent>    &ref_abonents() const noexcept;
+    enum MODEL_TYPE         getModel_type() const noexcept;
+    enum STATUS             status() const noexcept;
 public slots:
     ///Для QML comboBox вызывает соответсвующие виртуальные функции
     void setOutputList();
@@ -150,6 +151,14 @@ class AbonentModel: public QAbstractListModel
 {
     Q_OBJECT
 public:
+    enum AbonentsRoles{
+        ICON = Qt::UserRole+1,
+        NAME,
+        FROM,
+        TO,
+        INDEX
+    };
+
     explicit        AbonentModel(std::vector<Abonent>& abonents, QObject* parent = nullptr);
     virtual         ~AbonentModel();
     virtual void    init();
@@ -161,24 +170,20 @@ public:
     virtual int         columnCount(const QModelIndex &parent) const override;
     virtual QVariant    data(const QModelIndex &index, int role) const override;
     virtual QHash<int, QByteArray> roleNames() const override;
+    ///get funcs
+    std::vector<Abonent> &ref_abonents() const;
+    void setRef_abonents(const std::vector<Abonent> &ref_abonents);
 
-    virtual void addAbonent(QString sys_name,
-                            QString inbox_path = "",
-                            QString outbox_path="",
-                            QString icon_path = "",
+public slots:
+    virtual void addAbonent(QString sys_name= "Не указано",
+                            QString inbox_path = "...",
+                            QString outbox_path="...",
+                            QString icon_path = ":/../icons/contacts.png",
                             int db_type_id=0);
     virtual void delAbonent(int index);
     virtual void renameAbonent(int index, QString sys_name);
 
-    enum AbonentsRoles{
-        ICON = Qt::UserRole+1,
-        NAME,
-        FROM,
-        TO
-    };
 
-    std::vector<Abonent> &ref_abonents() const;
-    void setRef_abonents(const std::vector<Abonent> &ref_abonents);
 
 private:
     std::vector<Abonent>&           m_ref_abonents; ///Ссылка на список абонентов в классе настроек

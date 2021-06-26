@@ -30,21 +30,27 @@ EmailModel::~EmailModel()
 
 }
 
-void EmailModel::initModelData()
+void EmailModel::initModelData() noexcept
 {
-    setInputLetters(letters());
+    try {
+        setInputLetters(letters());
     /// А теперь сравнить с тем, что действительно есть сейчас в дерикториях
     /// И внести изменения в БД
     /// Для этого смотрим в таблице let_option все пути и свеояем с тем что находится в дерикториях
     /// если такого еще нет то вставляем новое входящее
     /// можно придумать универсальную функцию проверки в дериктории нового контейнера и вставки его в БД
     /// При этом можно его сравнивать с теми что уже есть в БД
-    if(getModel_type()!=FAIL)
-        for(auto const &it : m_ref_abonents){
-            syncLettersWithDir(letters(),
-                                 QString::fromStdString(
-                                     it.inbox_path));
+        if(getModel_type()!=FAIL)
+            for(auto const &it : m_ref_abonents){
+             syncLettersWithDir(letters(),
+                                    QString::fromStdString(
+                                        it.inbox_path));
         }
+    }  catch (...) {
+        setModel_type(FAIL);
+        setStatus(INIT_LET_ERROR);
+        ///можно вызвать сигнал который будет выкидывать окно с ошибкой
+    }
 }
 
 /*!
@@ -53,7 +59,7 @@ void EmailModel::initModelData()
  */
 void EmailModel::initAddressBook()
 {
-    db::RESULT res = db::DatabaseQuery::generate_select_abonents();
+    auto res = db::DatabaseQuery::generate_select_abonents();
     if(res.first==db::DBResult::ISOK){
         std::set<Abonent> db_abonents;
         setAbonentsFromRESULT(res, db_abonents);
@@ -65,7 +71,7 @@ void EmailModel::initAddressBook()
                 if(ab_iter->inbox_path != it.inbox_path ||
                     ab_iter->outbox_path != it.outbox_path){
                     ///update inbox and outbox path
-                    db::RESULT upd_res =
+                    auto upd_res =
                             db::DatabaseQuery::
                             generate_update_abonent_path(it);
                     ///обработка ошибки обновления
@@ -77,7 +83,7 @@ void EmailModel::initAddressBook()
                 }
                 if(ab_iter->db_type_id != it.db_type_id){
                  ///update type_id
-                    db::RESULT upd_res = db::DatabaseQuery::
+                    auto upd_res = db::DatabaseQuery::
                             generate_update_abonent_type(it);
                     ///обработка ошибки обновления
                     if(upd_res.first!=db::DBResult::ISOK){
@@ -91,7 +97,7 @@ void EmailModel::initAddressBook()
             else{
                 it.db_id = db::DatabaseQuery::
                         generate_select_abonent_count()+1;
-                db::RESULT upd_res = db::DatabaseQuery::
+                auto upd_res = db::DatabaseQuery::
                         generate_insert_abonent(it);
                 ///если не нашли такой элемент вставляем его
                 if(upd_res.first!=db::DBResult::ISOK){
@@ -105,16 +111,15 @@ void EmailModel::initAddressBook()
         if(db_abonents.size()>0){
             for(auto it : db_abonents){
                 try {
-                    std::string type_name = "Неопределен";
                     it.db_type_id = SettingsController::
                             get_instanse().get_settings().
-                            cl_abonent_type.at(type_name);
+                            cl_abonent_type.at(QString::fromLocal8Bit("Неопределен")); ///Тут нужно поработать с кодировкой
 
                 }  catch (const std::exception& exp) {
                     qDebug()<<"Uncnown type"<<exp.what();
                     it.db_type_id=0;
                 }
-                db::RESULT upd_res = db::DatabaseQuery::
+                auto upd_res = db::DatabaseQuery::
                         generate_update_abonent_type(it);
                 ///обработка ошибки обновления
                 if(upd_res.first!=db::DBResult::ISOK){
@@ -125,8 +130,6 @@ void EmailModel::initAddressBook()
             }
 
             }
-        ///Включение слежения за дерикториями входящих и исходящих
-            initWatchers();
         }
     else {
         setStatus(INIT_AB_ERROR);
@@ -136,7 +139,7 @@ void EmailModel::initAddressBook()
     setStatus(IS_OK);
 }
 
-void EmailModel::initWatchers()
+void EmailModel::initWatchers() noexcept
 {
     try {
         if(m_inbox_watchers!=nullptr){
@@ -147,6 +150,21 @@ void EmailModel::initWatchers()
             delete m_outbox_watchers;
             m_outbox_watchers = nullptr;
         }
+
+
+        m_inbox_watchers = new QFileSystemWatcher;
+        m_outbox_watchers = new QFileSystemWatcher;
+
+        for(const auto &it : ref_abonents()){
+            m_inbox_watchers->
+                    addPath(QString::fromStdString(it.inbox_path));
+            m_outbox_watchers->
+                    addPath(QString::fromStdString(it.outbox_path));
+        }
+        connect(m_inbox_watchers, SIGNAL(directoryChanged(QString)),
+            this, SLOT(getNewInMessage(QString)));
+        connect(m_outbox_watchers, SIGNAL(directoryChanged(QString)),
+            this, SLOT(getNewOutMessage(QString)));
     }
     catch(std::exception& exep){
         qDebug()<<exep.what();
@@ -158,20 +176,6 @@ void EmailModel::initWatchers()
         setStatus(STATUS::INIT_FSW_ERROR);
         return;
     }
-
-    m_inbox_watchers = new QFileSystemWatcher;
-    m_outbox_watchers = new QFileSystemWatcher;
-
-    for(const auto &it : ref_abonents()){
-        m_inbox_watchers->
-                addPath(QString::fromStdString(it.inbox_path));
-        m_outbox_watchers->
-                addPath(QString::fromStdString(it.outbox_path));
-    }
-    connect(m_inbox_watchers, SIGNAL(directoryChanged(QString)),
-            this, SLOT(getNewInMessage(QString)));
-    connect(m_outbox_watchers, SIGNAL(directoryChanged(QString)),
-            this, SLOT(getNewOutMessage(QString)));
 }
 
 void EmailModel::init()
@@ -181,7 +185,7 @@ void EmailModel::init()
     this->initWatchers();
 }
 
-enum EmailModel::STATUS EmailModel::status() const
+enum EmailModel::STATUS EmailModel::status() const noexcept
 {
     return m_status;
 }
@@ -203,35 +207,63 @@ void EmailModel::setStatus(enum STATUS status)
 
 void EmailModel::setOutputLetters(std::vector<Letter> &letters)
 {
-    if(getModel_type()==OUTBOX) return;
-    db::RESULT res = db::DatabaseQuery::generate_select_output_letters();
+    try{
+        if(getModel_type()==OUTBOX) return;
+        db::RESULT res = db::DatabaseQuery::generate_select_output_letters();
     ///изначально считываем только входящие
-    if(res.first==db::DBResult::ISOK){
-        beginResetModel();
-        letters.clear();
-        setLettersFromRESULT(res, letters);
-        endResetModel();
-        setModel_type(OUTBOX);
+        if(res.first==db::DBResult::ISOK){
+            beginResetModel();
+            letters.clear();
+            setLettersFromRESULT(res, letters);
+            endResetModel();
+            setModel_type(OUTBOX);
+        }
+        else {
+            setModel_type(FAIL);
+        }
     }
-    else {
+    catch(std::exception& exep){
+        qDebug()<<exep.what();
+        setStatus(STATUS::INIT_LET_ERROR);
         setModel_type(FAIL);
+        return;
+    }
+    catch (...) {
+        qDebug()<<"unknown exeption";
+        setStatus(STATUS::INIT_LET_ERROR);
+        setModel_type(FAIL);
+        return;
     }
 }
 
 void EmailModel::setInputLetters(std::vector<Letter> &letters)
 {
-    if(getModel_type()==INBOX) return;
-    db::RESULT res = db::DatabaseQuery::generate_select_input_letters();
+    try{
+        if(getModel_type()==INBOX) return;
+        db::RESULT res = db::DatabaseQuery::generate_select_input_letters();
     ///изначально считываем только входящие
-    if(res.first==db::DBResult::ISOK){
-        beginResetModel();
-        letters.clear();
-        setLettersFromRESULT(res, letters);
-        endResetModel();
-        setModel_type(INBOX);
+        if(res.first==db::DBResult::ISOK){
+            beginResetModel();
+            letters.clear();
+            setLettersFromRESULT(res, letters);
+            endResetModel();
+            setModel_type(INBOX);
+        }
+        else {
+            setModel_type(FAIL);
+        }
     }
-    else {
+    catch(std::exception& exep){
+        qDebug()<<exep.what();
+        setStatus(STATUS::INIT_LET_ERROR);
         setModel_type(FAIL);
+        return;
+    }
+    catch (...) {
+        qDebug()<<"unknown exeption";
+        setStatus(STATUS::INIT_LET_ERROR);
+        setModel_type(FAIL);
+        return;
     }
 }
 
@@ -337,7 +369,10 @@ int EmailModel::columnCount(const QModelIndex &parent) const
 
 QVariant EmailModel::data(const QModelIndex &index, int role) const
 {
+
     if(index.row() < m_letters.size() && index.row()>= 0){
+        if(role==INDEX) return index.row();
+
         auto finder = std::find_if(
                     m_ref_abonents.begin(),
                     m_ref_abonents.end() ,
@@ -368,8 +403,7 @@ QVariant EmailModel::data(const QModelIndex &index, int role) const
                 return QString::fromStdString(
                             finder->sys_name);
             else{
-                std::string str = "Неизвестный абонент";
-                return QString::fromStdString(str);
+                return QString::fromStdString("Неизвестный абонент");
             }
             break;
         }
@@ -387,6 +421,7 @@ QHash<int, QByteArray> EmailModel::roleNames() const
     roles.insert(ICON,          QByteArray("icon"));
     roles.insert(ATACH_COUNT,   QByteArray("atach_count"));
     roles.insert(SENDER,        QByteArray("sender"));
+    roles.insert(INDEX,         QByteArray("index"));
     return roles;
 }
 
@@ -473,7 +508,7 @@ void EmailModel::makeLettersFromDir(std::vector<Letter> &empty_let_arr, const QS
 
 }
 
-EmailModel::MODEL_TYPE EmailModel::getModel_type() const
+EmailModel::MODEL_TYPE EmailModel::getModel_type() const noexcept
 {
     return m_model_type;
 }
@@ -483,7 +518,7 @@ void EmailModel::setModel_type(MODEL_TYPE model_type)
     m_model_type = model_type;
 }
 
-std::vector<Letter>& EmailModel::letters()
+std::vector<Letter>& EmailModel::letters() noexcept
 {
     return m_letters;
 }
@@ -493,7 +528,7 @@ void EmailModel::setLetters(const std::vector<Letter> &letters)
     m_letters = letters;
 }
 
-std::vector<Abonent> &EmailModel::ref_abonents() const
+std::vector<Abonent> &EmailModel::ref_abonents() const noexcept
 {
     return m_ref_abonents;
 }
@@ -565,6 +600,9 @@ QVariant AbonentModel::data(const QModelIndex &index, int role) const
             return QString::fromStdString(
                         m_ref_abonents.at(index.row()).outbox_path);
             break;
+        case INDEX:
+            return index.row();
+            break;
         }
     return QVariant();
 }
@@ -576,6 +614,7 @@ QHash<int, QByteArray> AbonentModel::roleNames() const
     roles.insert(NAME,  QByteArray("name"));
     roles.insert(FROM,  QByteArray("from"));
     roles.insert(TO,    QByteArray("to"));
+    roles.insert(INDEX,    QByteArray("index"));
     return roles;
 }
 
@@ -609,12 +648,16 @@ void AbonentModel::renameAbonent(int index, QString sys_name)
 {
     if(index < 0 || index >= ref_abonents().size()) return;
 
+    qDebug()<<sys_name;
     std::string new_name = sys_name.toStdString();
     auto it = std::find_if(ref_abonents().begin(),ref_abonents().end(),[&](const Abonent& ab){
         return ab.sys_name==new_name;
     });
     if(it==ref_abonents().end()){
+        beginResetModel();
         (ref_abonents().begin()+index)->sys_name = new_name;
+        endResetModel();
+        emit abonentsChange();
     }
 }
 

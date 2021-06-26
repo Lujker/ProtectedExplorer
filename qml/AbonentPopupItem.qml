@@ -36,6 +36,7 @@ Rectangle {
                     parent.iconHovered = !parent.iconHovered
                 }
                 onClicked: {
+                    _dialogForIcon.index = index
                     _dialogForIcon.open()
                 }
             }
@@ -62,6 +63,7 @@ Rectangle {
                     parent.nameHovered = !parent.nameHovered
                 }
                 onClicked: {
+                    _dialogNewName.index = index
                     _dialogNewName.open()
                 }
             }
@@ -87,6 +89,7 @@ Rectangle {
                     parent.outboxHovered = !parent.outboxHovered
                 }
                 onClicked: {
+                    _dialogForOutboxes.index = index
                     _dialogForOutboxes.open()
                 }
             }
@@ -104,6 +107,7 @@ Rectangle {
                     parent.inboxHovered = !parent.inboxHovered
                 }
                 onClicked: {
+                    _dialogForInboxes.index = index
                     _dialogForInboxes.open()
                 }
             }
@@ -115,6 +119,7 @@ Rectangle {
         selectFolder: true
         folder: shortcuts.home
         nameFilters: ["Inboxes"]
+        property int index: -1
         onAccepted: {
 
             //            TreeList.add_from_dir(dupmFileDir.fileUrl)
@@ -130,6 +135,7 @@ Rectangle {
         selectFolder: true
         folder: shortcuts.home
         nameFilters: ["Outboxes"]
+        property int index: -1
         onAccepted: {
 
             //            TreeList.add_from_dir(dupmFileDir.fileUrl)
@@ -144,6 +150,7 @@ Rectangle {
         title: "Введите имя для абонента"
         height: 100
         width: 200
+        property int index: -1
 
         TextField {
             id: _txtFieldAbName
@@ -153,7 +160,10 @@ Rectangle {
 
         standardButtons: Dialog.Ok | Dialog.Cancel
         onAccepted: {
-            _txtName.text = _txtFieldAbName.text
+            AbonentModel.renameAbonent(index, _txtFieldAbName.text)
+        }
+        onRejected: {
+            console.debug(index)
         }
     }
     FileDialog {
@@ -162,6 +172,7 @@ Rectangle {
         selectFolder: true
         folder: shortcuts.home
         nameFilters: ["png"]
+        property int index: -1
         onAccepted: {
 
             //            TreeList.add_from_dir(dupmFileDir.fileUrl)

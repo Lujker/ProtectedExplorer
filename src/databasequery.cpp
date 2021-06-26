@@ -6,12 +6,12 @@ namespace db {
  * \brief DatabaseQuery::generate_select_abonents считывает всех абонентов из базы данных
  * \return RESULT
  */
-bool DatabaseQuery::generate_select_cl_status(std::map<std::string, size_t> &cl_status)
+bool DatabaseQuery::generate_select_cl_status(std::map<QString, size_t> &cl_status)
 {
     RESULT res = db::DatabaseAccessor::getInstanse()->executeQuery("SELECT * FROM cl_status;");
     if(res.first==DBResult::ISOK){
         while (res.second.next()) {
-            cl_status.insert(std::make_pair(res.second.value(1).toString().toStdString(),
+            cl_status.insert(std::make_pair(res.second.value(1).toString(),
                                             res.second.value(0).toUInt()));
             qDebug()<<res.second.value(1).toString() << " : " << res.second.value(0);
         }
@@ -20,12 +20,12 @@ bool DatabaseQuery::generate_select_cl_status(std::map<std::string, size_t> &cl_
     else return false;
 }
 
-bool DatabaseQuery::generate_select_cl_abonent_type(std::map<std::string, size_t> &cl_abonent_type)
+bool DatabaseQuery::generate_select_cl_abonent_type(std::map<QString, size_t> &cl_abonent_type)
 {
     RESULT res = db::DatabaseAccessor::getInstanse()->executeQuery("SELECT * FROM cl_abntonent_type;");
     if(res.first==DBResult::ISOK){
         while (res.second.next()) {
-            cl_abonent_type.insert(std::make_pair(res.second.value(1).toString().toStdString(),
+            cl_abonent_type.insert(std::make_pair(res.second.value(1).toString(),
                                             res.second.value(0).toUInt()));
 
             qDebug()<<res.second.value(1).toString() << " : " << res.second.value(0);

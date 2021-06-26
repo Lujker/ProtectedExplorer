@@ -76,8 +76,8 @@ struct Letter{
 struct Settings{
     std::vector<std::pair<std::string,std::string>> shared_list;
     std::vector<std::pair<std::string,std::string>> dir_list;
-    std::map<std::string, size_t> cl_status;
-    std::map<std::string, size_t> cl_abonent_type;
+    std::map<QString, size_t> cl_status;
+    std::map<QString, size_t> cl_abonent_type;
     std::vector<Abonent> abonents;
     std::string log_file_path;
 };
