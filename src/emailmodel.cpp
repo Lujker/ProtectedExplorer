@@ -205,6 +205,7 @@ void EmailModel::setStatus(enum STATUS status)
     m_status = status;
 }
 
+///Установить модель в исходящие сообещения
 void EmailModel::setOutputLetters(std::vector<Letter> &letters)
 {
     try{
@@ -236,6 +237,7 @@ void EmailModel::setOutputLetters(std::vector<Letter> &letters)
     }
 }
 
+///Установить модель во входщие сообещения
 void EmailModel::setInputLetters(std::vector<Letter> &letters)
 {
     try{
@@ -266,7 +268,7 @@ void EmailModel::setInputLetters(std::vector<Letter> &letters)
         return;
     }
 }
-
+///Полная перезагрузка моделей абонентов и сообщений
 void EmailModel::update()
 {
 
@@ -298,16 +300,17 @@ void EmailModel::getNewOutMessage(QString path)
     emit ouboxChange();
 }
 
+///Формирование и отправка контейнера
 void EmailModel::sendMessage()
 {
 
 }
-
+///Чтнеие контейнера и вытаскивание из него список вложений
 void EmailModel::getAttacmentsList(const int index)
 {
 
 }
-
+///Копирование вложений в указанную папку
 void EmailModel::getAttacments(const int mes_index, const int dir_index)
 {
 

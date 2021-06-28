@@ -72,8 +72,8 @@ public:
 
     ///\warning Методы ниже бязательно переопределяются в наслединке
     virtual void    initModelData() noexcept;
+    virtual void    initWatchers()  noexcept;
     virtual void    initAddressBook();
-    virtual void    initWatchers() noexcept;
     virtual void    init();
     ///\brief Установка значений состояния программы (не обязательно переопределять)
     virtual void    setStatus(enum STATUS status);
@@ -81,10 +81,10 @@ public:
     virtual void    setRef_abonents(const std::vector<Abonent> &ref_abonents);
     virtual void    setLetters(const std::vector<Letter> &letters);
 
-    std::vector<Letter>     &letters() noexcept;
+    std::vector<Letter>     &letters()      noexcept;
     std::vector<Abonent>    &ref_abonents() const noexcept;
     enum MODEL_TYPE         getModel_type() const noexcept;
-    enum STATUS             status() const noexcept;
+    enum STATUS             status()        const noexcept;
 public slots:
     ///Для QML comboBox вызывает соответсвующие виртуальные функции
     void setOutputList();
@@ -110,6 +110,7 @@ public slots:
     ///\brief Удаление сообщения
     virtual void    deleteMessage(const int index);
     /// QAbstractItemModel interface доступа объектов из QML
+
     ///\warning Методы ниже бязательно переопределяются в наслединке
 public:
     virtual QModelIndex index(int row, int column, const QModelIndex &parent) const override;

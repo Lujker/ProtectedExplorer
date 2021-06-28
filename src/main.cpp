@@ -3,6 +3,9 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <folderexpl.h>
+/*!
+ * \author Zelenskiy Vladislav, email: vladzzp10@yandex.ru
+ */
 
 int main(int argc, char *argv[])
 {

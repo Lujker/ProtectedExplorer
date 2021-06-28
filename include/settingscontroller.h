@@ -80,6 +80,7 @@ struct Settings{
     std::map<QString, size_t> cl_abonent_type;
     std::vector<Abonent> abonents;
     std::string log_file_path;
+    bool    helps;
 };
 
 ///функции получающии из одной строки вектор строк по разделителю
@@ -106,6 +107,7 @@ class SettingsController: public QObject
 {
     Q_OBJECT
 public:
+    Q_PROPERTY(bool helps READ helps WRITE setHelps NOTIFY helpsChanged)
     static SettingsController &get_instanse();
     static void parse_args(const QCoreApplication &app);
     void save_settings(std::string path_to_save_file = std::string());
@@ -113,6 +115,8 @@ public:
     bool is_init();
     const Settings &get_settings();
     void set_cl();
+    bool helps();
+    void setHelps(bool helps);
 
     ///PROPERTY_GET
     std::vector<std::pair<std::string,std::string>> sub_list_dirs();
@@ -128,6 +132,7 @@ signals:
     void sub_list_dirs_change(const QString &name);
     void dir_list_change(const QString &dir_list);
     void log_file_path_change(const QString &path);
+    void helpsChanged(bool helps);
 
 private:
     explicit SettingsController(QObject* parent = nullptr);

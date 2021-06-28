@@ -8,7 +8,7 @@ ApplicationWindow {
     minimumWidth: 1020
     minimumHeight: 640
     visible: true
-    property bool help: true
+    property bool help: AppSettings.helps
     title: qsTr("Модуль взаимодействия со шлюзом обмена данными")
     menuBar: mainAppMenu
 

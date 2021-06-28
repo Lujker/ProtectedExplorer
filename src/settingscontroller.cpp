@@ -123,6 +123,13 @@ void SettingsController::save_settings(std::string path_to_save_file)
         xmlWriter.writeAttribute("path", QString::fromStdString(m_set.log_file_path));
     xmlWriter.writeEndElement();
 
+    xmlWriter.writeStartElement("helps");  // Записываем тег с именем для первого чекбокса
+    if(m_set.helps)
+        xmlWriter.writeAttribute("bool", "true");
+    else
+        xmlWriter.writeAttribute("bool", "false");;
+    xmlWriter.writeEndElement();
+
     xmlWriter.writeEndElement();
     /* Завершаем запись в документ
      * */
@@ -223,6 +230,17 @@ void SettingsController::read_settings()
                                     m_set.log_file_path = attribute_value.toStdString();
                             }
                     }
+                    if(xmlReader.name() == "helps")
+                        for(const auto &attr : xmlReader.attributes()) {
+                            if (attr.name().toString() == "bool") {
+                                QString attribute_value = attr.value().toString();
+                                if(attribute_value == "false")
+                                   m_set.helps = false;
+                                else if(attribute_value == "true")
+                                    m_set.helps = true;
+                                else m_set.helps = false;
+                            }
+                    }
                 }
                 xmlReader.readNext();
     }
@@ -245,6 +263,17 @@ void SettingsController::set_cl()
 {
     db::DatabaseQuery::generate_select_cl_abonent_type(m_set.cl_abonent_type);
     db::DatabaseQuery::generate_select_cl_status(m_set.cl_status);
+}
+
+bool SettingsController::helps()
+{
+    return m_set.helps;
+}
+
+void SettingsController::setHelps(bool helps)
+{
+    m_set.helps = helps;
+    helpsChanged(m_set.helps);
 }
 
 std::vector<std::pair<std::string,std::string>> SettingsController::sub_list_dirs()
