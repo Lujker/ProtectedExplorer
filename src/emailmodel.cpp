@@ -113,7 +113,7 @@ void EmailModel::initAddressBook()
                 try {
                     it.db_type_id = SettingsController::
                             get_instanse().get_settings().
-                            cl_abonent_type.at(QString::fromLocal8Bit("Неопределен")); ///Тут нужно поработать с кодировкой
+                            cl_abonent_type.at(QString::fromLocal8Bit(u8"Неопределен")); ///Тут нужно поработать с кодировкой
 
                 }  catch (const std::exception& exp) {
                     qDebug()<<"Uncnown type"<<exp.what();

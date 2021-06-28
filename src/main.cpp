@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 
 //    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8")); //изменения
 
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("cp1251")); //изменения
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8")); //изменения
 //    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8")); //изменения
     ///Чтение переданных параметров командной строки и инициализцация настроек
     SettingsController::get_instanse().parse_args(app);
