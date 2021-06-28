@@ -188,8 +188,6 @@ public slots:
     virtual void setIconPath(int index, QString path);
     virtual void updateAll();
 
-
-
 private:
     std::vector<Abonent>&           m_ref_abonents; ///Ссылка на список абонентов в классе настроек
 

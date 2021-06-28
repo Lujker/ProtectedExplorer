@@ -38,6 +38,8 @@ void FolderExpl::initFromSettings()
                 std::make_shared<EmailModel>
                 (SettingsController::get_instanse().abonents());
 
+    m_abonent_model = std::make_shared<AbonentModel>(SettingsController::get_instanse().abonents());
+    getAbonent_model()->init();
 
     if(provider==nullptr)
         provider = new IconProvider(); ///интересно тут теряется память???
@@ -50,10 +52,15 @@ void FolderExpl::initFromSettings()
    if(m_email_models.first!=nullptr && m_email_models.second!=nullptr){
         m_email_models.first->init();
         m_email_models.second->init();
+        QObject::connect(m_abonent_model.get(),
+                         SIGNAL(abonentsChange()),
+                         m_email_models.first.get(),
+                         SLOT(updateAbonents()));
+        QObject::connect(m_abonent_model.get(),
+                         SIGNAL(abonentsChange()),
+                         m_email_models.second.get(),
+                         SLOT(updateAbonents()));
    }
-
-    m_abonent_model = std::make_shared<AbonentModel>(SettingsController::get_instanse().abonents());
-    getAbonent_model()->init();
 }
 
 /*!

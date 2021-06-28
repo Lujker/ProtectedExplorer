@@ -271,7 +271,7 @@ ApplicationWindow {
             listModel: EmailModelRight
             height: parent.height - _rowLayoutTableButtom.height - dirComboBox.height
 
-            anchors.leftMargin: 5
+            anchors.rightMargin: 5
             anchors.top: subComboBox.bottom
             anchors.bottom: _rowLayoutTableButtom.top
             anchors.left: _rectWidth.right

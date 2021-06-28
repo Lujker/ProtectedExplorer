@@ -15,7 +15,6 @@ Dialog {
         anchors.topMargin: 40
         anchors.bottomMargin: 40
         model: AbonentModel
-
         delegate: Component {
             AbonentPopupItem {
                 width: popup.width

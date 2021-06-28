@@ -274,7 +274,8 @@ void EmailModel::update()
 
 void EmailModel::updateAbonents()
 {
-
+    beginResetModel();
+    endResetModel();
 }
 
 void EmailModel::getNewInMessage(QString path)
@@ -457,6 +458,7 @@ void EmailModel::setLettersFromRESULT(db::RESULT &result, std::vector<Letter> &l
     }
 }
 
+///синхронизирует списко сообщейний с указанной папкой
 void EmailModel::syncLettersWithDir(std::vector<Letter> &let_arr, const QString &path)
 {
     std::vector<Letter> lettersFromDir;
@@ -503,6 +505,7 @@ void EmailModel::syncLettersWithDir(std::vector<Letter> &let_arr, const QString 
     }
 }
 
+///Просматривает контейнеры по указанному пути и записывает их в список
 void EmailModel::makeLettersFromDir(std::vector<Letter> &empty_let_arr, const QString &path)
 {
 

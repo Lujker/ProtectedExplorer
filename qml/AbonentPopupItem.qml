@@ -24,7 +24,6 @@ Rectangle {
                 _listPopup.open()
             }
             if (mouse.button === Qt.LeftButton) {
-
                 //                isSelected = !isSelected
             }
         }
@@ -138,10 +137,7 @@ Rectangle {
         nameFilters: ["Inboxes"]
         property int index: -1
         onAccepted: {
-            console.debug(_dialogForInboxes.fileUrl)
             AbonentModel.setInPath(index, fileUrl)
-
-            //            TreeList.add_from_dir(dupmFileDir.fileUrl)
         }
         onRejected: {
 
@@ -157,7 +153,6 @@ Rectangle {
         property int index: -1
         onAccepted: {
             AbonentModel.setOutPath(index, fileUrl)
-            //            TreeList.add_from_dir(dupmFileDir.fileUrl)
         }
         onRejected: {
 
@@ -182,7 +177,7 @@ Rectangle {
             AbonentModel.renameAbonent(index, _txtFieldAbName.text)
         }
         onRejected: {
-            console.debug(index)
+
         }
     }
     FileDialog {
@@ -193,7 +188,6 @@ Rectangle {
         property int index: -1
         onAccepted: {
             AbonentModel.setIconPath(index, fileUrl)
-            //            TreeList.add_from_dir(dupmFileDir.fileUrl)
         }
         onRejected: {
 
