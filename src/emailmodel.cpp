@@ -407,7 +407,7 @@ QVariant EmailModel::data(const QModelIndex &index, int role) const
                 return QString::fromStdString(
                             finder->sys_name);
             else{
-                return QString::fromStdString("Неизвестный абонент");
+                return QString::fromStdString(u8"Неизвестный абонент");
             }
             break;
         }
