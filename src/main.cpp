@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QTextCodec>
 #include <folderexpl.h>
 /*!
  * \author Zelenskiy Vladislav, email: vladzzp10@yandex.ru
@@ -17,6 +18,11 @@ int main(int argc, char *argv[])
     app.setApplicationVersion("1.0.0");
     app.setOrganizationDomain("RusBITeh");
     app.setWindowIcon(QIcon(":/appIcon.ico"));
+
+//    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8")); //изменения
+
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("windows-1251")); //изменения
+//    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8")); //изменения
     ///Чтение переданных параметров командной строки и инициализцация настроек
     SettingsController::get_instanse().parse_args(app);
     SettingsController::get_instanse().read_settings();
