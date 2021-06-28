@@ -113,7 +113,7 @@ void EmailModel::initAddressBook()
                 try {
                     it.db_type_id = SettingsController::
                             get_instanse().get_settings().
-                            cl_abonent_type.at(QString::fromLocal8Bit("Неопределен")); ///Тут нужно поработать с кодировкой
+                            cl_abonent_type.at(QString("Неопределен")); ///Тут нужно поработать с кодировкой
 
                 }  catch (const std::exception& exp) {
                     qDebug()<<"Uncnown type"<<exp.what();
@@ -630,7 +630,9 @@ void AbonentModel::addAbonent(QString sys_name,
     new_ab.outbox_path = outbox_path.toStdString();
     new_ab.icon_path = icon_path.toStdString();
     new_ab.db_type_id = db_type_id;
-    ref_abonents().push_back(new_ab);
+
+    ref_abonents().push_back(std::move_if_noexcept(new_ab));
+    updateAll();
 }
 
 void AbonentModel::delAbonent(int index)
@@ -642,23 +644,52 @@ void AbonentModel::delAbonent(int index)
                     ref_abonents().begin(), ref_abonents().end(),
                     *(ref_abonents().begin() + index)),
                 ref_abonents().end());
+    updateAll();
 }
 
 void AbonentModel::renameAbonent(int index, QString sys_name)
 {
     if(index < 0 || index >= ref_abonents().size()) return;
 
-    qDebug()<<sys_name;
     std::string new_name = sys_name.toStdString();
     auto it = std::find_if(ref_abonents().begin(),ref_abonents().end(),[&](const Abonent& ab){
         return ab.sys_name==new_name;
     });
     if(it==ref_abonents().end()){
-        beginResetModel();
         (ref_abonents().begin()+index)->sys_name = new_name;
-        endResetModel();
-        emit abonentsChange();
+        updateAll();
     }
+}
+
+void AbonentModel::setInPath(int index, QString path)
+{
+    if(index < 0 || index >= ref_abonents().size()) return;
+
+    m_ref_abonents.at(index).inbox_path = path.split("file:///").at(1).toStdString();
+    updateAll();
+}
+
+void AbonentModel::setOutPath(int index, QString path)
+{
+    if(index < 0 || index >= ref_abonents().size()) return;
+
+    m_ref_abonents.at(index).outbox_path = path.split("file:///").at(1).toStdString();
+    updateAll();
+}
+
+void AbonentModel::setIconPath(int index, QString path)
+{
+    if(index < 0 || index >= ref_abonents().size()) return;
+
+    m_ref_abonents.at(index).icon_path = path.toStdString();
+    updateAll();
+}
+
+void AbonentModel::updateAll()
+{
+    beginResetModel();
+    endResetModel();
+    emit abonentsChange();
 }
 
 std::vector<Abonent> &AbonentModel::ref_abonents() const

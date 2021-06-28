@@ -53,6 +53,7 @@ Rectangle {
         anchors.left: parent.left
         anchors.leftMargin: 10
         text: listModel.current_dir
+        height: text.length === 0 ? 0 : 20
     }
 
     TableView {
@@ -60,7 +61,7 @@ Rectangle {
         parent: explWindow
 
         anchors.top: _curFolder.bottom
-        anchors.topMargin: 10
+        //        anchors.topMargin: 10
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -260,6 +261,21 @@ Rectangle {
                     width: 100
                     height: 150
                     modal: true
+                    dim: true
+                    enter: Transition {
+                        NumberAnimation {
+                            property: "opacity"
+                            from: 0.0
+                            to: 1.0
+                        }
+                    }
+                    exit: Transition {
+                        NumberAnimation {
+                            property: "opacity"
+                            from: 1.0
+                            to: 0.0
+                        }
+                    }
                     Overlay.modal: Rectangle {
                         color: "#aacfdbe7"
                     }

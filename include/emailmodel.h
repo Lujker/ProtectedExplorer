@@ -183,6 +183,10 @@ public slots:
                             int db_type_id=0);
     virtual void delAbonent(int index);
     virtual void renameAbonent(int index, QString sys_name);
+    virtual void setInPath(int index, QString path);
+    virtual void setOutPath(int index, QString path);
+    virtual void setIconPath(int index, QString path);
+    virtual void updateAll();
 
 
 

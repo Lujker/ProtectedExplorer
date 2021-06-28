@@ -2,22 +2,19 @@
 import QtQuick.Controls 2.12
 import QtQuick.Window 2.2
 
-Popup {
+Dialog {
     id: popup
-
-    //    contentHeight: _listModel.contentHeight
-    //    contentWidth: _listModel.contentWidth
     modal: true
-    //    Overlay.modal: Rectangle {
-    //        anchors.fill: parent
-    //        color: "#aacfdbe7"
-    //    }
+    title: "Список абонентов"
+    height: 400
+    width: 500
+
     contentItem: ListView {
         id: _listModel
-        implicitWidth: 300
-        implicitHeight: 300
-        model: AbonentModel
         anchors.fill: parent
+        anchors.topMargin: 40
+        anchors.bottomMargin: 40
+        model: AbonentModel
 
         delegate: Component {
             AbonentPopupItem {

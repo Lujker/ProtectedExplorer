@@ -1,6 +1,7 @@
 ﻿import QtQuick 2.0
 import QtQuick.Controls 2.15
 import QtQuick.Dialogs 1.2
+import QtQuick.Layouts 1.3
 
 Rectangle {
     id: contentItem
@@ -14,7 +15,20 @@ Rectangle {
     border.width: 1
     color: isHovered ? (isSelected ? "lightsteelblue" : "skyblue") : (isSelected ? "skyblue" : "white")
     height: 32
+    width: parent.width
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton | Qt.LeftButton
+        onClicked: {
+            if (mouse.button === Qt.RightButton) {
+                _listPopup.open()
+            }
+            if (mouse.button === Qt.LeftButton) {
 
+                //                isSelected = !isSelected
+            }
+        }
+    }
     Item {
         id: _abIcon
         anchors.top: parent.top
@@ -63,6 +77,7 @@ Rectangle {
                     parent.nameHovered = !parent.nameHovered
                 }
                 onClicked: {
+                    isSelected = true
                     _dialogNewName.index = index
                     _dialogNewName.open()
                 }
@@ -79,8 +94,8 @@ Rectangle {
             property bool outboxHovered: false
             verticalAlignment: Text.AlignVCenter
             text: "Исходящие"
-            font.bold: true
 
+            //            font.bold: true
             color: outboxHovered ? "green" : "black"
             MouseArea {
                 anchors.fill: parent
@@ -89,6 +104,7 @@ Rectangle {
                     parent.outboxHovered = !parent.outboxHovered
                 }
                 onClicked: {
+                    isSelected = true
                     _dialogForOutboxes.index = index
                     _dialogForOutboxes.open()
                 }
@@ -107,6 +123,7 @@ Rectangle {
                     parent.inboxHovered = !parent.inboxHovered
                 }
                 onClicked: {
+                    isSelected = true
                     _dialogForInboxes.index = index
                     _dialogForInboxes.open()
                 }
@@ -115,12 +132,14 @@ Rectangle {
     }
     FileDialog {
         id: _dialogForInboxes
-        title: "Выбирите путь к исходящим"
+        title: "Выбирите путь к входящим"
         selectFolder: true
         folder: shortcuts.home
         nameFilters: ["Inboxes"]
         property int index: -1
         onAccepted: {
+            console.debug(_dialogForInboxes.fileUrl)
+            AbonentModel.setInPath(index, fileUrl)
 
             //            TreeList.add_from_dir(dupmFileDir.fileUrl)
         }
@@ -137,7 +156,7 @@ Rectangle {
         nameFilters: ["Outboxes"]
         property int index: -1
         onAccepted: {
-
+            AbonentModel.setOutPath(index, fileUrl)
             //            TreeList.add_from_dir(dupmFileDir.fileUrl)
         }
         onRejected: {
@@ -169,17 +188,63 @@ Rectangle {
     FileDialog {
         id: _dialogForIcon
         title: "Выбирите путь к иконке абонента"
-        selectFolder: true
         folder: shortcuts.home
-        nameFilters: ["png"]
+        nameFilters: ["Image files (*.jpg *.png)"]
         property int index: -1
         onAccepted: {
-
+            AbonentModel.setIconPath(index, fileUrl)
             //            TreeList.add_from_dir(dupmFileDir.fileUrl)
         }
         onRejected: {
 
         }
         Component.onCompleted: visible = false
+    }
+    Popup {
+        id: _listPopup
+        width: 150
+        height: 100
+        dim: true
+        modal: true
+        enter: Transition {
+            NumberAnimation {
+                property: "opacity"
+                from: 0.0
+                to: 1.0
+            }
+        }
+        exit: Transition {
+            NumberAnimation {
+                property: "opacity"
+                from: 1.0
+                to: 0.0
+            }
+        }
+        Overlay.modal: Rectangle {
+            color: "#aacfdbe7"
+        }
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 2
+
+            PopupFMItem {
+                text: qsTr("Добавить абоннета")
+                onButtonPress: {
+                    AbonentModel.addAbonent()
+                }
+                onButtonReleased: {
+                    _listPopup.close()
+                }
+            }
+            PopupFMItem {
+                text: qsTr("Удалить")
+                onButtonPress: {
+                    AbonentModel.delAbonent(index)
+                }
+                onButtonReleased: {
+                    _listPopup.close()
+                }
+            }
+        }
     }
 }

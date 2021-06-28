@@ -54,7 +54,7 @@ Rectangle {
             anchors.fill: parent
             verticalAlignment: Text.AlignVCenter
             text: "Дата"
-            font.bold: true
+            //            font.bold: true
         }
     }
 }

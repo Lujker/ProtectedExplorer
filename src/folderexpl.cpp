@@ -730,7 +730,7 @@ QVariant DirsModel::data(const QModelIndex &index, int role) const
         break;
     case SizeRole:
         if(info.isDir()){
-            return QString::fromLocal8Bit("<Папка>"); //RVO ///Нужно порабоать с кодировкой
+            return QString("<Папка>"); //RVO ///Нужно порабоать с кодировкой
         }
         else {
             qint64 nSize = info.size();
