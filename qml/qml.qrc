@@ -21,5 +21,6 @@
         <file>EmailDelegate.qml</file>
         <file>AbonentList.qml</file>
         <file>AbonentPopupItem.qml</file>
+        <file>AbonentListPopup.qml</file>
     </qresource>
 </RCC>
