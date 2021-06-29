@@ -315,9 +315,6 @@ SettingsController::SettingsController(QObject *parent)
     Q_UNUSED(parent)
 }
 
-SettingsController::~SettingsController()
-{}
-
 std::string SettingsController::checkFolder(const std::string &absPath)
 {
     ///проверка имени дериктории по абсолютному пути

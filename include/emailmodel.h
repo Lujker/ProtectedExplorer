@@ -128,10 +128,14 @@ private:
     void makeLettersFromDir(std::vector<Letter>& empty_let_arr, const QString& path);
 
 private:
-    std::vector<Abonent>&           m_ref_abonents;         ///Ссылка на список абонентов в классе настроек
-    std::vector<Letter>             m_letters;              ///Список писем
-    QFileSystemWatcher*             m_inbox_watchers;       ///Слежка за входящими дерикториями
-    QFileSystemWatcher*             m_outbox_watchers;       ///Слежка за исходящими дерикториями
+    ///Ссылка на список абонентов в классе настроек
+    std::vector<Abonent>&           m_ref_abonents;
+    ///Список писем
+    std::vector<Letter>             m_letters;
+    ///Слежка за входящими дерикториями
+    QFileSystemWatcher*             m_inbox_watchers;
+    ///Слежка за исходящими дерикториями
+    QFileSystemWatcher*             m_outbox_watchers;
     enum STATUS                     m_status;
     enum MODEL_TYPE                 m_model_type;
 

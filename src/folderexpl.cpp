@@ -10,10 +10,10 @@ FolderExpl::~FolderExpl()
         clear_members();
     }
     catch(std::exception& exep){
-        qDebug()<<exep.what();
+        qDebug()<<"Exep in clear_members FolderExpl "<<exep.what();
     }
     catch (...) {
-
+        qDebug()<<"Exep in clear_members FolderExpl";
     }
 }
 
@@ -38,15 +38,23 @@ void FolderExpl::initFromSettings()
                 std::make_shared<EmailModel>
                 (SettingsController::get_instanse().abonents());
 
-    m_abonent_model = std::make_shared<AbonentModel>(SettingsController::get_instanse().abonents());
+    m_abonent_model = std::make_shared<AbonentModel>
+            (SettingsController::get_instanse().abonents());
     getAbonent_model()->init();
 
     if(provider==nullptr)
         provider = new IconProvider(); ///интересно тут теряется память???
     ///Инициализация и подклоючените фалового менеджера
     if(m_dir_models.first!=nullptr && m_dir_models.second!=nullptr){
-        QObject::connect(m_dir_models.first.get(),SIGNAL(copyFile(QString)),m_dir_models.second.get(),SLOT(copyFrom(QString)));
-        QObject::connect(m_dir_models.second.get(),SIGNAL(copyFile(QString)),m_dir_models.first.get(),SLOT(copyFrom(QString)));
+        QObject::connect(m_dir_models.first.get(),
+                         SIGNAL(copyFile(QString)),
+                         m_dir_models.second.get(),
+                         SLOT(copyFrom(QString)));
+
+        QObject::connect(m_dir_models.second.get(),
+                         SIGNAL(copyFile(QString)),
+                         m_dir_models.first.get(),
+                         SLOT(copyFrom(QString)));
     }
     ///Инициализация почтового класса
    if(m_email_models.first!=nullptr && m_email_models.second!=nullptr){
@@ -71,7 +79,11 @@ void FolderExpl::initFromSettings()
  * \param rightModel - уже инициализировання модель для сообщений
  * \param abonentModel - уже инициализировання модель абонентов
  */
-void FolderExpl::init(FileSystemModel *subs, FileSystemModel *dirs, EmailModel *leftModel, EmailModel *rightModel, AbonentModel* abonentModel)
+void FolderExpl::init(FileSystemModel *subs,
+                      FileSystemModel *dirs,
+                      EmailModel *leftModel,
+                      EmailModel *rightModel,
+                      AbonentModel* abonentModel)
 {
     clear_members();
     m_dir_models.first = (std::shared_ptr<FileSystemModel>(subs));
@@ -124,12 +136,14 @@ void FolderExpl::setProvider(IconProvider *value)
     provider = value;
 }
 
-std::pair<std::shared_ptr<FileSystemModel>, std::shared_ptr<FileSystemModel> > FolderExpl::getDir_models() const
+std::pair<std::shared_ptr<FileSystemModel>,
+std::shared_ptr<FileSystemModel> > FolderExpl::getDir_models() const
 {
     return m_dir_models;
 }
 
-std::pair<std::shared_ptr<EmailModel>, std::shared_ptr<EmailModel>> FolderExpl::getEmail_models() const
+std::pair<std::shared_ptr<EmailModel>,
+std::shared_ptr<EmailModel>> FolderExpl::getEmail_models() const
 {
     return m_email_models;
 }
@@ -151,8 +165,14 @@ FileSystemModel::~FileSystemModel(){}
  * \brief DirsModel::DirsModel инициализация модели
  * \param dirs списко доступных папок
  */
-DirsModel::DirsModel(std::vector<std::pair<std::string, std::string> > dirs, QObject *parent): FileSystemModel(parent),
-    m_dirs(dirs), m_folder(nullptr),  m_level_count(0),  m_watcher(new QFileSystemWatcher)
+DirsModel::DirsModel(std::vector<
+                     std::pair<std::string, std::string> > dirs,
+                     QObject *parent):
+    FileSystemModel(parent),
+    m_dirs(dirs),
+    m_folder(nullptr),
+    m_level_count(0),
+    m_watcher(new QFileSystemWatcher)
 {
     connect(m_watcher, SIGNAL(directoryChanged(QString)),
             this, SLOT(derictoryChange(QString)));
@@ -172,10 +192,10 @@ DirsModel::~DirsModel()
         }
     }
     catch(std::exception& exep){
-        qDebug()<<exep.what();
+        qDebug()<<"Exep in destructor DirsModel "<<exep.what();
     }
     catch (...) {
-
+        qDebug()<<"Exep in destructor DirsModel";
     }
 }
 

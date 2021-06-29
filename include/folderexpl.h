@@ -92,24 +92,30 @@ public:
     virtual QString current_dir() = 0;
 
 public slots:
-    //Установка стандартных путей в таблице
+    ///обновляет все данные в view qml
     virtual void refreshModel() = 0;
+    ///Установка стандартных путей в таблице
     virtual void setAsSubModel() = 0;
     virtual void setAsDirModel() = 0;
 
-    //Переход по дерикториями
+    ///Переход по дерикториями
     virtual void openFolder(int index) = 0;
+    ///преейти на уровень выше
     virtual void comeBack() = 0;
+    ///Вернуться к стандартным дерикториям из настроек
     virtual void comeToBeginning() = 0;
-    //Копирование файлов
+
+    ///Копирование файлов
     virtual void copySelections(int start, int end) = 0;
     virtual void copyFile(int index) = 0;
-    virtual void moveFile(int index) = 0;
-    virtual void signedFile(int index) = 0;
     virtual void copyFrom(QString path) = 0;
     virtual void copyTo(QString path) = 0;
+    ///перемещение фалов
+    virtual void moveFile(int index) = 0;
+    ///подпись файлов
+    virtual void signedFile(int index) = 0;
 
-    //Работа с дерикториями и файлами
+    ///Работа с дерикториями и файлами
     virtual void derictoryChange(QString path) = 0;
     virtual void addFile(QString name) = 0;
     virtual void deleteFile(int index) = 0;
@@ -117,7 +123,7 @@ public slots:
     virtual void addFolder(QString name) = 0;
     virtual void deleteFolder(int index) = 0;
     virtual void renameFile(int index, QString name) = 0;
-    //Сортировка файлов таблциы
+    ///Сортировка файлов таблицы
     virtual void setSorting(int column, int order) = 0;
 };
 
@@ -202,7 +208,9 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
 signals:
+    ///отправляем сигнал на соседнюю модель если пользователь копирует
     void copyFile(QString);
+    ///отслеживаем изменения в текущей дериктории
     void current_dir_change(QString);
 
 private:
@@ -214,7 +222,9 @@ private:
         QList<QString> m_filenames;
         ///уровень вхождения
         int m_level_count;
+        ///отслеживает текущую дерикторию и обновляет если изменилась
         QFileSystemWatcher* m_watcher;
+        ///путь к текущей дериктории
         std::string m_current_dir;
 
         ///Перечисление для доступа к информации в qml

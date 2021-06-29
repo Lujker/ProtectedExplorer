@@ -465,7 +465,7 @@ void EmailModel::setLettersFromRESULT(db::RESULT &result, std::vector<Letter> &l
 void EmailModel::syncLettersWithDir(std::vector<Letter> &let_arr, const QString &path)
 {
     std::vector<Letter> lettersFromDir;
-    ///Определить функцию получения информации из контейнера
+    ///\todo Определить функцию получения информации из контейнера
     makeLettersFromDir(lettersFromDir, path);
     for(const auto &it: lettersFromDir){
         auto finder = std::find_if(

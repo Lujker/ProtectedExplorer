@@ -139,7 +139,7 @@ private:
     SettingsController(SettingsController&)=delete;
     SettingsController(SettingsController&&)=delete;
     SettingsController& operator=(SettingsController&)=delete;
-    ~SettingsController();
+    ~SettingsController() = default;
 
     std::string checkFolder(const std::string &absPath);
     std::string checkIcon(const QString &iconPath);
