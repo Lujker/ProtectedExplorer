@@ -81,7 +81,7 @@ private:
 
 /*!
  * \brief The FileSystemModel class интерфейс для класса отображения фаловой системы
- * \details Данный класс является интерфейсом для интерфейса отображения фаловой системы qml
+ * \details Данный класс является интерфейсом для отображения фаловой системы в qml
  */
 class FileSystemModel: public QAbstractTableModel
 {
@@ -183,7 +183,7 @@ public slots:
     void addFolder(QString name) override;
     void deleteFolder(int index) override;
     void renameFile(int index, QString name) override;
-    //Сортировка файлов таблциы
+    //Сортировка файлов таблцы
     void setSorting(int column, int order) override;
     void sortByName(bool lower = false);
     void sortByDate(bool lower = false);

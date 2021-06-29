@@ -29,8 +29,6 @@ Popup {
     ColumnLayout {
         anchors.fill: parent
         spacing: 2
-        ///!\todo Сделать диалог по найтройке нового абонента
-        ///куда будет всписываться инфа о нем и уже эту инфу передает в модель
         PopupFMItem {
             text: qsTr("Удалить")
             onButtonPress: {
