@@ -22,5 +22,6 @@
         <file>AbonentList.qml</file>
         <file>AbonentPopupItem.qml</file>
         <file>AbonentListPopup.qml</file>
+        <file>AddAbonentDialog.qml</file>
     </qresource>
 </RCC>

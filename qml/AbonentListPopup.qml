@@ -6,7 +6,7 @@ import QtQuick.Layouts 1.3
 Popup {
     id: _listPopup
     width: 100
-    height: 100
+    height: 50
     dim: true
     modal: true
     enter: Transition {
@@ -31,15 +31,6 @@ Popup {
         spacing: 2
         ///!\todo Сделать диалог по найтройке нового абонента
         ///куда будет всписываться инфа о нем и уже эту инфу передает в модель
-        PopupFMItem {
-            text: qsTr("Новый абоннет")
-            onButtonPress: {
-                AbonentModel.addAbonent()
-            }
-            onButtonReleased: {
-                _listPopup.close()
-            }
-        }
         PopupFMItem {
             text: qsTr("Удалить")
             onButtonPress: {
