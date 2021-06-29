@@ -24,6 +24,7 @@ Rectangle {
                 _listPopup.open()
             }
             if (mouse.button === Qt.LeftButton) {
+
                 //                isSelected = !isSelected
             }
         }
@@ -76,7 +77,7 @@ Rectangle {
                     parent.nameHovered = !parent.nameHovered
                 }
                 onClicked: {
-                    isSelected = true
+                    //                    isSelected = true
                     _dialogNewName.index = index
                     _dialogNewName.open()
                 }
@@ -103,7 +104,7 @@ Rectangle {
                     parent.outboxHovered = !parent.outboxHovered
                 }
                 onClicked: {
-                    isSelected = true
+                    //                    isSelected = true
                     _dialogForOutboxes.index = index
                     _dialogForOutboxes.open()
                 }
@@ -122,7 +123,7 @@ Rectangle {
                     parent.inboxHovered = !parent.inboxHovered
                 }
                 onClicked: {
-                    isSelected = true
+                    //                    isSelected = true
                     _dialogForInboxes.index = index
                     _dialogForInboxes.open()
                 }
@@ -196,7 +197,7 @@ Rectangle {
     }
     Popup {
         id: _listPopup
-        width: 150
+        width: 100
         height: 100
         dim: true
         modal: true
@@ -220,9 +221,10 @@ Rectangle {
         ColumnLayout {
             anchors.fill: parent
             spacing: 2
-
+            ///!\todo Сделать диалог по найтройке нового абонента
+            ///куда будет всписываться инфа о нем и уже эту инфу передает в модель
             PopupFMItem {
-                text: qsTr("Добавить абоннета")
+                text: qsTr("Новый абоннет")
                 onButtonPress: {
                     AbonentModel.addAbonent()
                 }

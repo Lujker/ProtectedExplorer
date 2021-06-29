@@ -71,11 +71,11 @@ void FolderExpl::initFromSettings()
  * \param rightModel - уже инициализировання модель для сообщений
  * \param abonentModel - уже инициализировання модель абонентов
  */
-void FolderExpl::init(DirsModel *subs, DirsModel *dirs, EmailModel *leftModel, EmailModel *rightModel, AbonentModel* abonentModel)
+void FolderExpl::init(FileSystemModel *subs, FileSystemModel *dirs, EmailModel *leftModel, EmailModel *rightModel, AbonentModel* abonentModel)
 {
     clear_members();
-    m_dir_models.first = (std::shared_ptr<DirsModel>(subs));
-    m_dir_models.second = (std::shared_ptr<DirsModel>(dirs));
+    m_dir_models.first = (std::shared_ptr<FileSystemModel>(subs));
+    m_dir_models.second = (std::shared_ptr<FileSystemModel>(dirs));
     m_email_models.first = (std::shared_ptr<EmailModel>(leftModel));
     m_email_models.second =(std::shared_ptr<EmailModel>(rightModel));
     if(provider==nullptr)
@@ -124,7 +124,7 @@ void FolderExpl::setProvider(IconProvider *value)
     provider = value;
 }
 
-std::pair<std::shared_ptr<DirsModel>, std::shared_ptr<DirsModel>> FolderExpl::getDir_models() const
+std::pair<std::shared_ptr<FileSystemModel>, std::shared_ptr<FileSystemModel> > FolderExpl::getDir_models() const
 {
     return m_dir_models;
 }
@@ -143,12 +143,15 @@ IconProvider *FolderExpl::getProvider() const
 {
     return provider;
 }
+FileSystemModel::FileSystemModel(QObject* parent) : QAbstractTableModel(parent){}
+
+FileSystemModel::~FileSystemModel(){}
 
 /*!
  * \brief DirsModel::DirsModel инициализация модели
  * \param dirs списко доступных папок
  */
-DirsModel::DirsModel(std::vector<std::pair<std::string, std::string> > dirs, QObject *parent): QAbstractTableModel(parent),
+DirsModel::DirsModel(std::vector<std::pair<std::string, std::string> > dirs, QObject *parent): FileSystemModel(parent),
     m_dirs(dirs), m_folder(nullptr),  m_level_count(0),  m_watcher(new QFileSystemWatcher)
 {
     connect(m_watcher, SIGNAL(directoryChanged(QString)),

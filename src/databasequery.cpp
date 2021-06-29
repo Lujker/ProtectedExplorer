@@ -67,6 +67,13 @@ RESULT DatabaseQuery::generate_update_abonent_path(const Abonent &abonent)
     return DatabaseAccessor::getInstanse()->executeQuery(str);
 }
 
+RESULT DatabaseQuery::generate_update_abonent_name(const Abonent &abonent)
+{
+    QString str = "UPDATE abonents SET Name = '" + QString::fromStdString(abonent.inbox_path) +
+            "' WHERE id = '" + QString::number(abonent.db_id) + "';";
+    return DatabaseAccessor::getInstanse()->executeQuery(str);
+}
+
 RESULT DatabaseQuery::generate_delete_abonent(const Abonent &abonent)
 {
     QString str = "DELETE FROM abonents WHERE Name = '" + QString::fromStdString(abonent.sys_name) +"';";

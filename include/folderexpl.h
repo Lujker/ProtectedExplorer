@@ -29,10 +29,9 @@
 #include <databasequery.h>
 #include <emailmodel.h>
 
-
-class DirsModel;
-class IconProvider;
+class FileSystemModel;
 class EmailModel;
+class IconProvider;
 
 /*!
  * \brief The FolderExpl class
@@ -45,14 +44,14 @@ class EmailModel;
  * \date 01.06.2021
  * \warning Класс не допускает возможности наследования
  */
-class FolderExpl : public QObject
+class FolderExpl final: public QObject
 {
     Q_OBJECT
 public:
     explicit FolderExpl(QObject *parent = nullptr);
     ~FolderExpl();
     void initFromSettings();
-    void init(DirsModel *subs, DirsModel* dirs,
+    void init(FileSystemModel *subs, FileSystemModel* dirs,
               EmailModel* leftModel, EmailModel* rightModel,
               AbonentModel *abonentModel);
     void clear_members();
@@ -61,20 +60,65 @@ public:
     IconProvider *getProvider() const;
     void setProvider(IconProvider *value);
 
-    std::pair<std::shared_ptr<DirsModel>, std::shared_ptr<DirsModel> > getDir_models() const;
+    std::pair<std::shared_ptr<FileSystemModel>, std::shared_ptr<FileSystemModel> > getDir_models() const;
     std::pair<std::shared_ptr<EmailModel>, std::shared_ptr<EmailModel>> getEmail_models() const;
     std::shared_ptr<AbonentModel>       getAbonent_model() const;
 
 
 private:
     std::pair<
-    std::shared_ptr<DirsModel>,
-    std::shared_ptr<DirsModel>>     m_dir_models;
+    std::shared_ptr<FileSystemModel>,
+    std::shared_ptr<FileSystemModel>>     m_dir_models;
+
     std::pair<
     std::shared_ptr<EmailModel>,
     std::shared_ptr<EmailModel>>    m_email_models;
+
     std::shared_ptr<AbonentModel>   m_abonent_model;
+
     IconProvider*                   provider;
+};
+
+/*!
+ * \brief The FileSystemModel class интерфейс для класса отображения фаловой системы
+ * \details Данный класс является интерфейсом для интерфейса отображения фаловой системы qml
+ */
+class FileSystemModel: public QAbstractTableModel
+{
+    Q_OBJECT
+public:
+    FileSystemModel(QObject* parent = nullptr);
+    virtual ~FileSystemModel() = 0;
+    virtual QString current_dir() = 0;
+
+public slots:
+    //Установка стандартных путей в таблице
+    virtual void refreshModel() = 0;
+    virtual void setAsSubModel() = 0;
+    virtual void setAsDirModel() = 0;
+
+    //Переход по дерикториями
+    virtual void openFolder(int index) = 0;
+    virtual void comeBack() = 0;
+    virtual void comeToBeginning() = 0;
+    //Копирование файлов
+    virtual void copySelections(int start, int end) = 0;
+    virtual void copyFile(int index) = 0;
+    virtual void moveFile(int index) = 0;
+    virtual void signedFile(int index) = 0;
+    virtual void copyFrom(QString path) = 0;
+    virtual void copyTo(QString path) = 0;
+
+    //Работа с дерикториями и файлами
+    virtual void derictoryChange(QString path) = 0;
+    virtual void addFile(QString name) = 0;
+    virtual void deleteFile(int index) = 0;
+    virtual void deleteFiles(int start, int end) = 0;
+    virtual void addFolder(QString name) = 0;
+    virtual void deleteFolder(int index) = 0;
+    virtual void renameFile(int index, QString name) = 0;
+    //Сортировка файлов таблциы
+    virtual void setSorting(int column, int order) = 0;
 };
 
 /*!
@@ -99,48 +143,48 @@ private:
  * \author Zelenskiy V.P.
  * \version 1.0
  * \date 01.06.2021
- * \warning Возможны баги, класс не проходил тестирование. Насоедование не желательно
- * \todo Переписать класс добавив возможность наследования и интерфейс
+ * \warning Возможны баги, класс не проходил тестирование. Насоедование заперщено (есть интерфейс)
+ * \todo
  */
-class DirsModel: public QAbstractTableModel
+class DirsModel final: public FileSystemModel
 {
     Q_OBJECT
-
     Q_PROPERTY(QString current_dir READ current_dir NOTIFY current_dir_change)
 
 public:
     explicit DirsModel(std::vector<std::pair<std::string,std::string>> dirs, QObject* parent = nullptr);
+    DirsModel(const DirsModel& ) = delete;
     ~DirsModel();
-    QString current_dir();
+    QString current_dir() override;
 
 public slots:
     //Установка стандартных путей в таблице
-    void refreshModel();
-    void setAsSubModel();
-    void setAsDirModel();
+    void refreshModel() override;
+    void setAsSubModel() override;
+    void setAsDirModel() override;
 
     //Переход по дерикториями
-    void openFolder(int index);
-    void comeBack();
-    void comeToBeginning();
+    void openFolder(int index) override;
+    void comeBack() override;
+    void comeToBeginning() override;
     //Копирование файлов
-    void copySelections(int start, int end);
-    void copyFile(int index);
-    void moveFile(int index);
-    void signedFile(int index);
-    void copyFrom(QString path);
-    void copyTo(QString path);
+    void copySelections(int start, int end) override;
+    void copyFile(int index) override;
+    void moveFile(int index) override;
+    void signedFile(int index) override;
+    void copyFrom(QString path) override;
+    void copyTo(QString path) override;
 
     //Работа с дерикториями и файлами
-    void derictoryChange(QString path);
-    void addFile(QString name);
-    void deleteFile(int index);
-    void deleteFiles(int start, int end);
-    void addFolder(QString name);
-    void deleteFolder(int index);
-    void renameFile(int index, QString name);
+    void derictoryChange(QString path) override;
+    void addFile(QString name) override;
+    void deleteFile(int index) override;
+    void deleteFiles(int start, int end) override;
+    void addFolder(QString name) override;
+    void deleteFolder(int index) override;
+    void renameFile(int index, QString name) override;
     //Сортировка файлов таблциы
-    void setSorting(int column, int order);
+    void setSorting(int column, int order) override;
     void sortByName(bool lower = false);
     void sortByDate(bool lower = false);
     void sortBySize(bool lower = false);
@@ -196,7 +240,7 @@ private:
  * \date 01.06.2021
  * \warning Загрузка иконок проходит медленно
  */
-class IconProvider : public QQuickImageProvider
+class IconProvider final: public QQuickImageProvider
 {
 public:
     IconProvider();

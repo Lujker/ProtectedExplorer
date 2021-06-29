@@ -318,7 +318,7 @@ void EmailModel::getAttacments(const int mes_index, const int dir_index)
 
 void EmailModel::deleteMessage(const int index)
 {
-    if(index<0 && index>=letters().size()) return;
+    if(index<0 && index>= static_cast<int>(letters().size())) return;
 
     auto result = db::DatabaseQuery::generate_delete_letters(letters().at(index));
     if(result.first==db::DBResult::ISOK){
@@ -374,7 +374,7 @@ int EmailModel::columnCount(const QModelIndex &parent) const
 QVariant EmailModel::data(const QModelIndex &index, int role) const
 {
 
-    if(index.row() < m_letters.size() && index.row()>= 0){
+    if(index.row() < static_cast<int>(m_letters.size()) && index.row()>= 0){
         if(role==INDEX) return index.row();
 
         auto finder = std::find_if(
@@ -588,7 +588,7 @@ int AbonentModel::columnCount(const QModelIndex &parent) const
 
 QVariant AbonentModel::data(const QModelIndex &index, int role) const
 {
-    if(index.row() < m_ref_abonents.size() && index.row()>= 0)
+    if(index.row() < static_cast<int>(m_ref_abonents.size()) && index.row()>= 0)
         switch (role) {
         case NAME:
             return QString::fromStdString(
@@ -636,56 +636,75 @@ void AbonentModel::addAbonent(QString sys_name,
     new_ab.outbox_path = outbox_path.toStdString();
     new_ab.icon_path = icon_path.toStdString();
     new_ab.db_type_id = db_type_id;
+    new_ab.db_id = db::DatabaseQuery::generate_select_abonent_count()+1;
 
-    ref_abonents().push_back(std::move_if_noexcept(new_ab));
-    updateAll();
+    try {
+        ref_abonents().push_back(std::move_if_noexcept(new_ab));
+        if(db::DatabaseQuery::generate_insert_abonent(ref_abonents().at(ref_abonents().size()-1)).first!=db::DBResult::ISOK){
+            qDebug()<<"Insetr abonent in DB failed";
+        }
+        updateAll();
+    }  catch (const std::bad_alloc& b_a) {
+        qDebug()<<b_a.what();
+    }
+    catch(...){
+        qDebug()<<"Insert new abonent failed";
+    }
 }
 
 void AbonentModel::delAbonent(int index)
 {
-    if(index < 0 || index >= ref_abonents().size()) return;
+    if(index < 0 || index >= static_cast<int>(ref_abonents().size())) return;
 
-    ref_abonents().erase(
-                std::remove(
-                    ref_abonents().begin(), ref_abonents().end(),
-                    *(ref_abonents().begin() + index)),
-                ref_abonents().end());
-    updateAll();
+    if(db::DatabaseQuery::generate_delete_abonent(*(ref_abonents().begin() + index)).first==db::DBResult::ISOK){
+        ref_abonents().erase(
+                    std::remove(
+                        ref_abonents().begin(),
+                        ref_abonents().end(),
+                        *(ref_abonents().begin() + index)),
+                    ref_abonents().end());
+        updateAll();
+    }
 }
 
 void AbonentModel::renameAbonent(int index, QString sys_name)
 {
-    if(index < 0 || index >= ref_abonents().size()) return;
+    if(index < 0 || index >= static_cast<int>(ref_abonents().size())) return;
 
     std::string new_name = sys_name.toStdString();
     auto it = std::find_if(ref_abonents().begin(),ref_abonents().end(),[&](const Abonent& ab){
         return ab.sys_name==new_name;
     });
     if(it==ref_abonents().end()){
-        (ref_abonents().begin()+index)->sys_name = new_name;
-        updateAll();
+        if(db::DatabaseQuery::generate_update_abonent_name(*it).first==db::DBResult::ISOK){
+            (ref_abonents().begin()+index)->sys_name = new_name;
+            updateAll();
+        }
     }
 }
 
 void AbonentModel::setInPath(int index, QString path)
 {
-    if(index < 0 || index >= ref_abonents().size()) return;
-
-    m_ref_abonents.at(index).inbox_path = path.split("file:///").at(1).toStdString();
-    updateAll();
+    if(index < 0 || index >= static_cast<int>(ref_abonents().size())) return;
+    if(db::DatabaseQuery::generate_update_abonent_path(m_ref_abonents.at(index)).first==db::DBResult::ISOK){
+        m_ref_abonents.at(index).inbox_path = path.split("file:///").at(1).toStdString();
+        updateAll();
+    }
 }
 
 void AbonentModel::setOutPath(int index, QString path)
 {
-    if(index < 0 || index >= ref_abonents().size()) return;
+    if(index < 0 || index >= static_cast<int>(ref_abonents().size())) return;
 
-    m_ref_abonents.at(index).outbox_path = path.split("file:///").at(1).toStdString();
-    updateAll();
+    if(db::DatabaseQuery::generate_update_abonent_path(m_ref_abonents.at(index)).first==db::DBResult::ISOK){
+        m_ref_abonents.at(index).outbox_path = path.split("file:///").at(1).toStdString();
+        updateAll();
+    }
 }
 
 void AbonentModel::setIconPath(int index, QString path)
 {
-    if(index < 0 || index >= ref_abonents().size()) return;
+    if(index < 0 || index >= static_cast<int>(ref_abonents().size())) return;
 
     m_ref_abonents.at(index).icon_path = path.toStdString();
     updateAll();

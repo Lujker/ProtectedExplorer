@@ -19,10 +19,8 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("RusBITeh");
     app.setWindowIcon(QIcon(":/appIcon.ico"));
 
-//    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8")); //изменения
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8")); //изменения
-//    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8")); //изменения
     ///Чтение переданных параметров командной строки и инициализцация настроек
     SettingsController::get_instanse().parse_args(app);
     SettingsController::get_instanse().read_settings();

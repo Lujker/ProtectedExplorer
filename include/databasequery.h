@@ -48,6 +48,7 @@ public:
 
     static RESULT generate_update_abonent_type(const Abonent& abonent);
     static RESULT generate_update_abonent_path(const Abonent& abonent);
+    static RESULT generate_update_abonent_name(const Abonent& abonent);
     static RESULT generate_delete_abonent(const Abonent& abonent);
     static RESULT generate_insert_abonent(const Abonent& abonent);
     static RESULT generate_update_abonent(const Abonent& abonent);
